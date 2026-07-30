@@ -1,0 +1,144 @@
+{
+  "entries": 5589,
+  "result_changing": 464,
+  "with_named_function": 230,
+  "with_corpus_exposure": 163,
+  "exposed_scripts": 719,
+  "coverage": {
+    "survival": {
+      "releases": 109,
+      "news_bytes": 116389,
+      "format": "rd",
+      "versions_documented": 114,
+      "version_coverage": 1.0,
+      "entries": 585,
+      "undated": 341
+    },
+    "sandwich": {
+      "releases": 39,
+      "news_bytes": 19634,
+      "format": "md",
+      "versions_documented": 39,
+      "version_coverage": 1.0,
+      "entries": 100,
+      "undated": 0
+    },
+    "lmtest": {
+      "releases": 46,
+      "news_bytes": 8267,
+      "format": "txt",
+      "versions_documented": 27,
+      "version_coverage": 0.587,
+      "entries": 57,
+      "undated": 0
+    },
+    "car": {
+      "releases": 91,
+      "news_bytes": 46253,
+      "format": "txt",
+      "versions_documented": 93,
+      "version_coverage": 1.0,
+      "entries": 422,
+      "undated": 59
+    },
+    "MASS": {
+      "releases": 78,
+      "news_bytes": 11060,
+      "format": "unstructured",
+      "versions_documented": 0,
+      "version_coverage": 0.0,
+      "entries": 148,
+      "undated": 148
+    },
+    "mgcv": {
+      "releases": 171,
+      "news_bytes": 153186,
+      "format": "bare",
+      "versions_documented": 150,
+      "version_coverage": 0.877,
+      "entries": 955,
+      "undated": 169
+    },
+    "lme4": {
+      "releases": 137,
+      "news_bytes": 72646,
+      "format": "rd",
+      "versions_documented": 52,
+      "version_coverage": 0.38,
+      "entries": 352,
+      "undated": 51
+    },
+    "plm": {
+      "releases": 50,
+      "news_bytes": 77054,
+      "format": "md",
+      "versions_documented": 86,
+      "version_coverage": 1.0,
+      "entries": 578,
+      "undated": 222
+    },
+    "estimatr": {
+      "releases": 22,
+      "news_bytes": 5435,
+      "format": "md",
+      "versions_documented": 21,
+      "version_coverage": 0.955,
+      "entries": 73,
+      "undated": 13
+    },
+    "fixest": {
+      "releases": 34,
+      "news_bytes": 115748,
+      "format": "md",
+      "versions_documented": 37,
+      "version_coverage": 1.0,
+      "entries": 769,
+      "undated": 108
+    },
+    "quantreg": {
+      "releases": 79,
+      "news_bytes": 67632,
+      "format": "verdate",
+      "versions_documented": 81,
+      "version_coverage": 1.0,
+      "entries": 220,
+      "undated": 216
+    },
+    "AER": {
+      "releases": 32,
+      "news_bytes": 13294,
+      "format": "md",
+      "versions_documented": 32,
+      "version_coverage": 1.0,
+      "entries": 73,
+      "undated": 2
+    },
+    "metafor": {
+      "releases": 36,
+      "news_bytes": 95881,
+      "format": "md",
+      "versions_documented": 39,
+      "version_coverage": 1.0,
+      "entries": 669,
+      "undated": 0
+    },
+    "nlme": {
+      "releases": 154,
+      "news_bytes": 57069,
+      "format": "gnu",
+      "versions_documented": 114,
+      "version_coverage": 0.74,
+      "entries": 585,
+      "undated": 0
+    },
+    "multiwayvcov": {
+      "releases": 5,
+      "news_bytes": 254,
+      "format": "unstructured",
+      "versions_documented": 0,
+      "version_coverage": 0.0,
+      "entries": 3,
+      "undated": 3
+    }
+  }
+}

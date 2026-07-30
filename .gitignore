@@ -18,3 +18,8 @@ reports/*.json
 
 # Track B harvest cache: large, re-fetchable, and pinned by content hash.
 data/cache/
+
+# Extracted corpus artifacts: large, and regenerable from softverse via
+# `concord frame`. The derived frame and changes tables are tracked.
+data/frame/call_sites.csv
+data/frame/extract.log
