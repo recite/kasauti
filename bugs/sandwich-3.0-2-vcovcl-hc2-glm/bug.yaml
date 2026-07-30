@@ -1,0 +1,30 @@
+id: sandwich-3.0-2-vcovcl-hc2-glm
+package: sandwich
+ecosystem: cran
+entry_id: sandwich@3.0-2#0
+fixed_in: 3.0-2
+fixed_on: '2022-06-15'
+introduced_in: null
+introduced_on: null
+functions:
+- vcovCL
+conditions: 'Requires type=''HC2'' explicitly -- vcovCL defaults to HC1 or HC0, never HC2
+  -- and the fit must be a glm or an lm with weights. Plain unweighted lm is unaffected, and
+  HC0 and HC3 are unaffected under every fit. Verified: 7 of 9 measured quantities are bit-identical
+  across versions, and only glm_HC2 and weighted_HC2 move.'
+condition_probe: (?=.*HC2)(?=.*(?:glm\s*\(|weights\s*=))
+category: RESULT_CHANGING
+silent: true
+severity: MEDIUM
+status: VERIFIED
+exposure:
+  scripts_calling_function: 37
+  scripts_meeting_probe: 6
+  papers_in_window: 0
+  papers_censored: 0
+magnitude: 'Verified against sandwich 3.0-1. Exactly the two documented conditions move and
+  nothing else: glm HC2 goes 3.257220214218 to 3.241862120725 (4.7e-3 relative) and weighted-lm
+  HC2 goes 0.677590761111 to 0.687773564531 (1.5e-2). The other seven quantities -- HC0 and
+  HC3 under all three fits, and every type on an unweighted lm -- are identical at relative
+  difference exactly 0. Wide and mild, where sandwich 2.5-0 was narrow and severe: a 0.5 to
+  1.5 percent move in a standard error rarely flips a conclusion, but it is silent.'

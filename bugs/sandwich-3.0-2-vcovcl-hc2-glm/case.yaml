@@ -1,0 +1,48 @@
+id: sandwich_vcovcl_hc2
+title: "sandwich 3.0-2: vcovCL(type='HC2') assumed symmetric hat matrices"
+family: version_regression
+
+# sandwich 3.0-2 (2022-06-15):
+#   "Bug fix in `vcovCL(..., type = "HC2")` for `glm` objects or `lm` objects
+#    with weights. The code had erroneously assumed that the hat matrices were
+#    all symmetric (as in the `lm` case without weights). This is corrected now."
+#
+# Requires sandwich 3.0-1 in a side library:
+#   Rscript -e 'install.packages(
+#     "https://cran.r-project.org/src/contrib/Archive/sandwich/sandwich_3.0-1.tar.gz",
+#     repos = NULL, type = "source", lib = "/tmp/rlibs/sandwich_3.0-1")'
+
+backends:
+  - name: buggy
+    cmd: ["Rscript", "--vanilla", "run_r.R", "/tmp/rlibs/sandwich_3.0-1"]
+    label: "sandwich 3.0-1 (before the fix)"
+    optional: true
+  - name: fixed
+    cmd: ["Rscript", "--vanilla", "run_r.R"]
+    label: "sandwich 3.1-2 (current)"
+
+agree_tol: 1.0e-8
+numeric_tol: 1.0e-5
+
+quantities:
+  se.x@glm_HC2:
+    expect: DIVERGE
+    reason: >
+      The bug. Cluster-robust HC2 on a glm: 3.257220214218 before the fix
+      against 3.241862120725 after, a relative difference of 4.7e-3. Small
+      beside the sign flip in sandwich 2.5-0, and that is the point -- this one
+      is wide and mild where that one was narrow and severe. A half-percent
+      move in a standard error will not flip most conclusions, but it is silent
+      and it is wrong.
+  se.x@weighted_HC2:
+    expect: DIVERGE
+    reason: >
+      Same defect on a weighted lm: 0.677590761111 against 0.687773564531, a
+      relative difference of 1.5e-2 -- three times the glm gap. Weighting is the
+      more affected of the two conditions the changelog names.
+
+# Everything else defaults to expecting AGREE, and that is the substantive
+# control. HC0 and HC3 are untouched by the fix, and the unweighted lm is
+# untouched under every type -- which is what confines the bug to exactly the
+# conditions the changelog claims. If se.x@plain_HC2 ever diverges, the entry
+# understates its own reach.

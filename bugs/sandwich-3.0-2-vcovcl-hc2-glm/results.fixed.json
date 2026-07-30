@@ -1,0 +1,29 @@
+{
+  "case_id": "sandwich_vcovcl_hc2",
+  "backend": "fixed",
+  "env": {
+    "language": "R",
+    "version": "4.6.0",
+    "packages": {
+      "sandwich": "3.1.2"
+    }
+  },
+  "status": "ok",
+  "quantities": {
+    "se.x@plain_HC0": 0.588213556344725,
+    "se.x@plain_HC2": 0.698535840214336,
+    "se.x@plain_HC3": 0.891727572958546,
+    "se.x@weighted_HC0": 0.570725596342384,
+    "se.x@weighted_HC2": 0.687773564531395,
+    "se.x@weighted_HC3": 0.884568716240985,
+    "se.x@glm_HC0": 2.78636793201414,
+    "se.x@glm_HC2": 3.24186212072522,
+    "se.x@glm_HC3": 4.04607327587132
+  },
+  "diagnostics": {
+    "sandwich_version": "3.1.2",
+    "n": 40,
+    "clusters": 8
+  },
+  "error": null
+}
