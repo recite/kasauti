@@ -1,0 +1,77 @@
+script,matches_probe,readable
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/0JFJ5V/Clark_Replication.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/2TC5TK/rep_Table_C5.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/2TC5TK/rep_Table_C6.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/8EHQWP/code_03_f_01_violence_id_correlation.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/8EHQWP/code_04_t_03_ate_violence.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/8EHQWP/code_05_t_04_violence_het_effects.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/8EHQWP/code_06_t_05_ate_status_int_inst_geo.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/8EHQWP/code_08_t_07_t_10_violence_id_correlation_tables.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/8EHQWP/code_09_t_11_identification_preferences_correlation.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/8EHQWP/code_10_t_12_refusal_rates.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/8EHQWP/code_13_t_13_t_14_bh_correction.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/8EHQWP/code_14_t_15_violence_protests_het_effects.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/8EHQWP/code_15_t_16_violence_het_effects_pca.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/8EHQWP/code_16_t_17_violence_het_effects_z_index.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/8EHQWP/code_17_t_18_violence_het_effects_id_only.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/8EHQWP/code_18_t_19_ate_all_groups_separate.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/AAY3TQ/Categorization.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/AAY3TQ/Figure 7 and related text.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/AAY3TQ/Figure4andrelatedtext.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/AAY3TQ/Figure6PanelA(numbers).R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/AAY3TQ/FigureA2point3andrelatedtext.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/AAY3TQ/No learning.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/AAY3TQ/Table 9.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/AAY3TQ/Table3.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/AAY3TQ/Table4.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/AAY3TQ/Table5.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/AAY3TQ/TableA2point2.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/AAY3TQ/TableA2point4.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/BP8SDT/Individual_byRetailer.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/CDM59A/Replication - Main results.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/CDM59A/Replication - Robust.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/FLXHAZ/trade_deforestation_appendix.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/FLXHAZ/trade_deforestation_replication.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/HLO4XC/table8prep.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/HUABYG/OLS.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/HWVUER/Ch-Validation.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/HWVUER/estimating-effects.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/HWVUER/sandwich-CL.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/HWVUER/sandwich.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/HWVUER/sim-CL.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/IYQIPG/Replication Script.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/JXGZKX/ReplicationCodeMcNameeZhang2 2.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/MK2OIT/ungc_replication_script.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/Q9TFN2/application_v05.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/R99Y4S/clusterBS.plm.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/R99Y4S/clusterwild.plm.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/RAX3SG/04_political_interest_results.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/RY2CVR/5_persistence_agribusiness.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/T7PXKJ/talkFightReplicationFinal.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/TIL7KK/loading_package_and_functions.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/VELJKG/double_lasso.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/YOMSIL/5_regs_netgen.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/dataverse/YXUTED/Dual Clarity Replication Wang 2024 FPA.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10012820/.checkpoint/2020-04-22/lib/x86_64-w64-mingw32/3.6.3/AER/demo/Ch-Validation.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10012820/.checkpoint/2020-04-22/lib/x86_64-w64-mingw32/3.6.3/sandwich/doc/sandwich-CL.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10012820/.checkpoint/2020-04-22/lib/x86_64-w64-mingw32/3.6.3/sandwich/doc/sandwich.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10012820/.checkpoint/2020-04-22/lib/x86_64-w64-mingw32/3.6.3/sandwich/doc/sim-CL.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10012820/RPackageSources/SourceCode/AER/demo/Ch-Validation.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10012820/RPackageSources/SourceCode/AER/tests/Ch-Validation.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10012820/RPackageSources/SourceCode/estimatr/tests/testthat/helper-lm-robust-se.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10012820/RPackageSources/SourceCode/estimatr/tests/testthat/test-lm-robust-fes.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10012820/RPackageSources/SourceCode/estimatr/tests/testthat/test-lm-robust.R,True,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10012820/RPackageSources/SourceCode/estimatr/tests/testthat/test-lm-robust_margins.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10012820/RPackageSources/SourceCode/sandwich/inst/doc/sandwich-CL.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10012820/RPackageSources/SourceCode/sandwich/inst/doc/sandwich.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10012820/RPackageSources/SourceCode/sandwich/inst/doc/sim-CL.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10012820/RPackageSources/SourceCode/sandwich/vignettes/sim-CL.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10145562/SBA_Code/renv/library/R-4.1/x86_64-w64-mingw32/AER/demo/Ch-Validation.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10145562/SBA_Code/renv/library/R-4.1/x86_64-w64-mingw32/sandwich/doc/sandwich-CL.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10145562/SBA_Code/renv/library/R-4.1/x86_64-w64-mingw32/sandwich/doc/sandwich.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10145562/SBA_Code/renv/library/R-4.1/x86_64-w64-mingw32/sandwich/doc/sim-CL.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/10452960/panelgroupcs_replication/panelgroupcs/R/kmeans.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/14009344/cate_eval_simu_fixed_nthread.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/14591286/storage_II/src/functions.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/14591286/storage_II/src/regression4matlab.R,False,True
+/Users/soodoku/Documents/GitHub/softverse/outputs/scripts/zenodo/8336416/Replication package/programs/appendix_tableA3.R,False,True

@@ -108,25 +108,34 @@ def load_case(directory: Path) -> CaseSpec:
     )
 
 
-def discover_cases(root: Path) -> list[CaseSpec]:
-    """Find and parse every case under a root directory.
+def discover_cases(*roots: Path) -> list[CaseSpec]:
+    """Find and parse every case under one or more root directories.
+
+    Takes several roots because the two tracks live in separate trees: `cases/`
+    holds cross-implementation comparisons, `bugs/` holds version regressions.
+    A bug directory that has reached verification contains a `case.yaml` and is
+    discovered here like any other; one that has not simply is not.
 
     Args:
-        root: The `cases/` directory.
+        *roots: Directories to search. Missing directories are skipped.
 
     Returns:
         Parsed cases sorted by family then id.
     """
-    root = Path(root)
-    cases = [load_case(p.parent) for p in sorted(root.rglob("case.yaml"))]
+    cases = []
+    for root in roots:
+        root = Path(root)
+        if not root.exists():
+            continue
+        cases.extend(load_case(p.parent) for p in sorted(root.rglob("case.yaml")))
     return sorted(cases, key=lambda c: (c.family, c.id))
 
 
-def select_cases(root: Path, wanted: list[str]) -> list[CaseSpec]:
-    """Find cases by id or family name.
+def select_cases(roots: Path | list[Path], wanted: list[str]) -> list[CaseSpec]:
+    """Find cases by id or family name across one or more roots.
 
     Args:
-        root: The `cases/` directory.
+        roots: A directory, or a list of them.
         wanted: Case ids or family names. Empty selects everything.
 
     Returns:
@@ -135,7 +144,8 @@ def select_cases(root: Path, wanted: list[str]) -> list[CaseSpec]:
     Raises:
         CaseError: If a name matches nothing.
     """
-    cases = discover_cases(root)
+    roots = [roots] if isinstance(roots, (str, Path)) else list(roots)
+    cases = discover_cases(*roots)
     if not wanted:
         return cases
     selected = []

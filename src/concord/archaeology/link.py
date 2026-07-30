@@ -226,3 +226,106 @@ def load_exports(packages: list[str]) -> dict[str, set[str]]:
         for owner in owners:
             exports[owner].add(function)
     return dict(exports)
+
+
+@dataclass
+class ProbeResult:
+    """Exposure narrowed from function name to triggering condition.
+
+    Always carries both counts. A probe is a regular expression over source
+    text: it shows a script *could* have met the condition, never that it did.
+    Reporting the narrowed number alone presents a guess as a measurement;
+    reporting the function-name count alone has overstated reach by up to two
+    orders of magnitude.
+
+    Attributes:
+        probe: The pattern used, kept so a reader can judge the bound.
+        calling: Scripts calling any affected function.
+        matching: Of those, scripts whose source matches the probe.
+        unreadable: Scripts that could not be read to test the probe.
+    """
+
+    probe: str
+    calling: list[str] = field(default_factory=list)
+    matching: list[str] = field(default_factory=list)
+    unreadable: list[str] = field(default_factory=list)
+
+    @property
+    def narrowing(self) -> float:
+        """How much the probe reduced the count.
+
+        Returns:
+            `matching / calling`, or 1.0 when nothing was calling.
+        """
+        return len(self.matching) / len(self.calling) if self.calling else 1.0
+
+
+def probe_exposure(
+    functions: list[str],
+    probe: str | None,
+    call_index: dict[str, set[str]],
+) -> ProbeResult:
+    """Narrow a bug's exposure by its triggering conditions.
+
+    Args:
+        functions: Affected function names.
+        probe: Regular expression over script source. None or empty means the
+            conditions cannot be approximated, and every calling script is
+            reported as matching -- the honest reading of "we could not narrow
+            this", not a claim that all of them qualify.
+        call_index: Function name to the scripts calling it.
+
+    Returns:
+        The probe result.
+
+    Raises:
+        re.error: If the probe is not a valid regular expression.
+    """
+    calling: set[str] = set()
+    for function in functions:
+        calling |= call_index.get(function, set())
+    calling_sorted = sorted(calling)
+
+    if not probe:
+        return ProbeResult(probe="", calling=calling_sorted, matching=calling_sorted)
+
+    pattern = re.compile(probe, re.IGNORECASE | re.DOTALL)
+    matching, unreadable = [], []
+    for path in calling_sorted:
+        try:
+            source = Path(path).read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            unreadable.append(path)
+            continue
+        if pattern.search(source):
+            matching.append(path)
+
+    return ProbeResult(
+        probe=probe,
+        calling=calling_sorted,
+        matching=matching,
+        unreadable=unreadable,
+    )
+
+
+def write_exposure(result: ProbeResult, path: Path) -> None:
+    """Write a probe result to CSV.
+
+    Every calling script is written, with a column saying whether the probe
+    matched, so the narrowing is auditable rather than asserted.
+
+    Args:
+        result: The probe result.
+        path: Destination CSV.
+    """
+    import csv
+
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    matched = set(result.matching)
+    unreadable = set(result.unreadable)
+    with path.open("w", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["script", "matches_probe", "readable"])
+        for script in result.calling:
+            writer.writerow([script, script in matched, script not in unreadable])

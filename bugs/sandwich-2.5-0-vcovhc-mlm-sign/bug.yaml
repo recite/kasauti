@@ -1,0 +1,28 @@
+id: sandwich-2.5-0-vcovhc-mlm-sign
+package: sandwich
+ecosystem: cran
+entry_id: sandwich@2.5-0#0
+fixed_in: 2.5-0
+fixed_on: '2018-08-17'
+introduced_in: null
+introduced_on: null
+functions:
+- vcovHC
+conditions: Only lm() with a matrix response -- a multivariate lm, dispatching to vcovHC.mlm.
+  Univariate lm and glm are unaffected. Within that, only the cross-equation block of the
+  covariance matrix is wrong; the within-equation diagonal blocks are bit-identical across
+  versions, so ordinary per-coefficient standard errors were never affected.
+condition_probe: lm\s*\(\s*cbind\s*\(
+category: RESULT_CHANGING
+silent: true
+severity: HIGH
+status: VERIFIED
+exposure:
+  scripts_calling_function: 76
+  scripts_meeting_probe: 1
+  papers_in_window: 0
+  papers_censored: 0
+magnitude: 'Verified against sandwich 2.4-0. All six within-equation covariances identical
+  to the fixed version at relative difference exactly 0. All four cross-equation covariances
+  differ: three flip sign, and y1:x/y2:x is +0.109997852 against a corrected 0.003342536347,
+  a factor of 33.'

@@ -1,4 +1,4 @@
-source(file.path("..", "..", "_lib", "concord.R"))
+source(file.path(Sys.getenv("CONCORD_LIB", file.path("..", "..", "..", "lib")), "concord.R"))
 suppressPackageStartupMessages(library(sandwich))
 
 body <- function(data_path) {

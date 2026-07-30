@@ -9,6 +9,7 @@ same schema.
 from __future__ import annotations
 
 import hashlib
+import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,6 +18,9 @@ from concord.schema import BackendSpec, CaseSpec, Result
 
 #: Seconds before a backend is killed. Generous: some cases fit mixed models.
 DEFAULT_TIMEOUT = 600
+
+#: Shared backend helpers, exported to every backend as CONCORD_LIB.
+LIB_DIR = Path(__file__).resolve().parents[2] / "lib"
 
 
 @dataclass
@@ -122,6 +126,10 @@ def run_backend(
     data_path = spec.directory / "data.csv"
 
     cmd = [*backend.cmd, str(data_path), str(out_path)]
+    # Backend scripts live at different depths under `cases/` and `bugs/`, so
+    # the shared helper location is exported rather than reached by a relative
+    # path. Moving a case between roots must not break it.
+    env = {**os.environ, "CONCORD_LIB": str(LIB_DIR)}
     try:
         proc = subprocess.run(  # noqa: S603
             cmd,
@@ -130,6 +138,7 @@ def run_backend(
             text=True,
             timeout=timeout,
             check=False,
+            env=env,
         )
         stderr, returncode = proc.stderr, proc.returncode
     except FileNotFoundError as exc:

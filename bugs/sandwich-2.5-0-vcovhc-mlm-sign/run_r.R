@@ -1,4 +1,4 @@
-source(file.path("..", "..", "_lib", "concord.R"))
+source(file.path(Sys.getenv("CONCORD_LIB", file.path("..", "..", "..", "lib")), "concord.R"))
 
 # The library path is passed as a flag by the case, so the same script serves
 # both the buggy and the fixed version. This is the whole archaeology trick: a

@@ -1,0 +1,30 @@
+{
+  "case_id": "sandwich_mlm_sign",
+  "backend": "sandwich_2.4-0",
+  "env": {
+    "language": "R",
+    "version": "4.6.0",
+    "packages": {
+      "sandwich": "2.4.0"
+    }
+  },
+  "status": "ok",
+  "quantities": {
+    "vcov.y1_int.y1_int@within": 0.0395186076300953,
+    "vcov.y1_x.y1_x@within": 0.0986528088260721,
+    "vcov.y2_int.y2_int@within": 0.0456149251833926,
+    "vcov.y2_x.y2_x@within": 0.201745792879153,
+    "vcov.y1_int.y1_x@within": -0.0574183038603107,
+    "vcov.y2_int.y2_x@within": -0.0826677996886154,
+    "vcov.y1_int.y2_int@cross": 0.0336656155794211,
+    "vcov.y1_x.y2_x@cross": 0.109997852020318,
+    "vcov.y1_int.y2_x@cross": -0.054305996491605,
+    "vcov.y1_x.y2_int@cross": -0.054305996491605
+  },
+  "diagnostics": {
+    "sandwich_version": "2.4.0",
+    "n": 30,
+    "responses": 2
+  },
+  "error": null
+}
