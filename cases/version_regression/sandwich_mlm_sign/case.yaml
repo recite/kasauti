@@ -1,0 +1,60 @@
+id: sandwich_mlm_sign
+title: "sandwich 2.5-0: vcovHC.mlm cross-equation sign error"
+family: version_regression
+
+# The archaeology track's payoff stage, expressed as an ordinary case. The two
+# backends are the same script against two package versions, which is the whole
+# claim behind sharing one comparison engine across both halves of the project.
+#
+# Changelog entry, sandwich 2.5-0 (2018-08-17):
+#   "Fix of a bug in `vcovHC.mlm()` (reported by James Pustejovsky). The
+#    off-diagonal values of the `vcovHC()` were computed without preserving the
+#    sign of the underlying residuals. This issue did not affect the diagonal
+#    because the underlying cross product amounts to squaring."
+#
+# Requires sandwich 2.4-0 in a side library:
+#   Rscript -e 'install.packages(
+#     "https://cran.r-project.org/src/contrib/Archive/sandwich/sandwich_2.4-0.tar.gz",
+#     repos = NULL, type = "source", lib = "/tmp/rlibs/sandwich_2.4-0")'
+
+backends:
+  - name: buggy
+    cmd: ["Rscript", "--vanilla", "run_r.R", "/tmp/rlibs/sandwich_2.4-0"]
+    label: "sandwich 2.4-0 (before the fix)"
+    optional: true
+  - name: fixed
+    cmd: ["Rscript", "--vanilla", "run_r.R"]
+    label: "sandwich 3.1-2 (current)"
+
+agree_tol: 1.0e-8
+numeric_tol: 1.0e-5
+
+quantities:
+  vcov.y1_int.y2_int@cross:
+    expect: DIVERGE
+    reason: >
+      The cross-equation block is the bug. 2.4-0 returns +0.03366562 where the
+      fixed version returns -0.01938128: the sign is wrong and so is the
+      magnitude. Anything that depends on covariance between coefficients of
+      different equations -- a joint Wald test that the x effect is equal across
+      responses, a seemingly-unrelated-regressions style contrast -- was
+      computed against this block.
+  vcov.y1_x.y2_x@cross:
+    expect: DIVERGE
+    reason: >
+      Same block. 2.4-0 gives +0.10999785 against the corrected 0.003342536, a
+      factor of 33. The two versions do not merely differ in sign here; the
+      buggy value is two orders of magnitude too large.
+  vcov.y1_int.y2_x@cross:
+    expect: DIVERGE
+    reason: Cross-equation block, same defect.
+  vcov.y1_x.y2_int@cross:
+    expect: DIVERGE
+    reason: Cross-equation block, same defect.
+
+# Every @within quantity is left to its default expectation of AGREE. That is
+# the substantive half of the finding and the reason this case reports ten
+# quantities rather than two: the within-equation block is bit-identical across
+# the two versions, so ordinary per-coefficient standard errors were never
+# affected. A changelog reader who stops at "the standard errors were wrong"
+# over-reads it.
