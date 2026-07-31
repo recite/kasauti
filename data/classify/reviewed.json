@@ -1,0 +1,1997 @@
+[
+  {
+    "entry_id": "fixest@0.13.0#77",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "feols"
+    ],
+    "conditions": "custom vcov passed with a fixest:: prefix",
+    "severity": "LOW",
+    "evidence_quote": "fix bug when a custom `vcov` is passed",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "fixest@0.9.0#12",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "feols"
+    ],
+    "conditions": "IV estimation with fixed effects and lean = TRUE",
+    "severity": "LOW",
+    "evidence_quote": "Fix bug in `feols` when IV estimations contained fixed-effects and `lean = TRUE`",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "plm@2.4-2#7",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "vcovG",
+      "vcovHC",
+      "vcovSCC",
+      "vcovBK"
+    ],
+    "conditions": "IV estimation with only one regressor",
+    "severity": "LOW",
+    "evidence_quote": "(errored previously)",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "plm@1.5-13#0",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "vcovHC"
+    ],
+    "conditions": "method='white' when any group has exactly one element",
+    "severity": "HIGH",
+    "evidence_quote": "degenerating diag() if any group has only 1 element",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "sandwich@2.5-0#7",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "vcovHC"
+    ],
+    "conditions": "multivariate lm only; off-diagonal blocks, diagonal unaffected",
+    "severity": "HIGH",
+    "evidence_quote": "computed without preserving the sign of the underlying residuals",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "plm@2.2-1#7",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "index"
+    ],
+    "conditions": "individual index variable named 'group'",
+    "severity": "LOW",
+    "evidence_quote": "fixed bug when individual index variable is called \"group\"",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "quantreg@4.24#2",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "predict.rq"
+    ],
+    "conditions": "prediction with factor covariates; xlevels were not stored on the fit",
+    "severity": "HIGH",
+    "evidence_quote": "Fix required adding an xlevels object to the fitted rq object",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "quantreg@4.36#0",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "rq",
+      "summary.rqs"
+    ],
+    "conditions": "multiple taus with contrasts",
+    "severity": "MEDIUM",
+    "evidence_quote": "prevented contrasts from being properly propagated forward to summary.rqs",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "survival@3.8-1#1",
+    "category": "DOC",
+    "silent": false,
+    "functions": [],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "Changes needed to pass reverse dependency checks",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.41-2#2",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "Surv",
+      "survfit",
+      "survreg"
+    ],
+    "conditions": "type='interval2' with an infinite endpoint",
+    "severity": "HIGH",
+    "evidence_quote": "The downstream survfit and/or survreg results could then sometimes be in error.",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.42-3#2",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "coxph"
+    ],
+    "conditions": "a constant covariate that is the only variable in the model",
+    "severity": "LOW",
+    "evidence_quote": "coefficent reported as 0 rather than NA",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "plm@1.5-9#3",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "phtest"
+    ],
+    "conditions": "method='aux' with NA values, or the between model (wrong degrees of freedom)",
+    "severity": "HIGH",
+    "evidence_quote": "phtest now also works with between model correctly (fixed degrees of freedom)",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "survival@2.35#8",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "Surv"
+    ],
+    "conditions": "missing times and time1>=time2 both present and interleaved",
+    "severity": "HIGH",
+    "evidence_quote": "the wrong observation (not the illegal) will be thrown out",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "car@1.0-18#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "recode"
+    ],
+    "conditions": "values mixing letters and numbers",
+    "severity": "HIGH",
+    "evidence_quote": "could cause values with mixed letters and numbers to be treated incorrectly",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "car@1.2-13#1",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "recode"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "Fixed bug in recode()",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "car@2.0-7#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "recode"
+    ],
+    "conditions": "a recode string containing the characters 'else'",
+    "severity": "MEDIUM",
+    "evidence_quote": "when a legitimate string includes the characters \"else\"",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.36-3#4",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "survfit.coxph"
+    ],
+    "conditions": "strata by covariate interaction; author calls it a very rare case",
+    "severity": "MEDIUM",
+    "evidence_quote": "All prior releases of the code did this wrong",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@3.7-2#2",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "survfit",
+      "coxph"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "Fix an inconsistency: survfit would label a transition ... Use a colon in both places.",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "sandwich@3.0-2#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "vcovCL"
+    ],
+    "conditions": "type='HC2' on a glm, or an lm with weights",
+    "severity": "MEDIUM",
+    "evidence_quote": "erroneously assumed that the hat matrices were all symmetric",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@3.2-5#4",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "coxph",
+      "cox.zph"
+    ],
+    "conditions": "multiple strata() terms first in the model",
+    "severity": "LOW",
+    "evidence_quote": "numeric values were correct, however",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.34#24",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "coxph"
+    ],
+    "conditions": "step halving where a loglik coincidentally lands within eps of the prior step",
+    "severity": "MEDIUM",
+    "evidence_quote": "decided, erroneously, that it had converged!",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.36-13#3",
+    "category": "BEHAVIOR_CHANGE",
+    "silent": true,
+    "functions": [
+      "coxph"
+    ],
+    "conditions": "robust= with multiple observations per subject",
+    "severity": "MEDIUM",
+    "evidence_quote": "it is almost surely the wrong thing to do",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "survival@2.36-5#2",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "predict.coxph"
+    ],
+    "conditions": "coxph called with subset= and predict called with newdata",
+    "severity": "MEDIUM",
+    "evidence_quote": "the subset clause was \"remembered\" in the newdata construction",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.37-1#15",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "coxph",
+      "survfit"
+    ],
+    "conditions": "model with an offset, predicted curve using newdata",
+    "severity": "HIGH",
+    "evidence_quote": "would be wrong, e.g. survival values > 1",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.37-3#8",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "cch"
+    ],
+    "conditions": "cch models using (start, stop) survival times",
+    "severity": "HIGH",
+    "evidence_quote": "leading to incorrect standard errors",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@3.4-2#5",
+    "category": "RESULT_CHANGING",
+    "silent": false,
+    "functions": [
+      "cox.zph"
+    ],
+    "conditions": "any NA coefficient in the coxph fit",
+    "severity": "LOW",
+    "evidence_quote": "the residuals used for the plot would also be NA",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "quantreg@4.47#2",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "predict.rqss"
+    ],
+    "conditions": "qss terms with a named lambda variable, predicting on newdata",
+    "severity": "LOW",
+    "evidence_quote": "caused problems with name matching for newdata",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "car@2.0-11#7",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "linearHypothesis"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "fixed bug in printed representation of hypotheses",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "car@2.0-12#6",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "linearHypothesis"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "affected printing of some hypotheses",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "car@2.0-16#0",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "linearHypothesis"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "Fixed bug in printing of hypotheses",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "car@3.0-1#5",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "linearHypothesis",
+      "Anova"
+    ],
+    "conditions": "lmer models using pbkrtest",
+    "severity": "MEDIUM",
+    "evidence_quote": "This bug indirectly affected Anova().",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "plm@0-2.2#1",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "plmtest"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "a bug in the plm method of plmtest has been fixed",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "plm@1.6-5#0",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "pFtest"
+    ],
+    "conditions": "input model check wrongly enabled in 1.6-4",
+    "severity": "LOW",
+    "introduced_version": "1.6-4",
+    "evidence_quote": "check was erroneously enabled in plm version 1.6-4",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "MASS@unknown#112",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "glm.nb",
+      "theta.ml"
+    ],
+    "conditions": "weights supplied that do not sum to n",
+    "severity": "HIGH",
+    "evidence_quote": "called theta.ml() incorrect when weights were supplied whch did not sum to n",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "fixest@0.10.4#0",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "fixef"
+    ],
+    "conditions": "three or more sets of fixed effects",
+    "severity": "HIGH",
+    "evidence_quote": "led to, in some specific circumstances, wrong values for the fixed-effects coefficients",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.9-0#5",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "gam"
+    ],
+    "conditions": "multinom family with K>=3 categories",
+    "severity": "HIGH",
+    "evidence_quote": "'multinom' variance fix for K>=3 cases. A counter was initialized in the wrong place.",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "plm@1.5-1#0",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "pcdtest"
+    ],
+    "conditions": "formula method on an object already a pdata.frame",
+    "severity": "LOW",
+    "evidence_quote": "fixed \"already a pdata.frame\" bug",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "survival@3.6-1#8",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "survfit"
+    ],
+    "conditions": "case weights varying between rows in the same cluster",
+    "severity": "HIGH",
+    "evidence_quote": "the infinitesimal jackknife could be wrong and hence the variance incorrect",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "AER@1.1-9#2",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "ivreg",
+      "summary"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "although the p-value was computed correctly",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "AER@1.2-6#2",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "ivreg",
+      "model.matrix",
+      "estfun"
+    ],
+    "conditions": "single-column projected regressor matrix, then a sandwich covariance",
+    "severity": "MEDIUM",
+    "evidence_quote": "erroneously dropped the dimension of single-column projected regressor matrices",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "sandwich@2.3-1#0",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "estfun"
+    ],
+    "conditions": "survreg or coxph fitted with weights, then a sandwich covariance",
+    "severity": "HIGH",
+    "evidence_quote": "incorrectly returned the unweighted estimating functions in case the objects were fitted with weights",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "fixest@0.1.1#0",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "feglm"
+    ],
+    "conditions": "step-halving unable to find a lower deviance at initialization",
+    "severity": "LOW",
+    "evidence_quote": "led the estimation to fail with an error although it should have been performed properly",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "fixest@0.3.0#37",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "feglm"
+    ],
+    "conditions": "weights supplied",
+    "severity": "MEDIUM",
+    "evidence_quote": "[estimations] bug when using weights in `feglm`",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "fixest@0.9.0#31",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "feglm"
+    ],
+    "conditions": "more parameters than observations with a dispersion-parameter family",
+    "severity": "LOW",
+    "evidence_quote": "Fix rare bug when the number of parameters is greater than the number of observations",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "survival@2.34#25",
+    "category": "RESULT_CHANGING",
+    "silent": false,
+    "functions": [
+      "survfit"
+    ],
+    "conditions": "method='fh2' with multiple groups",
+    "severity": "MEDIUM",
+    "evidence_quote": "The resulting curves were obviously wrong -- survival precipitously drops to zero.",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.35#3",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "survfit"
+    ],
+    "conditions": "times that are equal mathematically but differ in floating point",
+    "severity": "MEDIUM",
+    "evidence_quote": "could lead to an inconsistent result",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.36-1#3",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "survfit"
+    ],
+    "conditions": "modified lower confidence limits (Dory & Korn)",
+    "severity": "MEDIUM",
+    "evidence_quote": "A logical vector was being inadvertently converted to numeric.",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.36-6#6",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "survfit"
+    ],
+    "conditions": "near-tied times; author says the bug is very hard to produce",
+    "severity": "LOW",
+    "evidence_quote": "I didn't round quite enough",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.37-5#20",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "survfit"
+    ],
+    "conditions": "OutDec option set to a comma",
+    "severity": "MEDIUM",
+    "evidence_quote": "it did not correctly convert times back from character to numeric",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.39-5#6",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "survfit"
+    ],
+    "conditions": "subscripting a curve from left-truncated data; affects n.enter only",
+    "severity": "LOW",
+    "evidence_quote": "fit[k] had an incorrect n.enter component",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.40-2#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "finegray"
+    ],
+    "conditions": "finegray with a strata() term",
+    "severity": "HIGH",
+    "evidence_quote": "the resulting data sets could have incorrect status values",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.42-4#2",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "survfit"
+    ],
+    "conditions": "multi-state data containing extra censored rows, as survSplit generates",
+    "severity": "MEDIUM",
+    "evidence_quote": "the transitions table in the output would be incorrect for this case",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@3.0#5",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "survfit"
+    ],
+    "conditions": "subscripting a survfit object",
+    "severity": "LOW",
+    "evidence_quote": "the information about which and how many rows were removed was incorrect",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "survival@3.2-15#1",
+    "category": "BEHAVIOR_CHANGE",
+    "silent": true,
+    "functions": [
+      "survfit"
+    ],
+    "conditions": "start.time argument with an event at start.time",
+    "severity": "LOW",
+    "evidence_quote": "All paths now do so.",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "survival@3.2-8#2",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "survfit"
+    ],
+    "conditions": "start.time where one curve has no subjects past it",
+    "severity": "LOW",
+    "evidence_quote": "leading to multiple downstream failures",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@3.4-1#3",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "pseudo"
+    ],
+    "conditions": "pseudo() applied to an interval-censored survfit curve",
+    "severity": "MEDIUM",
+    "evidence_quote": "still produced a result (assuredly an incorrect one)",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@3.5-4#3",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "survfit"
+    ],
+    "conditions": "start.time present",
+    "severity": "LOW",
+    "evidence_quote": "the 'type' element could be missing from the output object",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "car@3.0-3#3",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "deltaMethod"
+    ],
+    "conditions": "a model variable named 'g', colliding with the argument name",
+    "severity": "MEDIUM",
+    "evidence_quote": "when a variable in the model is named \"g\"",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "survival@2.34#27",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "survfit"
+    ],
+    "conditions": "turnbull method with multiple curves",
+    "severity": "LOW",
+    "evidence_quote": "all the downstream print/plot functions would not work with the result",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.35#21",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "survfit.coxph"
+    ],
+    "conditions": "null model with strata and x=TRUE",
+    "severity": "LOW",
+    "evidence_quote": "The 'n' component would be missing",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "survival@2.35#27",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "anova.coxph"
+    ],
+    "conditions": "models containing a strata term",
+    "severity": "HIGH",
+    "evidence_quote": "The anova.coxph function was incorrect for models with a strata term.",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.36-11#4",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "predict.coxph"
+    ],
+    "conditions": "strata with newdata and reference='sample'",
+    "severity": "LOW",
+    "evidence_quote": "it would (incorrectly) ask for a strata variable in the new data set",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.36-12#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "coxph",
+      "clogit"
+    ],
+    "conditions": "strata combined with many tied times",
+    "severity": "MEDIUM",
+    "evidence_quote": "that's the case where I had an indexing error",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "survival@2.36-13#6",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "summary.survfit"
+    ],
+    "conditions": "multiple strata where one curve has no data after times=",
+    "severity": "LOW",
+    "evidence_quote": "an output label was the wrong length",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.36-6#3",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "predict.survreg"
+    ],
+    "conditions": "a model specified with -1 (no intercept)",
+    "severity": "MEDIUM",
+    "evidence_quote": "leading to incorrect results for a model with \"-1\"",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.42-0#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "coxph"
+    ],
+    "conditions": "start-stop data with strata and particular adjacent event times; a rare edge case",
+    "severity": "MEDIUM",
+    "introduced_version": "2.39-1",
+    "evidence_quote": "leads to incorrect solutions for selected data sets",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@3.2-9#5",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "survfit.coxph"
+    ],
+    "conditions": "multistate fit with strata",
+    "severity": "LOW",
+    "evidence_quote": "an array dimension was wrong (but contents correct)",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "fixest@0.14.1#2",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "femlm",
+      "fenegbin",
+      "fepois"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "fix bug in the error reporting",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.0-7#6",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "gam"
+    ],
+    "conditions": "an offset is present",
+    "severity": "MEDIUM",
+    "evidence_quote": "now gives correct null deviance when an offset is present",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.1-2#0",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "gam",
+      "interpret.gam"
+    ],
+    "conditions": "data not in the calling environment",
+    "severity": "LOW",
+    "evidence_quote": "could cause gam to fail to find data",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.1-5#2",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "plot.gam"
+    ],
+    "conditions": "residuals=TRUE",
+    "severity": "LOW",
+    "evidence_quote": "plot.gam could fail with residuals=TRUE",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.8-1#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "gam"
+    ],
+    "conditions": "every gam fit in 1.8-0 -- the entry says it applied even without prior weights specified",
+    "severity": "HIGH",
+    "introduced_version": "1.8-0",
+    "evidence_quote": "resulting in incorrect variance estimates (even without prior weights specified)",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.8-25#3",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "gam"
+    ],
+    "conditions": "extended family with no extra parameters, optimizer='efs'",
+    "severity": "MEDIUM",
+    "evidence_quote": "could give incorrect results when using optimer=\"efs\"",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "lme4@2.0-6#14",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "glmer"
+    ],
+    "conditions": "memory pressure; intermittent and GC-timing dependent",
+    "severity": "LOW",
+    "evidence_quote": "caused intermittent ... errors and other spurious failures",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "lme4@2.0-6#5",
+    "category": "RESULT_CHANGING",
+    "silent": false,
+    "functions": [
+      "glmer"
+    ],
+    "conditions": "structured covariance models",
+    "severity": "HIGH",
+    "evidence_quote": "would return incorrect fixed effect coefficients (zero values, or wrong number of values)",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "lmtest@0.9-35#2",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "bptest"
+    ],
+    "conditions": "aliased or collinear regressors",
+    "severity": "HIGH",
+    "evidence_quote": "Fixed bug in bptest() for degrees-of-freedom calculation when some regressors are aliased/collinear",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "nlme@3.1-118#0",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "nlme"
+    ],
+    "conditions": "self-starting model",
+    "severity": "LOW",
+    "evidence_quote": "incorrectly required 'start'",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "AER@1.2-6#3",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "tobit",
+      "summary"
+    ],
+    "conditions": "survival 2.42-7 or later installed",
+    "severity": "HIGH",
+    "introduced_version": "survival 2.42-7",
+    "evidence_quote": "This leads to incorrect `summary()` output for `tobit` objects",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "estimatr@0.20.0#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "iv_robust"
+    ],
+    "conditions": "diagnostics requested without an explicit se_type",
+    "severity": "MEDIUM",
+    "evidence_quote": "Fixed bug when estimating `diagnostics` in `iv_robust()` without explicitly specifying `se_type`",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "survival@2.35#14",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "frailty",
+      "survfit",
+      "survreg"
+    ],
+    "conditions": "missing values in frailty levels; case weights in SurvfitCI",
+    "severity": "HIGH",
+    "evidence_quote": "SurvfitCI had an incorrect CI with case weights",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "fixest@0.1.1#7",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "fepois",
+      "update"
+    ],
+    "conditions": "updating a fepois fit",
+    "severity": "LOW",
+    "evidence_quote": "bug when updating the function fepois",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "fixest@0.10.0#10",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "coefplot"
+    ],
+    "conditions": "estimation run with lean = TRUE",
+    "severity": "LOW",
+    "evidence_quote": "Fix bug in `coefplot` when `lean = TRUE`",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "fixest@0.11.2#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "coefplot"
+    ],
+    "conditions": "plotted confidence intervals used the normal law where the t was appropriate",
+    "severity": "MEDIUM",
+    "evidence_quote": "now the confidence intervals use the Student t when appropriate",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "fixest@0.6.0#5",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "coefplot"
+    ],
+    "conditions": "interacted variables removed for collinearity",
+    "severity": "LOW",
+    "evidence_quote": "Bug in `coefplot` when some interacted variables were removed because of collinearity",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "fixest@0.8.1#9",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "coefplot"
+    ],
+    "conditions": "multiple models with interactions",
+    "severity": "LOW",
+    "evidence_quote": "preventing the proper scaling of the x-axis",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "lme4@1.1-0#3",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "ranef"
+    ],
+    "conditions": "only a development version was affected",
+    "severity": "LOW",
+    "evidence_quote": "ranef returned incorrect conditional variances",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "quantreg@4.50#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "crq"
+    ],
+    "conditions": "64-bit R only; a Fortran declaration error in powell.f",
+    "severity": "HIGH",
+    "evidence_quote": "caused example(crq) to produce something insane in 64bit R",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "fixest@0.12.0#9",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "demean"
+    ],
+    "conditions": "formula argument with data as a data.table",
+    "severity": "LOW",
+    "evidence_quote": "fix bug in the function `demean` when a formula is passed as argument",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "fixest@0.13.0#74",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "etable",
+      "setFixest_etable"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "preventing the user to modify the `fitstat` argument",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "fixest@0.8.1#0",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "etable",
+      "setFixest_etable"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "Bug in `etable` when the default value of `fitstat` was set",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "lme4@1.0-4#2",
+    "category": "BEHAVIOR_CHANGE",
+    "silent": true,
+    "functions": [
+      "getME"
+    ],
+    "conditions": "getME(., 'ST') return value redefined to match lme4.0",
+    "severity": "LOW",
+    "evidence_quote": "This inconsistency has now been fixed",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "lme4@1.1-10#6",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "getME"
+    ],
+    "conditions": "getME(., 'Ztlist') where grouping factors differ in number of levels",
+    "severity": "MEDIUM",
+    "evidence_quote": "terms are reordered ... but names were not being reordered",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "lme4@2.0-6#3",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "lmList"
+    ],
+    "conditions": "groups with rank-deficient model matrices",
+    "severity": "MEDIUM",
+    "evidence_quote": "it used to report the incorrect degrees of freedom",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.7-24#3",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "bam"
+    ],
+    "conditions": "ti/te only models with fast REML",
+    "severity": "LOW",
+    "evidence_quote": "could cause bam to fail",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.8-30#1",
+    "category": "RESULT_CHANGING",
+    "silent": false,
+    "functions": [
+      "bam",
+      "predict.gam"
+    ],
+    "conditions": "discrete=TRUE with an offset",
+    "severity": "HIGH",
+    "introduced_version": "1.8-29",
+    "evidence_quote": "which corrupted offset (and generated numerous warnings)",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.38-1#1",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "survConcordance.fit"
+    ],
+    "conditions": "frailty model linear predictors",
+    "severity": "LOW",
+    "evidence_quote": "triggered a core dump",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@3.1-2#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "cox.zph"
+    ],
+    "conditions": "models containing tt() terms",
+    "severity": "HIGH",
+    "evidence_quote": "before it had an incorrect computation",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@3.2-12#2",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "cox.zph"
+    ],
+    "conditions": "coxme models",
+    "severity": "MEDIUM",
+    "evidence_quote": "The df column from cox.zph could be incorrect for a coxme model.",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "MASS@unknown#147",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "fitdistr"
+    ],
+    "conditions": "the geometric distribution",
+    "severity": "MEDIUM",
+    "evidence_quote": "the log-likelihood returned for fitdistr(, \"geometric\") was incorrect",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "fixest@0.8.0#4",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "femlm",
+      "feNmlm"
+    ],
+    "conditions": "factor variables removed because observations were dropped",
+    "severity": "LOW",
+    "evidence_quote": "when factor variables are removed due to the removal of some observations",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "estimatr@0.12.0#7",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "difference_in_means"
+    ],
+    "conditions": "condition1/condition2 subsetting a treatment with more than two conditions",
+    "severity": "HIGH",
+    "evidence_quote": "Previous estimates and standard errors were incorrect.",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "estimatr@0.6.0#11",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "difference_in_means"
+    ],
+    "conditions": "both weights and blocks supplied",
+    "severity": "HIGH",
+    "evidence_quote": "Fixed incorrect estimates when both weights and blocks were passed",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "fixest@0.10.2#7",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "fitstat"
+    ],
+    "conditions": "the KPR statistic",
+    "severity": "MEDIUM",
+    "evidence_quote": "fix bug in `fitstat` for the KPR statistic",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "lme4@2.0-6#20",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "getData"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "now gives more informative error messages",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "plm@1.2-6#0",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "mtest",
+      "pgmm"
+    ],
+    "conditions": "effect='individual' with transformation='ld', and the Wald test for time dummies under effect='twoways'",
+    "severity": "HIGH",
+    "evidence_quote": "a bug in mtest for pgmm models ... is fixed",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "plm@1.2-6#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "pgmm"
+    ],
+    "conditions": "different lags for GMM instruments",
+    "severity": "HIGH",
+    "evidence_quote": "The number of time series lost is now the min (and not the max)",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "plm@1.2-6#4",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "plmtest"
+    ],
+    "conditions": "two-tailed tests; p-values were divided by 2 instead of multiplied",
+    "severity": "HIGH",
+    "evidence_quote": "p-values for the two-tailed versions of plmtest() were wrong",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "fixest@0.11.0#1",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "predict",
+      "feNmlm"
+    ],
+    "conditions": "predict applied to a feNmlm fit",
+    "severity": "LOW",
+    "evidence_quote": "fix bug in the `predict` method when applied to objects estimated with `feNmlm`",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "fixest@0.11.1#0",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "bin"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "fix bug in the help of `bin`",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.7-18#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "bam"
+    ],
+    "conditions": "method='fREML' with random-effect terms",
+    "severity": "MEDIUM",
+    "evidence_quote": "could give incorrect edfs for \"re\" terms",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.7-6#0",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "bam"
+    ],
+    "conditions": "",
+    "severity": "MEDIUM",
+    "evidence_quote": "aic was reported incorrectly (too low)",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.8-10#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "bam"
+    ],
+    "conditions": "discrete=TRUE with s(a,b,bs='re') terms",
+    "severity": "HIGH",
+    "evidence_quote": "had wrong p-value computation applied",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.8-12#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "bam"
+    ],
+    "conditions": "prior weights, or non-binary binomial; the entry says estimation was unaffected",
+    "severity": "MEDIUM",
+    "evidence_quote": "null deviance computation was wrong with prior weights ... (did not affect estimation)",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.8-13#7",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "bam",
+      "smoothCon"
+    ],
+    "conditions": "t2 terms where penalty and model matrix parameterizations did not match",
+    "severity": "MEDIUM",
+    "evidence_quote": "parameterization of penalty and model matrix did not previously match properly",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "mgcv@1.8-20#2",
+    "category": "RESULT_CHANGING",
+    "silent": false,
+    "functions": [
+      "bam",
+      "predict.bam"
+    ],
+    "conditions": "discrete=TRUE with an offset",
+    "severity": "HIGH",
+    "evidence_quote": "Fix to bad bug in bam(...,discrete=TRUE) offset handling",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.8-23#11",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "bam"
+    ],
+    "conditions": "non-default smoothing parameter selection methods",
+    "severity": "LOW",
+    "evidence_quote": "bam was reporting wrong family",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "mgcv@1.8-23#9",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "bam"
+    ],
+    "conditions": "Gaussian additive case with methods other than fREML or GCV.Cp",
+    "severity": "MEDIUM",
+    "evidence_quote": "had introduced a bug in null deviance computation",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.8-25#7",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "bam"
+    ],
+    "conditions": "non-default smoothing parameter selection methods",
+    "severity": "MEDIUM",
+    "evidence_quote": "null deviance was wrong for non-default methods",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.8-29#10",
+    "category": "RESULT_CHANGING",
+    "silent": false,
+    "functions": [
+      "bam"
+    ],
+    "conditions": "",
+    "severity": "MEDIUM",
+    "evidence_quote": "deviance could be wrongly returned, leading to 100% explained deviance",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.8-29#4",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "bam"
+    ],
+    "conditions": "discrete=TRUE with matrix-argument smooths plus factor-by smooths",
+    "severity": "LOW",
+    "evidence_quote": "would fail at the setup stage",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.8-41#5",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "bam"
+    ],
+    "conditions": "discrete=TRUE with all smoothing parameters fixed",
+    "severity": "MEDIUM",
+    "evidence_quote": "otherwise scale could be wrong for all fixed smoothing parameters",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.9-1#2",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "bam"
+    ],
+    "conditions": "gfam family with discrete=FALSE",
+    "severity": "MEDIUM",
+    "evidence_quote": "Subsetting in bgam.fit was incorrect for gfam.",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "plm@1.2-8#2",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "vcovBK"
+    ],
+    "conditions": "matrices degenerating into vectors",
+    "severity": "HIGH",
+    "evidence_quote": "a bug in vcovBK (matrices degenerating into vectors) is fixed",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "MASS@unknown#100",
+    "category": "FEATURE",
+    "silent": false,
+    "functions": [
+      "truehist"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "checks more thoroughly for erroneous inputs",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@0.6-0#27",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "predict.gam"
+    ],
+    "conditions": "standard errors for parametric terms",
+    "severity": "HIGH",
+    "evidence_quote": "A bug in the standard error calculations for parametric terms in predict.gam() is fixed.",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.8-13#26",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "vis.gam"
+    ],
+    "conditions": "perspective plot with standard errors",
+    "severity": "LOW",
+    "evidence_quote": "Fix of bug in zlim handling in vis.gam perspective plot",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.36-10#2",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "survreg"
+    ],
+    "conditions": "case weights; the entry says the error is a fixed constant with no effect on tests or inferences",
+    "severity": "LOW",
+    "evidence_quote": "so had no impact on tests or inferences",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.36-10#3",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "survreg"
+    ],
+    "conditions": "psline(..., method='aic')",
+    "severity": "LOW",
+    "evidence_quote": "leading to a \"variable not found\" message",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.38-1#16",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "residuals.coxph"
+    ],
+    "conditions": "(start, stop] data with a pspline term",
+    "severity": "HIGH",
+    "evidence_quote": "Martingale residuals could be incorrect",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@3.2-12#10",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "survreg"
+    ],
+    "conditions": "large values of y, which triggered a wrong singularity decision",
+    "severity": "HIGH",
+    "evidence_quote": "could cause it to incorrectly mark a column as singular",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "car@3.0-1#0",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "Boot"
+    ],
+    "conditions": "models with transformed predictors like log(x) or I(x-34)",
+    "severity": "LOW",
+    "evidence_quote": "so lm and glm models work with transformed predictors",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "fixest@0.10.0#11",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "iplot"
+    ],
+    "conditions": "IVs containing interactions",
+    "severity": "LOW",
+    "evidence_quote": "Fix bug in `iplot` when IVs contained interactions",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "fixest@0.10.0#12",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "iplot"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "preventing some variables to be removed",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "fixest@0.12.0#11",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "collinearity"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "fix bug in the `collinearity` function",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "fixest@0.12.0#17",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "feols"
+    ],
+    "conditions": "IV estimation where all exogenous variables are collinear with the fixed effects",
+    "severity": "MEDIUM",
+    "evidence_quote": "fix bug in IV estimation when all exogenous variables were removed because of collinearity",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "fixest@0.9.0#13",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "feols"
+    ],
+    "conditions": "IV estimation with an endogenous regressor dropped for collinearity",
+    "severity": "MEDIUM",
+    "evidence_quote": "Fix bug in IV estimations when an endogenous regressor was removed because of collinearity",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "fixest@0.9.0#6",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "feols"
+    ],
+    "conditions": "Wald test in IV estimation with variables removed for collinearity",
+    "severity": "HIGH",
+    "evidence_quote": "Fix bug in the Wald test in IV estimations when variables are removed because of collinearity",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.3-12#1",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "predict.gam"
+    ],
+    "conditions": "te smooths with 1-D terms",
+    "severity": "LOW",
+    "evidence_quote": "prediction from te smooths could fail",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "mgcv@1.7-19#2",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "gamm"
+    ],
+    "conditions": "tensor product handling of te terms",
+    "severity": "MEDIUM",
+    "evidence_quote": "could have a te term pick up the wrong model matrix and fail",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "nlme@3.1-42#0",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "groupedData"
+    ],
+    "conditions": "outer argument not missing",
+    "severity": "LOW",
+    "evidence_quote": "Fixed bug in groupedData constructor when outer is not missing",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "survival@2.37-1#4",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "clogit",
+      "coxph"
+    ],
+    "conditions": "fast subsets path; linear predictor returned in sorted rather than data order",
+    "severity": "HIGH",
+    "evidence_quote": "incorrectly returned the linear predictor vector in the (internal) sorted order rather than data set order",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@2.43-2#3",
+    "category": "RESULT_CHANGING",
+    "silent": false,
+    "functions": [
+      "finegray"
+    ],
+    "conditions": "(start, stop) data, e.g. time-dependent covariates",
+    "severity": "HIGH",
+    "evidence_quote": "the censoring distribution G was incorrect which leads to incorrect weights, including NA",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "survival@3.5-4#1",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "finegray"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "Update the help file for the finegray command",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "car@2.0-13#16",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "logit"
+    ],
+    "conditions": "percents=TRUE where the largest percent is 1",
+    "severity": "LOW",
+    "evidence_quote": "Fixed bug in logit() when percents=TRUE and largest percent is 1",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "car@3.1-4#1",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "logit"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "Fix bug in logit()",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "fixest@0.14.2#1",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "xpd"
+    ],
+    "conditions": "variable completion with a .. suffix after an underscore",
+    "severity": "LOW",
+    "evidence_quote": "variable completion with `..` suffix now works",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "fixest@0.6.0#2",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "r2"
+    ],
+    "conditions": "estimation containing only fixed effects",
+    "severity": "MEDIUM",
+    "evidence_quote": "`r2`: bug when the estimation contained only fixed effects",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "lmtest@0.9-27#0",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "grangertest"
+    ],
+    "conditions": "workaround for an as.zoo() bug",
+    "severity": "LOW",
+    "evidence_quote": "Modified grangertest() default method to workaround a bug in as.zoo()",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "mgcv@0.8-2#9",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "plot.gam"
+    ],
+    "conditions": "the select option",
+    "severity": "LOW",
+    "evidence_quote": "A bug in the select option of plot.gam has been fixed.",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "mgcv@1.3-24#2",
+    "category": "BEHAVIOR_CHANGE",
+    "silent": true,
+    "functions": [
+      "gam.check",
+      "model.matrix.gam"
+    ],
+    "conditions": "the 'cr' basis centering condition changed",
+    "severity": "MEDIUM",
+    "evidence_quote": "\"cr\" basis constructor modified to use the same centering conditions as other bases",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "mgcv@1.7-10#0",
+    "category": "DOC",
+    "silent": false,
+    "functions": [
+      "plot.gam"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "introduced_version": "1.7-9",
+    "evidence_quote": "lost term labels in plot.gam",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "nlme@3.1-73#1",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "gsummary"
+    ],
+    "conditions": "objects carrying classes such as Hmisc labels",
+    "severity": "LOW",
+    "evidence_quote": "fix bug in gsummary with objects that have classes",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "quantreg@3.08#0",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "anova.rqlist"
+    ],
+    "conditions": "numerator degrees of freedom were p*(m-1) instead of (p-1)*(m-1)",
+    "severity": "HIGH",
+    "evidence_quote": "ndf = (p-1)*(m-1) not p*(m-1)",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "quantreg@3.31#0",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "anova.rqlist"
+    ],
+    "conditions": "intercept detection",
+    "severity": "MEDIUM",
+    "evidence_quote": "messed up the checking for an intercept",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "quantreg@3.33#0",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "ranks"
+    ],
+    "conditions": "the tau score function",
+    "severity": "MEDIUM",
+    "evidence_quote": "Fixed a bug in ranks() ... involving the tau score function",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "quantreg@3.73#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "anova.rqlist",
+      "rq.test.rank"
+    ],
+    "conditions": "chi-squared statistic divided by numerator df twice",
+    "severity": "HIGH",
+    "evidence_quote": "chi-squared statistic was divided by numerator degrees of freedom (ndf) when this had already been done",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "quantreg@4.16#5",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "boot.crq"
+    ],
+    "conditions": "bootstrap weights applied twice",
+    "severity": "HIGH",
+    "evidence_quote": "led to double weighting in the bootstrap",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "quantreg@4.20#2",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "rq.fit.lasso",
+      "rq.fit.scad"
+    ],
+    "conditions": "tau != 0.5",
+    "severity": "MEDIUM",
+    "evidence_quote": "Fixed a bug in rq.fit.lasso for tau != .5",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "quantreg@4.20#9",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "rq.test.rank"
+    ],
+    "conditions": "denominator degrees of freedom",
+    "severity": "HIGH",
+    "evidence_quote": "computed the denominator degrees of freedom incorrectly",
+    "confidence": "HIGH"
+  },
+  {
+    "entry_id": "quantreg@4.24#1",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "rq.fit.lasso",
+      "rq.fit.scad"
+    ],
+    "conditions": "p=2",
+    "severity": "MEDIUM",
+    "evidence_quote": "Changed rq.fit.lasso to fix a bug when p=2",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "quantreg@4.43#0",
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
+    "functions": [
+      "predict.rq"
+    ],
+    "conditions": "residual degrees of freedom lookup",
+    "severity": "LOW",
+    "evidence_quote": "Fix bug in predict.rq so rdf were found",
+    "confidence": "MEDIUM"
+  },
+  {
+    "entry_id": "quantreg@4.51#1",
+    "category": "UNCLEAR",
+    "silent": false,
+    "functions": [
+      "predict.rq.process"
+    ],
+    "conditions": "",
+    "severity": "LOW",
+    "evidence_quote": "Fixed bug in predict.rq.process",
+    "confidence": "LOW"
+  },
+  {
+    "entry_id": "sandwich@2.2-8#0",
+    "category": "RESULT_CHANGING",
+    "silent": true,
+    "functions": [
+      "bwNeweyWest"
+    ],
+    "conditions": "mlm objects having only an intercept",
+    "severity": "LOW",
+    "evidence_quote": "Fixed a bug in `bwNeweyWest()` for `mlm` objects that only have an intercept",
+    "confidence": "MEDIUM"
+  }
+]

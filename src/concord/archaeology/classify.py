@@ -33,6 +33,18 @@ from concord.archaeology.parse import Entry
 
 MODEL = "claude-opus-5"
 
+#: How a classification was decided. A rate computed over a mix of these is
+#: uninterpretable, so every record carries its provenance.
+#:
+#: * `rules` -- the regular-expression layer in `link.py`. Cheap, deterministic,
+#:   and demonstrably unable to decide `silent`: the obvious pattern for a loud
+#:   failure fires on 19% of candidates and is a false positive on every one
+#:   sampled, because in changelog prose "error" means a mistake in the code
+#:   rather than a raised exception.
+#: * `agent` -- read and judged in a Claude Code session.
+#: * `api` -- classified through the Batches API by `submit_batch`.
+Source = Literal["rules", "agent", "api"]
+
 #: Categories an entry can fall into. `BEHAVIOR_CHANGE` is deliberately separate
 #: from `RESULT_CHANGING`: both move published numbers, but only one is a bug,
 #: and conflating them makes the headline rate unreadable.
@@ -126,6 +138,7 @@ class Classification(BaseModel):
         introduced_version: Version that introduced the defect, if stated.
         evidence_quote: Span of the entry supporting the category.
         confidence: Confidence in the category.
+        source: How this classification was decided.
     """
 
     category: Category
@@ -138,6 +151,7 @@ class Classification(BaseModel):
     introduced_version: str | None = None
     evidence_quote: str = ""
     confidence: Literal["HIGH", "MEDIUM", "LOW"] = "MEDIUM"
+    source: Source = "api"
 
     @property
     def moves_published_numbers(self) -> bool:
@@ -376,3 +390,169 @@ def collect_batch(
         added += 1
     cache.save()
     return added
+
+
+def classify_by_rules(entry: Entry) -> Classification:
+    """Classify an entry with regular expressions alone.
+
+    The baseline, not the answer. It decides only what the patterns in `link.py`
+    can decide -- whether the prose claims a previously-wrong result -- and
+    deliberately declines the rest:
+
+    * `silent` is left at its default rather than guessed. The obvious pattern
+      for a loud failure (`error|warning|crash|fail`) fires on 19% of candidates
+      and is a false positive on every one sampled, because changelog authors
+      write "error" to mean a mistake in the code, not a raised exception.
+    * `conditions` is left empty. Extracting the clause needs to know which
+      `when`/`if`/`for` scopes the defect and which is incidental.
+    * `confidence` is always LOW, for the reasons above.
+
+    Its purpose is to be disagreed with: read classifications are compared
+    against it, and the disagreement rate is the validation that would otherwise
+    need a hand-coded gold set.
+
+    Args:
+        entry: The changelog entry.
+
+    Returns:
+        A classification with `source="rules"`.
+    """
+    from concord.archaeology.link import INERT, RESULT_CHANGING
+
+    match = RESULT_CHANGING.search(entry.text)
+    if match and not INERT.search(entry.text):
+        category, evidence = "RESULT_CHANGING", match.group(0)
+    elif INERT.search(entry.text):
+        category, evidence = "DOC", INERT.search(entry.text).group(0)
+    else:
+        category, evidence = "UNCLEAR", ""
+
+    return Classification(
+        category=category,  # type: ignore[arg-type]
+        silent=False,
+        evidence_quote=evidence,
+        confidence="LOW",
+        source="rules",
+    )
+
+
+def pending_payload(
+    entries: list[Entry],
+    cache: ClassificationCache,
+    exposure: dict[str, int] | None = None,
+    limit: int | None = None,
+) -> list[dict]:
+    """Build the review queue: entries needing judgment, with their baseline.
+
+    Ranked by corpus exposure so the highest-value entries are read first. Each
+    record carries the rule layer's proposal, so review starts from a baseline
+    and every correction is a measured disagreement rather than an opinion
+    formed in a vacuum.
+
+    Args:
+        entries: Candidate entries.
+        cache: Already-classified entries, which are skipped.
+        exposure: Entry id to the number of corpus scripts exposed.
+        limit: Maximum records to return.
+
+    Returns:
+        One dict per entry, ready to be written as JSON and read.
+    """
+    exposure = exposure or {}
+    queue = [e for e in entries if cache.get(e.entry_id) is None]
+    queue.sort(key=lambda e: (-exposure.get(e.entry_id, 0), e.entry_id))
+    if limit is not None:
+        queue = queue[:limit]
+
+    return [
+        {
+            "entry_id": e.entry_id,
+            "package": e.package,
+            "version": e.version,
+            "released": e.released.isoformat() if e.released else None,
+            "exposure_scripts": exposure.get(e.entry_id, 0),
+            "text": e.text,
+            "rule_baseline": classify_by_rules(e).category,
+        }
+        for e in queue
+    ]
+
+
+def ingest_reviewed(
+    payload: list[dict], cache: ClassificationCache
+) -> tuple[int, list[str]]:
+    """Merge read classifications into the cache, validating each.
+
+    A malformed record is refused by name rather than silently dropped: a
+    classification that failed to parse is not the same as one that says
+    UNCLEAR, and conflating them corrupts the rate.
+
+    Args:
+        payload: Reviewed records, each with an `entry_id` and the
+            classification fields.
+        cache: Cache to merge into.
+
+    Returns:
+        A `(merged, errors)` pair.
+    """
+    from pydantic import ValidationError
+
+    merged, errors = 0, []
+    for record in payload:
+        entry_id = record.get("entry_id")
+        if not entry_id:
+            errors.append(f"record with no entry_id: {str(record)[:80]}")
+            continue
+        fields = {k: v for k, v in record.items() if k != "entry_id"}
+        fields.setdefault("source", "agent")
+        try:
+            cache.put(entry_id, Classification(**fields))
+            merged += 1
+        except (ValidationError, TypeError) as exc:
+            errors.append(f"{entry_id}: {str(exc).splitlines()[0]}")
+    cache.save()
+    return merged, errors
+
+
+def agreement(entries: list[Entry], cache: ClassificationCache) -> dict[str, object]:
+    """Compare the rule baseline against the read classifications.
+
+    This is the validation the plan originally wanted a hand-coded gold set for.
+    The rules are the baseline and the readings are the reference, so the
+    disagreement rate says how much the reading was worth.
+
+    Args:
+        entries: The classified entries.
+        cache: Cache holding their classifications.
+
+    Returns:
+        Counts keyed for reporting, including the confusion between the rule
+        category and the read category.
+    """
+    from collections import Counter
+
+    judged, confusion = 0, Counter()
+    categories, silent_counts = Counter(), Counter()
+    moves = 0
+    for entry in entries:
+        found = cache.get(entry.entry_id)
+        if found is None or found.source == "rules":
+            continue
+        judged += 1
+        rule = classify_by_rules(entry).category
+        confusion[(rule, found.category)] += 1
+        categories[found.category] += 1
+        silent_counts[found.silent] += 1
+        if found.moves_published_numbers:
+            moves += 1
+
+    agreed = sum(n for (rule, read), n in confusion.items() if rule == read)
+    return {
+        "judged": judged,
+        "rules_agreed": agreed,
+        "rules_disagreed": judged - agreed,
+        "categories": dict(categories),
+        "silent": dict(silent_counts),
+        "moves_published_numbers": moves,
+        "confusion": {f"{r}->{d}": n for (r, d), n in confusion.most_common()},
+    }

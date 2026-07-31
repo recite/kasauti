@@ -208,3 +208,120 @@ class TestBuildBugs:
             entries, {"p": {"aa", "bb"}}, {"aa": {"x.R"}, "bb": {"x.R", "y.R"}}
         )
         assert bugs[0].total_exposed == 2
+
+
+class TestClassification:
+    def test_rules_flag_a_claimed_wrong_result(self):
+        from concord.archaeology.classify import classify_by_rules
+
+        entry = Entry("p", "1.0", None, "the variance was incorrect", 0)
+        result = classify_by_rules(entry)
+        assert result.category == "RESULT_CHANGING"
+        assert result.source == "rules"
+        assert result.confidence == "LOW"
+
+    def test_rules_flag_prose_as_doc(self):
+        from concord.archaeology.classify import classify_by_rules
+
+        entry = Entry("p", "1.0", None, "fixed a typo in the documentation", 0)
+        assert classify_by_rules(entry).category == "DOC"
+
+    def test_rules_do_not_guess_silent(self):
+        # The obvious pattern for a loud failure fires on 19% of candidates and
+        # is a false positive on every one sampled: changelog authors write
+        # "error" to mean a mistake in the code, not a raised exception.
+        from concord.archaeology.classify import classify_by_rules
+
+        entry = Entry("p", "1.0", None, "Small error in plot.survfit was fixed", 0)
+        assert classify_by_rules(entry).silent is False
+
+    def test_moves_published_numbers_needs_silence(self):
+        from concord.archaeology.classify import Classification
+
+        loud = Classification(category="RESULT_CHANGING", silent=False)
+        quiet = Classification(category="RESULT_CHANGING", silent=True)
+        behaviour = Classification(category="BEHAVIOR_CHANGE", silent=False)
+        assert not loud.moves_published_numbers
+        assert quiet.moves_published_numbers
+        # A behaviour change moves results whether or not anyone calls it a bug.
+        assert behaviour.moves_published_numbers
+
+    def test_cache_round_trips_source(self, tmp_path):
+        from concord.archaeology.classify import Classification, ClassificationCache
+
+        cache = ClassificationCache(tmp_path / "c.json")
+        cache.put(
+            "p@1.0#0", Classification(category="DOC", silent=False, source="agent")
+        )
+        cache.save()
+        assert ClassificationCache(tmp_path / "c.json").get("p@1.0#0").source == "agent"
+
+    def test_pending_skips_what_is_cached_and_ranks_by_exposure(self, tmp_path):
+        from concord.archaeology.classify import (
+            Classification,
+            ClassificationCache,
+            pending_payload,
+        )
+
+        entries = [
+            Entry("p", "1.0", None, "bug in a() was incorrect", 0),
+            Entry("p", "1.1", None, "bug in b() was incorrect", 0),
+            Entry("p", "1.2", None, "bug in c() was incorrect", 0),
+        ]
+        cache = ClassificationCache(tmp_path / "c.json")
+        cache.put("p@1.0#0", Classification(category="DOC", silent=False))
+        exposure = {"p@1.1#0": 5, "p@1.2#0": 50}
+
+        payload = pending_payload(entries, cache, exposure)
+        assert [r["entry_id"] for r in payload] == ["p@1.2#0", "p@1.1#0"]
+        assert payload[0]["rule_baseline"] == "RESULT_CHANGING"
+
+    def test_ingest_rejects_a_bad_record_by_name(self, tmp_path):
+        from concord.archaeology.classify import ClassificationCache, ingest_reviewed
+
+        cache = ClassificationCache(tmp_path / "c.json")
+        merged, errors = ingest_reviewed(
+            [
+                {"entry_id": "p@1.0#0", "category": "DOC", "silent": False},
+                {"entry_id": "p@1.1#0", "category": "NONSENSE", "silent": False},
+                {"category": "DOC", "silent": False},
+            ],
+            cache,
+        )
+        assert merged == 1
+        assert any("p@1.1#0" in e for e in errors)
+        assert any("no entry_id" in e for e in errors)
+
+    def test_ingest_defaults_to_agent_provenance(self, tmp_path):
+        from concord.archaeology.classify import ClassificationCache, ingest_reviewed
+
+        cache = ClassificationCache(tmp_path / "c.json")
+        ingest_reviewed(
+            [{"entry_id": "p@1.0#0", "category": "DOC", "silent": False}], cache
+        )
+        assert cache.get("p@1.0#0").source == "agent"
+
+    def test_agreement_ignores_rule_generated_records(self, tmp_path):
+        # A rate computed over records the rules themselves wrote would be
+        # 100% agreement by construction.
+        from concord.archaeology.classify import (
+            Classification,
+            ClassificationCache,
+            agreement,
+        )
+
+        entries = [
+            Entry("p", "1.0", None, "bug in a() was incorrect", 0),
+            Entry("p", "1.1", None, "bug in b() was incorrect", 0),
+        ]
+        cache = ClassificationCache(tmp_path / "c.json")
+        cache.put(
+            "p@1.0#0", Classification(category="DOC", silent=False, source="agent")
+        )
+        cache.put(
+            "p@1.1#0",
+            Classification(category="RESULT_CHANGING", silent=True, source="rules"),
+        )
+        stats = agreement(entries, cache)
+        assert stats["judged"] == 1
+        assert stats["rules_disagreed"] == 1

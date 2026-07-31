@@ -140,10 +140,6 @@ def report(cases_dir: Path | None, reports_dir: Path) -> None:
     click.echo(f"wrote {md_path}")
 
 
-if __name__ == "__main__":
-    main()
-
-
 @main.group()
 def bug() -> None:
     """Work with the bug record."""
@@ -324,3 +320,272 @@ def bug_papers(bug_id: str, bugs_dir: Path, datasets_dir: Path, enrich: bool) ->
         click.echo(f"  {len(linkage.unresolved)} script(s) from an unindexed source")
     if linkage.undated():
         click.echo(f"  {len(linkage.undated())} archive(s) with no publication date")
+
+
+#: Packages whose changelogs feed the classification queue. R only for now: the
+#: Python funnel has no export restriction, so its candidates are noisier and
+#: mixing two different-quality samples into one rate makes the rate meaningless.
+CLASSIFY_PACKAGES = [
+    "survival",
+    "sandwich",
+    "lmtest",
+    "car",
+    "MASS",
+    "mgcv",
+    "lme4",
+    "plm",
+    "estimatr",
+    "fixest",
+    "quantreg",
+    "AER",
+    "metafor",
+    "nlme",
+    "multiwayvcov",
+]
+
+
+def _exposed_entries(cache_root: Path, call_sites: Path):
+    """Load the entries that have corpus exposure, with their exposure counts.
+
+    Args:
+        cache_root: Harvest cache directory.
+        call_sites: Extracted call sites CSV.
+
+    Returns:
+        A `(entries, exposure)` pair, where exposure maps entry id to the number
+        of corpus scripts calling an affected function.
+    """
+    from concord.archaeology.harvest import harvest
+    from concord.archaeology.link import build_bugs, load_call_index, load_exports
+    from concord.archaeology.parse import parse_news
+
+    entries = []
+    for package in CLASSIFY_PACKAGES:
+        entries += parse_news(harvest(package, "cran", cache_root)).entries
+
+    bugs, _ = build_bugs(
+        entries, load_exports(CLASSIFY_PACKAGES), load_call_index(call_sites)
+    )
+    exposure = {b.entry.entry_id: b.total_exposed for b in bugs}
+    exposed = [b.entry for b in bugs]
+    return exposed, exposure
+
+
+@main.group()
+def classify() -> None:
+    """Classify changelog entries, and measure the rules against the reading."""
+
+
+@classify.command("pending")
+@click.option("--limit", type=int, default=None, help="Maximum entries to queue.")
+@click.option(
+    "--out",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/classify/pending.json",
+)
+@click.option(
+    "--cache",
+    "cache_file",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/classify/cache.json",
+)
+@click.option(
+    "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
+)
+@click.option(
+    "--call-sites",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/call_sites.csv",
+)
+def classify_pending(limit, out, cache_file, cache_root, call_sites) -> None:
+    """Write the queue of entries still needing judgment.
+
+    Args:
+        limit: Maximum entries to queue.
+        out: Destination JSON.
+        cache_file: Classification cache.
+        cache_root: Harvest cache directory.
+        call_sites: Extracted call sites CSV.
+    """
+    import json as _json
+
+    from concord.archaeology.classify import ClassificationCache, pending_payload
+
+    entries, exposure = _exposed_entries(cache_root, call_sites)
+    store = ClassificationCache(cache_file)
+    payload = pending_payload(entries, store, exposure, limit)
+
+    Path(out).parent.mkdir(parents=True, exist_ok=True)
+    Path(out).write_text(_json.dumps(payload, indent=2))
+    click.echo(
+        f"{len(entries)} exposed entries, {len(store)} already classified; "
+        f"queued {len(payload)} to {out}"
+    )
+
+
+@classify.command("ingest")
+@click.option(
+    "--reviewed",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/classify/reviewed.json",
+)
+@click.option(
+    "--cache",
+    "cache_file",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/classify/cache.json",
+)
+def classify_ingest(reviewed, cache_file) -> None:
+    """Merge reviewed classifications into the cache.
+
+    Args:
+        reviewed: JSON of reviewed records.
+        cache_file: Classification cache.
+    """
+    import json as _json
+
+    from concord.archaeology.classify import ClassificationCache, ingest_reviewed
+
+    if not Path(reviewed).exists():
+        click.echo(f"no reviewed file at {reviewed}", err=True)
+        sys.exit(1)
+
+    store = ClassificationCache(cache_file)
+    merged, errors = ingest_reviewed(_json.loads(Path(reviewed).read_text()), store)
+    click.echo(f"merged {merged} record(s); cache now holds {len(store)}")
+    for error in errors:
+        click.echo(f"  REJECTED {error}", err=True)
+    if errors:
+        sys.exit(1)
+
+
+@classify.command("report")
+@click.option(
+    "--cache",
+    "cache_file",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/classify/cache.json",
+)
+@click.option(
+    "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
+)
+@click.option(
+    "--call-sites",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/call_sites.csv",
+)
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=ROOT / "docs/classification.md"
+)
+def classify_report(cache_file, cache_root, call_sites, out) -> None:
+    """Report the classification, and the rules' agreement with it.
+
+    Args:
+        cache_file: Classification cache.
+        cache_root: Harvest cache directory.
+        call_sites: Extracted call sites CSV.
+        out: Destination markdown.
+    """
+    from concord.archaeology.classify import ClassificationCache, agreement
+
+    entries, _ = _exposed_entries(cache_root, call_sites)
+    store = ClassificationCache(cache_file)
+    stats = agreement(entries, store)
+
+    judged = stats["judged"]
+    if not judged:
+        click.echo(
+            "nothing classified yet; run `concord classify pending` first", err=True
+        )
+        sys.exit(1)
+
+    lines = [
+        "# Classification of exposed changelog entries",
+        "",
+        f"{len(entries)} entries from {len(CLASSIFY_PACKAGES)} R packages survive the",
+        "funnel with corpus exposure. Of those, "
+        f"**{judged}** have been read and judged.",
+        "",
+        "R only. The Python funnel has no export restriction, so its candidates are",
+        "noisier; mixing two different-quality samples into one rate would make the",
+        "rate meaningless.",
+        "",
+        "## What the reading changed",
+        "",
+        "The regular-expression layer agreed with the reading on "
+        f"**{stats['rules_agreed']}**",
+        f"of {judged} entries and disagreed on **{stats['rules_disagreed']}** "
+        f"({stats['rules_disagreed'] / judged:.0%}).",
+        "",
+        "This is the validation a hand-coded gold set was going to provide. The rules",
+        "are the baseline, the reading is the reference, and the disagreement rate is",
+        "how much the reading was worth.",
+        "",
+        "| rules said | reading said | n |",
+        "|---|---|---|",
+    ]
+    for pair, count in stats["confusion"].items():
+        rule, read = pair.split("->")
+        mark = "" if rule == read else " **"
+        lines.append(f"| {rule} | {read}{mark} | {count} |")
+
+    lines += [
+        "",
+        "## Distribution",
+        "",
+        "| category | n |",
+        "|---|---|",
+    ]
+    for name, count in sorted(stats["categories"].items(), key=lambda kv: -kv[1]):
+        lines.append(f"| {name} | {count} |")
+
+    silent = stats["silent"]
+    lines += [
+        "",
+        f"Silent (quietly wrong, no error or warning): "
+        f"**{silent.get(True, 0)}**; loud: {silent.get(False, 0)}.",
+        "",
+        f"**{stats['moves_published_numbers']}** entries could have moved a number "
+        "in a published table -- silent result-changing bugs, plus behaviour",
+        "changes, which move results whether or not anyone calls them defects.",
+        "",
+        "## Shortlist: silent, result-changing, high severity",
+        "",
+        "The queue the verification pass draws from. Each of these changed an",
+        "estimate, standard error, or p-value, under conditions an applied user",
+        "could plausibly hit, with nothing to signal it had happened.",
+        "",
+        "| entry | functions | conditions |",
+        "|---|---|---|",
+    ]
+    store_all = ClassificationCache(cache_file)
+    shortlist = []
+    for entry in entries:
+        found = store_all.get(entry.entry_id)
+        if (
+            found
+            and found.category == "RESULT_CHANGING"
+            and found.silent
+            and found.severity == "HIGH"
+        ):
+            shortlist.append((entry, found))
+    shortlist.sort(key=lambda pair: pair[0].entry_id)
+    for entry, found in shortlist:
+        functions = ", ".join(f"`{f}`" for f in found.functions) or "--"
+        lines.append(
+            f"| `{entry.entry_id}` | {functions} | "
+            f"{' '.join(found.conditions.split())} |"
+        )
+    lines.append("")
+
+    Path(out).parent.mkdir(parents=True, exist_ok=True)
+    Path(out).write_text("\n".join(lines) + "\n")
+    disagreed = stats["rules_disagreed"]
+    click.echo(
+        f"{judged}/{len(entries)} judged; rules disagreed on {disagreed} "
+        f"({disagreed / judged:.0%}); wrote {out}"
+    )
+
+
+if __name__ == "__main__":
+    main()

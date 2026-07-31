@@ -1,7 +1,7 @@
 id: r/sandwich/3.0-2-vcovcl-hc2-glm
 package: sandwich
 ecosystem: cran
-entry_id: sandwich@3.0-2#0
+entry_id: sandwich@3.0-2#1
 fixed_in: 3.0-2
 fixed_on: '2022-06-15'
 introduced_in: null
