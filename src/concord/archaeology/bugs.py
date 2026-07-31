@@ -18,6 +18,8 @@ later session must not spend an afternoon rediscovering.
 
 from __future__ import annotations
 
+import csv
+import json
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
@@ -136,6 +138,8 @@ class Bug:
         exposure: Script and paper counts.
         magnitude: What verification measured, in prose.
         directory: Where the record lives.
+        root: The `bugs/` directory this record was found under, against which
+            `id` is checked. Set by `load_bug`; None for records built in memory.
     """
 
     id: str
@@ -156,6 +160,19 @@ class Bug:
     exposure: Exposure = field(default_factory=Exposure)
     magnitude: str | None = None
     directory: Path | None = None
+    root: Path | None = None
+
+    @property
+    def language(self) -> str:
+        """The language this bug's package belongs to.
+
+        Derived from the record's location rather than stored, so the two
+        cannot disagree.
+
+        Returns:
+            The first path segment of the id, e.g. `r` or `python`.
+        """
+        return self.id.split("/", 1)[0] if "/" in self.id else self.ecosystem
 
     @property
     def stage(self) -> int:
@@ -279,7 +296,18 @@ def validate(bug: Bug) -> None:
             "overstated reach by up to 100x every time it was checked."
         )
 
-    if bug.directory and bug.directory.name != bug.id:
+    # Identity is location. A record's id must be its path under the bugs root,
+    # so a moved directory cannot silently keep a stale name.
+    if bug.directory and bug.root:
+        try:
+            relative = bug.directory.resolve().relative_to(bug.root.resolve())
+        except ValueError:
+            raise BugError(
+                f"{where}: {bug.directory} is not under the bugs root {bug.root}"
+            ) from None
+        if str(relative) != bug.id:
+            raise BugError(f"{where}: id does not match its location {relative!s}")
+    elif bug.directory and "/" not in bug.id and bug.directory.name != bug.id:
         raise BugError(
             f"{where}: id does not match its directory name {bug.directory.name!r}"
         )
@@ -311,11 +339,12 @@ def validate(bug: Bug) -> None:
             )
 
 
-def load_bug(directory: Path) -> Bug:
+def load_bug(directory: Path, root: Path | None = None) -> Bug:
     """Read and validate a bug record.
 
     Args:
         directory: Directory containing `bug.yaml`.
+        root: The `bugs/` directory, against which the record's id is checked.
 
     Returns:
         The parsed record.
@@ -333,6 +362,7 @@ def load_bug(directory: Path) -> Bug:
 
     bug = Bug(
         id=raw.get("id", directory.name),
+        root=Path(root) if root else None,
         package=raw.get("package", ""),
         fixed_in=str(raw.get("fixed_in", "")),
         conditions=raw.get("conditions") or "",
@@ -393,7 +423,7 @@ def discover_bugs(root: Path) -> list[Bug]:
     root = Path(root)
     if not root.exists():
         return []
-    bugs = [load_bug(p.parent) for p in sorted(root.rglob("bug.yaml"))]
+    bugs = [load_bug(p.parent, root) for p in sorted(root.rglob("bug.yaml"))]
     return sorted(bugs, key=lambda b: (-b.rank[0], -b.rank[1], b.id))
 
 
@@ -489,3 +519,182 @@ def render_index(bugs: list[Bug]) -> str:
             out.append(f"- `{bug.id}` -- {bug.status}: {detail}")
 
     return "\n".join(out) + "\n"
+
+
+def _read_papers(bug: Bug) -> list[dict[str, str]]:
+    """Read a record's `papers.csv`, if the linkage stage has run.
+
+    Args:
+        bug: The record.
+
+    Returns:
+        Rows as dicts, or an empty list when the file is absent.
+    """
+    if not bug.directory:
+        return []
+    path = bug.directory / "papers.csv"
+    if not path.exists():
+        return []
+    with path.open(newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
+def render_by_paper(bugs: list[Bug]) -> str:
+    """Invert the record: per replication archive, which bugs could reach it.
+
+    The tree is organized by bug because a bug has exactly one package in one
+    language. Papers are the other direction of a many-to-many relation -- one
+    archive can be exposed to several bugs -- so they get a generated view
+    rather than a directory level, which would duplicate every record.
+
+    Args:
+        bugs: All records.
+
+    Returns:
+        Markdown for `bugs/BY-PAPER.md`.
+    """
+    archives: dict[str, dict[str, Any]] = {}
+    for bug in bugs:
+        for row in _read_papers(bug):
+            key = f"{row['source']}/{row['repo_id']}"
+            entry = archives.setdefault(
+                key,
+                {
+                    "doi": row.get("doi", ""),
+                    "published": row.get("published", ""),
+                    "journal": row.get("journal", ""),
+                    "title": row.get("title", ""),
+                    "bugs": [],
+                },
+            )
+            entry["bugs"].append((bug, row.get("in_window") == "True"))
+
+    exposed = {k: v for k, v in archives.items() if any(w for _, w in v["bugs"])}
+
+    out = [
+        "# Bug record, inverted by replication archive",
+        "",
+        f"{len(archives)} archive(s) contain a script matching some bug's conditions",
+        f"probe; {len(exposed)} were published while a matching bug was live.",
+        "",
+        "Membership of a window is necessary, not sufficient. The archive also had",
+        "to hit the triggering condition at runtime, which no static check can",
+        "establish -- and an archive published shortly after a fix was very likely",
+        "*analysed* before it, so the window errs in both directions.",
+        "",
+    ]
+    if not archives:
+        out.append("No linkage has been run yet (`concord bug papers <id>`).")
+        return "\n".join(out) + "\n"
+
+    out += [
+        "| archive | published | journal | bugs | in window |",
+        "|---|---|---|---|---|",
+    ]
+    for key in sorted(
+        archives, key=lambda k: (not any(w for _, w in archives[k]["bugs"]), k)
+    ):
+        entry = archives[key]
+        ids = ", ".join(f"`{b.id}`" for b, _ in entry["bugs"])
+        live = sum(1 for _, w in entry["bugs"] if w)
+        title = (entry["title"] or "")[:70]
+        out.append(
+            f"| [{key}]({entry['doi']}) {title} | {entry['published']} | "
+            f"{entry['journal']} | {ids} | {live} |"
+        )
+    return "\n".join(out) + "\n"
+
+
+#: Columns of the machine-readable export -- the by-language/bug/impact table.
+FINDINGS_COLUMNS = [
+    "language",
+    "package",
+    "bug_id",
+    "fixed_in",
+    "fixed_on",
+    "functions",
+    "category",
+    "severity",
+    "silent",
+    "status",
+    "conditions",
+    "condition_probe",
+    "scripts_calling_function",
+    "scripts_meeting_probe",
+    "papers_linked",
+    "papers_in_window",
+    "window_censored",
+    "magnitude",
+]
+
+
+def findings_rows(bugs: list[Bug]) -> list[dict[str, Any]]:
+    """Flatten records into one row each.
+
+    Args:
+        bugs: All records.
+
+    Returns:
+        One dict per record, keyed by `FINDINGS_COLUMNS`.
+    """
+    rows = []
+    for bug in bugs:
+        papers = _read_papers(bug)
+        rows.append(
+            {
+                "language": bug.language,
+                "package": bug.package,
+                "bug_id": bug.id,
+                "fixed_in": bug.fixed_in,
+                "fixed_on": bug.fixed_on.isoformat() if bug.fixed_on else "",
+                "functions": ";".join(bug.functions),
+                "category": bug.category,
+                "severity": bug.severity,
+                "silent": bug.silent,
+                "status": bug.status,
+                "conditions": " ".join(bug.conditions.split()),
+                "condition_probe": bug.condition_probe or "",
+                "scripts_calling_function": bug.exposure.scripts_calling_function,
+                "scripts_meeting_probe": bug.exposure.scripts_meeting_probe,
+                "papers_linked": len(papers) if papers else None,
+                "papers_in_window": bug.exposure.papers_in_window,
+                "window_censored": bug.censored,
+                "magnitude": " ".join((bug.magnitude or "").split()),
+            }
+        )
+    return rows
+
+
+def export_findings(bugs: list[Bug], directory: Path) -> tuple[Path, Path]:
+    """Write the machine-readable record.
+
+    Args:
+        bugs: All records.
+        directory: The `bugs/` directory.
+
+    Returns:
+        Paths to the CSV and JSON exports.
+    """
+    directory = Path(directory)
+    rows = findings_rows(bugs)
+
+    csv_path = directory / "findings.csv"
+    with csv_path.open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=FINDINGS_COLUMNS)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    json_path = directory / "findings.json"
+    json_path.write_text(
+        json.dumps(
+            {
+                "bugs": rows,
+                "papers": {
+                    bug.id: _read_papers(bug) for bug in bugs if _read_papers(bug)
+                },
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return csv_path, json_path

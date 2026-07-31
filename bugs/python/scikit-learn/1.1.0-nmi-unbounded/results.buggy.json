@@ -1,0 +1,27 @@
+{
+  "backend": "buggy",
+  "case_id": "sklearn_nmi_unbounded",
+  "diagnostics": {
+    "clusters_a": 2,
+    "clusters_b": 1,
+    "n": 10,
+    "sklearn_version": "1.0.2",
+    "warnings": []
+  },
+  "env": {
+    "language": "Python",
+    "packages": {
+      "numpy": "1.26.4",
+      "sklearn": "1.0.2"
+    },
+    "version": "3.10.9"
+  },
+  "error": null,
+  "quantities": {
+    "nmi@arithmetic": 8.248170715663733e-16,
+    "nmi@geometric": 1.25,
+    "nmi@max": 4.1240853578318663e-16,
+    "nmi@min": 1.25
+  },
+  "status": "ok"
+}

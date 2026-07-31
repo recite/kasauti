@@ -42,6 +42,20 @@ R_NEWS_CANDIDATES = [
 
 USER_AGENT = "concord/0.1 (research; differential testing of statistical software)"
 
+GITHUB_API = "https://api.github.com/repos"
+GITHUB_RAW = "https://raw.githubusercontent.com"
+
+#: Python projects keep release notes in the repository rather than the sdist,
+#: so the changelog and the version timeline come from different places: PyPI
+#: dates the releases, GitHub explains them. Each entry is
+#: `(repo, directory, extension)`.
+PYTHON_NOTES = {
+    "statsmodels": ("statsmodels/statsmodels", "docs/source/release", ".rst"),
+    "scipy": ("scipy/scipy", "doc/source/release", ".rst"),
+    "scikit-learn": ("scikit-learn/scikit-learn", "doc/whats_new", ".rst"),
+    "numpy": ("numpy/numpy", "doc/source/release", ".rst"),
+}
+
 
 @dataclass
 class Release:
@@ -326,12 +340,65 @@ def harvest_cran(package: str) -> Harvest:
     )
 
 
-def harvest_pypi(package: str) -> Harvest:
-    """Collect releases for one PyPI package.
+def github_notes(package: str, timeout: int = 60) -> tuple[str, str, list[str]]:
+    """Fetch a Python project's release notes from its GitHub repository.
 
-    Python changelogs live in project-specific documentation trees rather than in
-    the distribution, so only the release timeline is collected here; the text is
-    fetched separately per project.
+    Every file in the project's release-notes directory is concatenated in name
+    order. The parser finds version sections wherever they fall, so the ordering
+    only has to be stable, not meaningful.
+
+    Args:
+        package: PyPI project name, which must appear in `PYTHON_NOTES`.
+        timeout: Seconds before giving up on a single request.
+
+    Returns:
+        A `(text, source, errors)` triple. Text is empty when the project is not
+        mapped or the directory cannot be listed.
+    """
+    if package not in PYTHON_NOTES:
+        return "", "", [f"no release-notes location known for {package}"]
+
+    repo, directory, extension = PYTHON_NOTES[package]
+    errors: list[str] = []
+    try:
+        response = _get(f"{GITHUB_API}/{repo}/contents/{directory}", timeout=timeout)
+        response.raise_for_status()
+        listing = response.json()
+    except (requests.RequestException, ValueError) as exc:
+        return "", "", [f"could not list {repo}/{directory}: {exc}"]
+
+    names = sorted(
+        item["name"]
+        for item in listing
+        if item.get("type") == "file" and item.get("name", "").endswith(extension)
+    )
+
+    chunks = []
+    for name in names:
+        try:
+            page = _get(f"{GITHUB_RAW}/{repo}/HEAD/{directory}/{name}", timeout=timeout)
+            if page.status_code == 200:
+                chunks.append(page.text)
+            else:
+                errors.append(f"{name}: HTTP {page.status_code}")
+        except requests.RequestException as exc:
+            errors.append(f"{name}: {exc}")
+
+    if not chunks:
+        return "", "", [*errors, f"no readable notes in {repo}/{directory}"]
+    return (
+        "\n\n".join(chunks),
+        f"github:{repo}/{directory} ({len(chunks)} files)",
+        errors,
+    )
+
+
+def harvest_pypi(package: str) -> Harvest:
+    """Collect releases and release notes for one PyPI package.
+
+    The two halves come from different services: PyPI dates the releases, and
+    GitHub holds the notes, because Python projects ship documentation in the
+    repository rather than in the distribution.
 
     Args:
         package: PyPI project name.
@@ -340,7 +407,15 @@ def harvest_pypi(package: str) -> Harvest:
         The harvest.
     """
     releases, errors = pypi_releases(package)
-    return Harvest(package=package, ecosystem="pypi", releases=releases, errors=errors)
+    text, source, note_errors = github_notes(package)
+    return Harvest(
+        package=package,
+        ecosystem="pypi",
+        releases=releases,
+        news_text=text,
+        news_source=source,
+        errors=errors + note_errors,
+    )
 
 
 def cache_path(root: Path, ecosystem: str, package: str) -> Path:

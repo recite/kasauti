@@ -47,6 +47,16 @@ class TestRelativeDifference:
     def test_both_zero_does_not_divide_by_zero(self):
         assert relative_difference(0.0, 0.0) == 0.0
 
+    def test_both_below_the_floor_agree(self):
+        # A denormal-scale value against an exact zero is not a disagreement:
+        # one scikit-learn version returns 8.2e-16 where another returns 0.0,
+        # and dividing by the floor would report that as 8e-4.
+        assert relative_difference(8.248170715663733e-16, 0.0) == 0.0
+        assert relative_difference(1e-15, -1e-15) == 0.0
+
+    def test_one_above_the_floor_still_diverges(self):
+        assert relative_difference(1e-15, 1e-6) == pytest.approx(1.0)
+
     def test_one_zero_is_total_disagreement(self):
         assert relative_difference(0.0, 5.0) == 1.0
 

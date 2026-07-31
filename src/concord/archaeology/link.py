@@ -44,6 +44,38 @@ INERT = re.compile(
     re.IGNORECASE,
 )
 
+#: Filenames that mark a script as library code rather than analysis. Replication
+#: archives frequently bundle an entire site-packages directory -- one QJE archive
+#: in this corpus holds 3,839 Python files, including scikit-learn's own test
+#: suite -- and a call-site search cannot tell vendored library code from the
+#: author's analysis without this. Left unfiltered, `test_supervised.py` counts as
+#: a paper exercising the very function whose bug is under investigation, which is
+#: exactly backwards: it is the library testing itself.
+VENDORED_NAME = re.compile(
+    r"^(?:test_|conftest\b|setup\b|_version|__init__|__config__|_distributor_init"
+    r"|version\b|_globals|_pytest)",
+    re.IGNORECASE,
+)
+
+
+def looks_vendored(path: str) -> bool:
+    """Whether a script is library code bundled into a replication archive.
+
+    Name-based and deliberately conservative: it excludes files that are almost
+    never author-written analysis, and accepts that an author who names a script
+    `test_effects.R` is wrongly excluded. Over-excluding shrinks a count that is
+    already reported as an upper bound; under-excluding invents exposure that
+    does not exist.
+
+    Args:
+        path: Path to the script.
+
+    Returns:
+        True when the filename marks it as library or packaging code.
+    """
+    return bool(VENDORED_NAME.match(Path(path).name))
+
+
 #: Any identifier-shaped token. Changelogs name the affected function three ways
 #: -- "bug in coxph()", "bug in `coxph`", and plain "Fix a bug in coxph" -- and
 #: survival, the most thoroughly documented package in the frame, uses the third
@@ -243,12 +275,14 @@ class ProbeResult:
         calling: Scripts calling any affected function.
         matching: Of those, scripts whose source matches the probe.
         unreadable: Scripts that could not be read to test the probe.
+        vendored: Scripts excluded as bundled library code.
     """
 
     probe: str
     calling: list[str] = field(default_factory=list)
     matching: list[str] = field(default_factory=list)
     unreadable: list[str] = field(default_factory=list)
+    vendored: list[str] = field(default_factory=list)
 
     @property
     def narrowing(self) -> float:
@@ -284,10 +318,17 @@ def probe_exposure(
     calling: set[str] = set()
     for function in functions:
         calling |= call_index.get(function, set())
-    calling_sorted = sorted(calling)
+
+    vendored = sorted(p for p in calling if looks_vendored(p))
+    calling_sorted = sorted(p for p in calling if not looks_vendored(p))
 
     if not probe:
-        return ProbeResult(probe="", calling=calling_sorted, matching=calling_sorted)
+        return ProbeResult(
+            probe="",
+            calling=calling_sorted,
+            matching=calling_sorted,
+            vendored=vendored,
+        )
 
     pattern = re.compile(probe, re.IGNORECASE | re.DOTALL)
     matching, unreadable = [], []
@@ -305,6 +346,7 @@ def probe_exposure(
         calling=calling_sorted,
         matching=matching,
         unreadable=unreadable,
+        vendored=vendored,
     )
 
 

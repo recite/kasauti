@@ -157,14 +157,28 @@ def bug_index(bugs_dir: Path) -> None:
     Args:
         bugs_dir: Directory holding bug records.
     """
-    from concord.archaeology.bugs import discover_bugs, render_index
+    from concord.archaeology.bugs import (
+        discover_bugs,
+        export_findings,
+        render_by_paper,
+        render_index,
+    )
 
     records = discover_bugs(bugs_dir)
     if not records:
         click.echo(f"no records under {bugs_dir}", err=True)
         sys.exit(1)
-    (Path(bugs_dir) / "INDEX.md").write_text(render_index(records))
-    click.echo(f"validated {len(records)} record(s), wrote {bugs_dir}/INDEX.md")
+
+    bugs_dir = Path(bugs_dir)
+    (bugs_dir / "INDEX.md").write_text(render_index(records))
+    (bugs_dir / "BY-PAPER.md").write_text(render_by_paper(records))
+    export_findings(records, bugs_dir)
+
+    languages = sorted({r.language for r in records})
+    click.echo(
+        f"validated {len(records)} record(s) across {', '.join(languages)}; "
+        "wrote INDEX.md, BY-PAPER.md, findings.csv, findings.json"
+    )
 
 
 @bug.command("status")
@@ -178,14 +192,14 @@ def bug_status(bugs_dir: Path) -> None:
     from concord.archaeology.bugs import discover_bugs
 
     records = discover_bugs(bugs_dir)
-    click.echo(f"{'bug':44} {'sev':7} {'calls':>6} {'probe':>6} {'papers':>7} status")
+    click.echo(f"{'bug':40} {'sev':7} {'calls':>6} {'probe':>6} {'papers':>7} status")
     for record in records:
         exposure = record.exposure
         calls = exposure.scripts_calling_function
         probe = exposure.scripts_meeting_probe
         papers = exposure.papers_in_window
         click.echo(
-            f"{record.id:44} {record.severity:7} "
+            f"{record.id:40} {record.severity:7} "
             f"{'--' if calls is None else calls:>6} "
             f"{'--' if probe is None else probe:>6} "
             f"{'--' if papers is None else papers:>7} "
@@ -212,9 +226,14 @@ def bug_probe(bug_id: str, bugs_dir: Path, call_sites: Path) -> None:
     from concord.archaeology.bugs import advance, load_bug, write_bug
     from concord.archaeology.link import load_call_index, probe_exposure, write_exposure
 
-    record = load_bug(Path(bugs_dir) / bug_id)
+    record = load_bug(Path(bugs_dir) / bug_id, Path(bugs_dir))
+    # The call index is per language: a Python bug must be probed against Python
+    # call sites, or it silently finds nothing and reports zero exposure.
+    language = {"r": "R", "python": "Python"}.get(record.language, "R")
     result = probe_exposure(
-        record.functions, record.condition_probe, load_call_index(call_sites)
+        record.functions,
+        record.condition_probe,
+        load_call_index(call_sites, language=language),
     )
 
     write_exposure(result, record.directory / "exposure.csv")
@@ -227,6 +246,11 @@ def bug_probe(bug_id: str, bugs_dir: Path, call_sites: Path) -> None:
         f"{len(result.matching)} match the probe "
         f"({result.narrowing:.0%})"
     )
+    if result.vendored:
+        click.echo(
+            f"  {len(result.vendored)} excluded as vendored library code "
+            "(bundled site-packages, not author analysis)"
+        )
     if result.unreadable:
         click.echo(f"  {len(result.unreadable)} script(s) could not be read")
 
@@ -259,7 +283,7 @@ def bug_papers(bug_id: str, bugs_dir: Path, datasets_dir: Path, enrich: bool) ->
         write_papers,
     )
 
-    record = load_bug(Path(bugs_dir) / bug_id)
+    record = load_bug(Path(bugs_dir) / bug_id, Path(bugs_dir))
     exposure_csv = record.directory / "exposure.csv"
     if not exposure_csv.exists():
         click.echo(f"{bug_id}: run `concord bug probe {bug_id}` first", err=True)

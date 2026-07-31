@@ -16,7 +16,7 @@ from concord.archaeology.bugs import (
     validate,
     write_bug,
 )
-from concord.archaeology.link import probe_exposure
+from concord.archaeology.link import looks_vendored, probe_exposure
 from concord.archaeology.papers import (
     Paper,
     link_scripts,
@@ -217,6 +217,39 @@ class TestProbeExposure:
         result = probe_exposure(["vcovHC"], None, {"vcovHC": {str(script)}})
         assert result.matching == result.calling
         assert result.probe == ""
+
+    def test_vendored_library_code_is_excluded(self, tmp_path):
+        # A QJE archive in the corpus bundles scikit-learn's own test suite along
+        # with 3,838 other site-packages files. Counting `test_supervised.py` as
+        # a paper exercising the buggy function gets it exactly backwards: that
+        # is the library testing itself.
+        analysis = tmp_path / "analysis.py"
+        analysis.write_text("nmi(a, b)\n")
+        vendored = tmp_path / "test_supervised.py"
+        vendored.write_text("nmi(a, b)\n")
+        result = probe_exposure(["nmi"], None, {"nmi": {str(analysis), str(vendored)}})
+        assert result.calling == [str(analysis)]
+        assert result.vendored == [str(vendored)]
+
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "test_supervised.py",
+            "__init___106.py",
+            "__config__.py",
+            "setup.py",
+            "conftest.py",
+            "_version.py",
+        ],
+    )
+    def test_library_filenames_are_recognised(self, name):
+        assert looks_vendored(f"/archive/{name}")
+
+    @pytest.mark.parametrize(
+        "name", ["analysis.R", "main.py", "figures.R", "estimate_effects.py"]
+    )
+    def test_analysis_filenames_are_kept(self, name):
+        assert not looks_vendored(f"/archive/{name}")
 
     def test_unreadable_scripts_are_counted_not_matched(self, tmp_path):
         missing = str(tmp_path / "gone.R")

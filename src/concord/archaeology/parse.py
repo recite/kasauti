@@ -42,10 +42,12 @@ TXT_SECTION = re.compile(
 )
 
 #: A line that is nothing but a version number, which is how mgcv's ChangeLog
-#: separates releases.
+#: separates releases. Restricted to the dashed CRAN form (`1.9-4`) rather than
+#: any dotted number: an unrestricted version of this matched stray numeric lines
+#: inside reStructuredText and, because detection picks whichever grammar matches
+#: most, beat the correct grammar on scipy and numpy.
 BARE_SECTION = re.compile(
-    r"^[ \t]*(?P<version>\d+\.\d+[-.]\d+[0-9A-Za-z.\-]*)[ \t]*$"
-    r"(?P<date>)",
+    r"^[ \t]*(?P<version>\d+\.\d+-\d+[0-9A-Za-z.\-]*)[ \t]*$" r"(?P<date>)",
     re.MULTILINE,
 )
 
@@ -56,6 +58,20 @@ VERDATE_SECTION = re.compile(
     r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*[ \t]+\d{1,2}?.*$"
     r"(?P<date>)",
     re.MULTILINE,
+)
+
+#: reStructuredText release notes, over an underline of `=`, `-`, `~`, or `^`.
+#: Four projects, three heading conventions: `Version 1.3.2` (scikit-learn),
+#: `Release 0.14.0` (statsmodels), and `SciPy 0.10.0 Release Notes` (scipy and
+#: numpy). One leading word covers all three, since "Version" and "Release" are
+#: themselves just words in that position.
+RST_SECTION = re.compile(
+    r"^[ \t]*[A-Za-z][\w.\-]*[ \t]+v?"
+    r"(?P<version>\d[0-9A-Za-z.]*)"
+    r"(?:[ \t]+release[ \t]+notes)?[ \t]*\n"
+    r"[=~^\-]{3,}[ \t]*$"
+    r"(?P<date>)",
+    re.MULTILINE | re.IGNORECASE,
 )
 
 #: GNU-style ChangeLog: `2026-04-24  Sebastian Meyer  <...>`. Used by nlme and
@@ -173,6 +189,7 @@ GRAMMARS: list[tuple[str, re.Pattern[str]]] = [
     ("rd", RD_SECTION),
     ("md", MD_SECTION),
     ("txt", TXT_SECTION),
+    ("rst", RST_SECTION),
     ("verdate", VERDATE_SECTION),
     ("bare", BARE_SECTION),
     ("gnu", GNU_SECTION),

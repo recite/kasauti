@@ -1,0 +1,30 @@
+id: python/scikit-learn/1.1.0-nmi-unbounded
+package: scikit-learn
+ecosystem: pypi
+entry_id: scikit-learn@1.1.0#0
+fixed_in: 1.1.0
+fixed_on: '2022-05-12'
+introduced_in: null
+introduced_on: null
+functions:
+- normalized_mutual_info_score
+conditions: 'One of the two labelings must be degenerate -- every point in a single cluster,
+  hence zero entropy -- and average_method must be ''min'' or ''geometric'', which are the
+  two normalizers that divide by the smaller entropy. The default is ''arithmetic'', which
+  is unaffected, as is ''max''. Verified: under 1.0.2 min and geometric both return 1.25 for
+  a metric bounded on [0, 1], while arithmetic and max return floating-point zero.'
+condition_probe: (?=.*normalized_mutual_info_score)(?=.*average_method)
+category: RESULT_CHANGING
+silent: true
+severity: HIGH
+status: VERIFIED
+exposure:
+  scripts_calling_function: 0
+  scripts_meeting_probe: 0
+  papers_in_window: 0
+  papers_censored: 0
+magnitude: Verified against scikit-learn 1.0.2 on Python 3.10. min and geometric both return
+  1.25 where 1.1.0 returns 0.0 -- a normalized mutual information above its own upper bound
+  of 1, which cannot be interpreted at all. arithmetic and max return 8.2e-16 and 4.1e-16
+  against an exact 0.0, which is the same answer to floating-point precision. Two of four
+  normalizers affected.

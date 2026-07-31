@@ -34,14 +34,23 @@ def relative_difference(a: float, b: float, floor: float = 1e-12) -> float:
     both a coefficient near 1 and a variance near 1e-9, and does not blow up when
     both values are zero.
 
+    The floor is also a noise floor, not only a guard against dividing by zero:
+    when *both* values fall below it they are treated as equal. Without that,
+    comparing a denormal-scale result against an exact zero -- 8.2e-16 against
+    0.0, say, which is what one scikit-learn version returns where another
+    returns zero exactly -- divides by the floor and reports a relative
+    difference of 8e-4, flagging two numbers that are zero for every purpose as
+    divergent.
+
     Args:
         a: First value.
         b: Second value.
-        floor: Lower bound on the denominator.
+        floor: Scale below which two values are indistinguishable, and the lower
+            bound on the denominator.
 
     Returns:
-        Relative difference. `0.0` if both are NaN, `inf` if exactly one is NaN or
-        the two differ in sign of infinity.
+        Relative difference. `0.0` if both are NaN or both are below the floor,
+        `inf` if exactly one is NaN or the two differ in sign of infinity.
     """
     a_nan, b_nan = math.isnan(a), math.isnan(b)
     if a_nan and b_nan:
@@ -52,6 +61,8 @@ def relative_difference(a: float, b: float, floor: float = 1e-12) -> float:
         return 0.0
     if math.isinf(a) or math.isinf(b):
         return math.inf
+    if abs(a) < floor and abs(b) < floor:
+        return 0.0
     return abs(a - b) / max(abs(a), abs(b), floor)
 
 

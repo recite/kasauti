@@ -1,0 +1,54 @@
+id: sklearn_nmi_unbounded
+title: "scikit-learn 1.1.0: normalized_mutual_info_score returned values above 1"
+family: version_regression
+
+# scikit-learn 1.1.0 (2022-05-12):
+#   "|Fix| Fixed a bug in `metrics.normalized_mutual_info_score` which could
+#    return unbounded values."
+#
+# Needs no side library: uv builds each environment on demand. numpy and scipy
+# are pinned alongside scikit-learn because a 2021 wheel is compiled against the
+# numpy 1.x C ABI -- resolving numpy 2.x instead produces
+# "numpy.dtype size changed, may indicate binary incompatibility" at import,
+# before any of the statistics run. Python 3.10 is pinned for the same reason:
+# scikit-learn 1.0.2 ships no wheel for anything newer. `--no-project` keeps uv
+# from applying concord's own `requires-python = ">=3.11"` to these environments.
+
+backends:
+  - name: buggy
+    cmd:
+      ["uv", "run", "--quiet", "--no-project", "--python", "3.10",
+       "--with", "scikit-learn==1.0.2", "--with", "numpy<2", "--with", "scipy<1.11",
+       "python", "run_py.py", "--buggy"]
+    label: "scikit-learn 1.0.2 (before the fix)"
+    optional: true
+  - name: fixed
+    cmd:
+      ["uv", "run", "--quiet", "--no-project", "--python", "3.10",
+       "--with", "scikit-learn==1.1.0", "--with", "numpy<2", "--with", "scipy<1.11",
+       "python", "run_py.py"]
+    label: "scikit-learn 1.1.0 (the fix)"
+
+agree_tol: 1.0e-8
+numeric_tol: 1.0e-5
+
+quantities:
+  nmi@min:
+    expect: DIVERGE
+    reason: >
+      The bug, at its clearest. 1.0.2 returns 1.25 for a metric defined on
+      [0, 1]; 1.1.0 returns 0.0, which is correct because one of the two
+      labelings puts every point in a single cluster and so carries zero
+      entropy. A value above the metric's own upper bound is not a rounding
+      difference -- it is a number that cannot mean anything.
+  nmi@geometric:
+    expect: DIVERGE
+    reason: >
+      Same failure, same value: 1.25 against 0.0. Both the min and geometric
+      normalizers divide by something that is zero here, and both returned the
+      same impossible number.
+
+# arithmetic and max default to expecting AGREE, and they are the control. Under
+# 1.0.2 they return 8.2e-16 and 4.1e-16 -- floating-point zero, which rounds to
+# the same answer 1.1.0 gives exactly. The bug reached two of the four
+# normalizers and not the other two, which is why all four are reported.

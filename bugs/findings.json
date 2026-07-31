@@ -1,0 +1,106 @@
+{
+  "bugs": [
+    {
+      "bug_id": "r/sandwich/2.5-0-vcovhc-mlm-sign",
+      "category": "RESULT_CHANGING",
+      "condition_probe": "lm\\s*\\(\\s*cbind\\s*\\(",
+      "conditions": "Only lm() with a matrix response -- a multivariate lm, dispatching to vcovHC.mlm. Univariate lm and glm are unaffected. Within that, only the cross-equation block of the covariance matrix is wrong; the within-equation diagonal blocks are bit-identical across versions, so ordinary per-coefficient standard errors were never affected.",
+      "fixed_in": "2.5-0",
+      "fixed_on": "2018-08-17",
+      "functions": "vcovHC",
+      "language": "r",
+      "magnitude": "Verified against sandwich 2.4-0. All six within-equation covariances identical to the fixed version at relative difference exactly 0. All four cross-equation covariances differ: three flip sign, and y1:x/y2:x is +0.109997852 against a corrected 0.003342536347, a factor of 33.",
+      "package": "sandwich",
+      "papers_in_window": 0,
+      "papers_linked": 1,
+      "scripts_calling_function": 76,
+      "scripts_meeting_probe": 1,
+      "severity": "HIGH",
+      "silent": true,
+      "status": "VERIFIED",
+      "window_censored": true
+    },
+    {
+      "bug_id": "python/scikit-learn/1.1.0-nmi-unbounded",
+      "category": "RESULT_CHANGING",
+      "condition_probe": "(?=.*normalized_mutual_info_score)(?=.*average_method)",
+      "conditions": "One of the two labelings must be degenerate -- every point in a single cluster, hence zero entropy -- and average_method must be 'min' or 'geometric', which are the two normalizers that divide by the smaller entropy. The default is 'arithmetic', which is unaffected, as is 'max'. Verified: under 1.0.2 min and geometric both return 1.25 for a metric bounded on [0, 1], while arithmetic and max return floating-point zero.",
+      "fixed_in": "1.1.0",
+      "fixed_on": "2022-05-12",
+      "functions": "normalized_mutual_info_score",
+      "language": "python",
+      "magnitude": "Verified against scikit-learn 1.0.2 on Python 3.10. min and geometric both return 1.25 where 1.1.0 returns 0.0 -- a normalized mutual information above its own upper bound of 1, which cannot be interpreted at all. arithmetic and max return 8.2e-16 and 4.1e-16 against an exact 0.0, which is the same answer to floating-point precision. Two of four normalizers affected.",
+      "package": "scikit-learn",
+      "papers_in_window": 0,
+      "papers_linked": null,
+      "scripts_calling_function": 0,
+      "scripts_meeting_probe": 0,
+      "severity": "HIGH",
+      "silent": true,
+      "status": "VERIFIED",
+      "window_censored": true
+    },
+    {
+      "bug_id": "r/sandwich/3.0-2-vcovcl-hc2-glm",
+      "category": "RESULT_CHANGING",
+      "condition_probe": "(?=.*HC2)(?=.*(?:glm\\s*\\(|weights\\s*=))",
+      "conditions": "Requires type='HC2' explicitly -- vcovCL defaults to HC1 or HC0, never HC2 -- and the fit must be a glm or an lm with weights. Plain unweighted lm is unaffected, and HC0 and HC3 are unaffected under every fit. Verified: 7 of 9 measured quantities are bit-identical across versions, and only glm_HC2 and weighted_HC2 move.",
+      "fixed_in": "3.0-2",
+      "fixed_on": "2022-06-15",
+      "functions": "vcovCL",
+      "language": "r",
+      "magnitude": "Verified against sandwich 3.0-1. Exactly the two documented conditions move and nothing else: glm HC2 goes 3.257220214218 to 3.241862120725 (4.7e-3 relative) and weighted-lm HC2 goes 0.677590761111 to 0.687773564531 (1.5e-2). The other seven quantities -- HC0 and HC3 under all three fits, and every type on an unweighted lm -- are identical at relative difference exactly 0. Wide and mild, where sandwich 2.5-0 was narrow and severe: a 0.5 to 1.5 percent move in a standard error rarely flips a conclusion, but it is silent.",
+      "package": "sandwich",
+      "papers_in_window": 0,
+      "papers_linked": 3,
+      "scripts_calling_function": 37,
+      "scripts_meeting_probe": 6,
+      "severity": "MEDIUM",
+      "silent": true,
+      "status": "VERIFIED",
+      "window_censored": true
+    }
+  ],
+  "papers": {
+    "r/sandwich/2.5-0-vcovhc-mlm-sign": [
+      {
+        "doi": "https://doi.org/10.5281/zenodo.10012820",
+        "in_window": "False",
+        "journal": "",
+        "published": "2023-10-17",
+        "repo_id": "10012820",
+        "source": "zenodo",
+        "title": "Drilling Deadlines and Oil and Gas Development"
+      }
+    ],
+    "r/sandwich/3.0-2-vcovcl-hc2-glm": [
+      {
+        "doi": "https://doi.org/10.7910/DVN/HWVUER",
+        "in_window": "False",
+        "journal": "IOJ",
+        "published": "2022-07-28",
+        "repo_id": "HWVUER",
+        "source": "dataverse",
+        "title": "Do Politically Irrelevant Events Cause Conflict? The Cross-continental Effects of European Professional Football on Protests in Africa"
+      },
+      {
+        "doi": "https://doi.org/10.5281/zenodo.10012820",
+        "in_window": "False",
+        "journal": "",
+        "published": "2023-10-17",
+        "repo_id": "10012820",
+        "source": "zenodo",
+        "title": "Drilling Deadlines and Oil and Gas Development"
+      },
+      {
+        "doi": "https://doi.org/10.5281/zenodo.10145562",
+        "in_window": "False",
+        "journal": "",
+        "published": "2023-11-16",
+        "repo_id": "10145562",
+        "source": "zenodo",
+        "title": "Replication Package for \"A Demand Curve For Disaster Recovery Loans"
+      }
+    ]
+  }
+}
