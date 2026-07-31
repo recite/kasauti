@@ -1,1 +1,722 @@
-[]
+[
+  {
+    "entry_id": "lfe@2.5#2",
+    "package": "lfe",
+    "version": "2.5",
+    "released": null,
+    "exposure_scripts": 245,
+    "text": "Multiway clustered standard errors now incorporate the negative Eigenvalue adjustment of Cameron, Gelbach, Miller. I.e. they are forced to zero. Can be switched off by felm(...,psdef=FALSE).",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "zoo@1.7-5#0",
+    "package": "zoo",
+    "version": "1.7-5",
+    "released": "2011-10-25",
+    "exposure_scripts": 77,
+    "text": "fixed a bug in the aggregate() method which occured when using it with \"zoo\" objects that have a \"timeDate\" index.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "Matrix@0.3-8#3",
+    "package": "Matrix",
+    "version": "0.3-8",
+    "released": "2001-01-10",
+    "exposure_scripts": 58,
+    "text": "Removes around 100 non-source files wrongly bundled in Matrix version 0.3-7.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "Matrix@1.2-6#1",
+    "package": "Matrix",
+    "version": "1.2-6",
+    "released": "2016-05-02",
+    "exposure_scripts": 58,
+    "text": "The 0-dim. Matrix multiplication fix in 1.2-5 did trigger wrong warnings in other diagonal matrix multiplications.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "Matrix@1.5-0#11",
+    "package": "Matrix",
+    "version": "1.5-0",
+    "released": "2022-09-10",
+    "exposure_scripts": 58,
+    "text": "Symmetrization of <Matrix>@Dimnames and dimnames(<matrix>) now goes through C utility symmDN() in most places, resolving some earlier inconsistencies.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "Matrix@1.5-0#17",
+    "package": "Matrix",
+    "version": "1.5-0",
+    "released": "2022-09-10",
+    "exposure_scripts": 58,
+    "text": "diag<- incorrectly preserved the class of dense matrices, so that, e.g., `diag<-`(x=<dpoMatrix>, value=-1) was still a dpoMatrix. Now the result is always one of the more general .(ge|tr|sy|tp|sp)Matrix.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "Matrix@1.5-0#25",
+    "package": "Matrix",
+    "version": "1.5-0",
+    "released": "2022-09-10",
+    "exposure_scripts": 58,
+    "text": "crossprod(<Rsparse>, <Tsparse>) and similar now work again (optional boolArith was not passed on), fixing 6766 by David Cortes. Ditto for tcrossprod(), where the old result was even wrong when it had worked, before Matrix 1.2-0.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "Matrix@1.5-0#69",
+    "package": "Matrix",
+    "version": "1.5-0",
+    "released": "2022-09-10",
+    "exposure_scripts": 58,
+    "text": "anyNA(<denseMatrix>) had incorrectly returned anyNA(.@x) in many cases, giving false positives for some .(tr|sy)Matrix and ndenseMatrix. Now methods respect the rules of these classes.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "Matrix@1.5-2#1",
+    "package": "Matrix",
+    "version": "1.5-2",
+    "released": "2022-10-21",
+    "exposure_scripts": 58,
+    "text": "The validity methods for classes l[st]CMatrix now correctly test for structurally nonzero entries on the wrong side of the main diagonal, and fail in that case. Previously, this test was performed only for d[st]Matrix.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "Matrix@1.6-2#47",
+    "package": "Matrix",
+    "version": "1.6-2",
+    "released": "2023-11-08",
+    "exposure_scripts": 58,
+    "text": "tri[ul](<.t[rp]Matrix>, k) was often wrong for nonzero k, setting too many bands to zero.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "sf@1.0-1#0",
+    "package": "sf",
+    "version": "1.0-1",
+    "released": "2021-06-29",
+    "exposure_scripts": 55,
+    "text": "fix regression in `st_intersection()`: when using s2 attributes were assigned wrongly; #1704",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "psych@1.6.4#22",
+    "package": "psych",
+    "version": "1.6.4",
+    "released": "2016-05-12",
+    "exposure_scripts": 43,
+    "text": "Corrected a bug in alpha (reported by Tamaki Hattori) to correctly find the s.e. of alpha. I was slightly overestimating the correct values.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "psych@1.7.8#30",
+    "package": "psych",
+    "version": "1.7.8",
+    "released": "2017-09-09",
+    "exposure_scripts": 43,
+    "text": "Fixed problem with alpha for two item scales (I was not correctly reporting the alpha if one item was dropped.) Reported by Daniel Zingaro.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "psych@1.8.12#30",
+    "package": "psych",
+    "version": "1.8.12",
+    "released": "2019-01-12",
+    "exposure_scripts": 43,
+    "text": "Fixed alpha so that it properly warns when it needs to reverse keys (incorrectly omitted this feature in the 1.8.8 release. Reported by Mohammad Latifi)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "psych@1.8.4#12",
+    "package": "psych",
+    "version": "1.8.4",
+    "released": "2018-05-06",
+    "exposure_scripts": 43,
+    "text": "Fixed a bug in alpha where it was not working from a correlation matrix with n.obs specified. (Reported by Nicholas Stefaniak).",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "psych@1.9.12#26",
+    "package": "psych",
+    "version": "1.9.12",
+    "released": "2019-12-20",
+    "exposure_scripts": 43,
+    "text": "Confidence intervals in ICC were incorrectly based upon alpha/2 instead of alpha. (reported by Wei Chen). Fixed.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "psych@2.0.8#13",
+    "package": "psych",
+    "version": "2.0.8",
+    "released": "2020-09-04",
+    "exposure_scripts": 43,
+    "text": "Found a fixed a bug in alpha where the imputation was not working quite right.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "psych@2.4.4#3",
+    "package": "psych",
+    "version": "2.4.4",
+    "released": "2024-04-01",
+    "exposure_scripts": 43,
+    "text": "Fix a bug in alpha when finding average R (need to use cor rather than cov2cor when treating missing data)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "psych@2.4.4#42",
+    "package": "psych",
+    "version": "2.4.4",
+    "released": "2024-04-01",
+    "exposure_scripts": 43,
+    "text": "Finally fixed bug in alpha where it finds R from cov2cor instead of directly (reported by Karl Ove Hufthammer )",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "xts@0.11-1#0",
+    "package": "xts",
+    "version": "0.11-1",
+    "released": "2018-09-12",
+    "exposure_scripts": 39,
+    "text": "Fix regression in .xts() that caused 'tclass' argument/attribute to be incorrectly set to POSIXct regardless of user-provided value. Thanks to @Eluvias for the report and Tom Andrews for the PR. ([#249](https://github.com/joshuaulrich/xts/issues/249), [#250](https://github.com/joshuaulrich/xts/pull/250))",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "xts@0.10-0#13",
+    "package": "xts",
+    "version": "0.10-0",
+    "released": "2017-07-07",
+    "exposure_scripts": 38,
+    "text": "Fixed a bug in endpoints() that caused incorrect results if the index was less than the epoch ([#144](https://github.com/joshuaulrich/xts/issues/144)).",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "xts@0.10-0#25",
+    "package": "xts",
+    "version": "0.10-0",
+    "released": "2017-07-07",
+    "exposure_scripts": 38,
+    "text": "Fixed bug in to.period() that errored when name=NULL ([#2](https://github.com/joshuaulrich/xts/issues/2)).",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "xts@0.10-0#5",
+    "package": "xts",
+    "version": "0.10-0",
+    "released": "2017-07-07",
+    "exposure_scripts": 38,
+    "text": "Fixed bug in endpoints() when called on sparse data that have the same month and day, but different years ([#169](https://github.com/joshuaulrich/xts/issues/169)).",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "xts@0.10-1#10",
+    "package": "xts",
+    "version": "0.10-1",
+    "released": "2017-12-20",
+    "exposure_scripts": 38,
+    "text": "Fixed bug in endpoints() due to sub-second representation error via using integer division (%/%) with non- integer arguments ([#202](https://github.com/joshuaulrich/xts/issues/202)).",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "xts@0.9-4#1",
+    "package": "xts",
+    "version": "0.9-4",
+    "released": "2013-06-09",
+    "exposure_scripts": 38,
+    "text": "Fixed to.period() bug when 'indexAt' is \"firstof\" or \"lastof\". (bug [#15](https://github.com/joshuaulrich/xts/issues/15), patch [#35](https://github.com/joshuaulrich/xts/issues/35), thanks to Garrett See)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "MatchIt@4.1.0#6",
+    "package": "MatchIt",
+    "version": "4.1.0",
+    "released": "2020-12-15",
+    "exposure_scripts": 37,
+    "text": "Fixed a bug when no argument was supplied to `data` in `matchit()`.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "MatchIt@4.3.2#0",
+    "package": "MatchIt",
+    "version": "4.3.2",
+    "released": "2021-11-23",
+    "exposure_scripts": 37,
+    "text": "Fixed a bug where the `q.cut` component of the `matchit` object when `method = \"subclass\"` was not included. Now it is. Thanks to @aldencabajar. (#92)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "MatchIt@4.4.0#7",
+    "package": "MatchIt",
+    "version": "4.4.0",
+    "released": "2022-05-18",
+    "exposure_scripts": 37,
+    "text": "Fixed a bug when using `matchit()` with `method = \"nearest\"`, `ratio` greater than 1, and `reuse.max` specified. The bug allowed a previously matched control unit to be matched to the same treatment unit, thereby essentially ignoring the `ratio` argument. It now works as intended.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "MatchIt@4.4.0#8",
+    "package": "MatchIt",
+    "version": "4.4.0",
+    "released": "2022-05-18",
+    "exposure_scripts": 37,
+    "text": "Fixed a bug in `matchit()` with `method = \"nearest\"` when `distance` was supplied as a matrix and `Inf` values were present.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "MatchIt@4.5.0#8",
+    "package": "MatchIt",
+    "version": "4.5.0",
+    "released": "2022-11-16",
+    "exposure_scripts": 37,
+    "text": "Fixed a bug when using `matchit()` with `method = \"cem\"`, `k2k = TRUE`, and `k2k.method = NULL`. Thanks to Florian B. Mayr.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "MatchIt@4.7.2#0",
+    "package": "MatchIt",
+    "version": "4.7.2",
+    "released": "2025-05-30",
+    "exposure_scripts": 37,
+    "text": "Fixed a bug where including an irrelevant argument to `matchit()` would yield the spurious error \"invalid 'pos' argument\". Thanks to @raffaem. (#219)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "xts@0.10-0#14",
+    "package": "xts",
+    "version": "0.10-0",
+    "released": "2017-07-07",
+    "exposure_scripts": 37,
+    "text": "Fixed a bug that caused diff.xts() on a logical xts object to return an object with a POSIXct index.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "xts@0.10-0#26",
+    "package": "xts",
+    "version": "0.10-0",
+    "released": "2017-07-07",
+    "exposure_scripts": 37,
+    "text": "Fixed bug in `.index*` functions that did not account for timezones ([#3](https://github.com/joshuaulrich/xts/issues/3)).",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "xts@0.10-0#6",
+    "package": "xts",
+    "version": "0.10-0",
+    "released": "2017-07-07",
+    "exposure_scripts": 37,
+    "text": "Fixed bug in [.xts did not do the same checks on logical xts objects as it does for all other data types ([#163](https://github.com/joshuaulrich/xts/issues/163)).",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "xts@0.11-1#1",
+    "package": "xts",
+    "version": "0.11-1",
+    "released": "2018-09-12",
+    "exposure_scripts": 37,
+    "text": "Fix performance regression when xts object is subset by a date-time vector. Thanks to Tom Andrews for the report, and the PR to fix the bug in my patch. ([#251](https://github.com/joshuaulrich/xts/issues/251), [#263](https://github.com/joshuaulrich/xts/issues/263), [#264](https://github.com/joshuaulrich/xts/pull/264))",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "xts@0.11-1#4",
+    "package": "xts",
+    "version": "0.11-1",
+    "released": "2018-09-12",
+    "exposure_scripts": 37,
+    "text": "Add ability to use \"quarters\" to specify tick/grid mark locations on plots. This ran but produced an incorrect result in 0.10-2 and threw an error in 0.11-0. Thanks to Marc Weibel for the report. ([#256](https://github.com/joshuaulrich/xts/issues/256))",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "xts@0.12.1#6",
+    "package": "xts",
+    "version": "0.12.1",
+    "released": "2020-09-09",
+    "exposure_scripts": 37,
+    "text": "Claymore Marshall added many examples of time-of-day subsetting to ?subset.xts. He also fixed a bug in time-of-day subsetting where subsetting by hour only returned wrong results. ([#304](https://github.com/joshuaulrich/xts/issues/304), [#326](https://github.com/joshuaulrich/xts/issues/326), [#328](https://github.com/joshuaulrich/xts/pull/328))",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "xts@0.8-8#2",
+    "package": "xts",
+    "version": "0.8-8",
+    "released": "2012-11-06",
+    "exposure_scripts": 37,
+    "text": "Fixed bug in xts() that dropped dims when 'x' is a 1-column matrix or data.frame.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "zoo@1.2-0#4",
+    "package": "zoo",
+    "version": "1.2-0",
+    "released": "2006-08-18",
+    "exposure_scripts": 35,
+    "text": "fixed a bug in zoo() when ordered factors are supplied (\"ordered\" class was dropped)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "zoo@1.7-13#0",
+    "package": "zoo",
+    "version": "1.7-13",
+    "released": "2016-05-03",
+    "exposure_scripts": 35,
+    "text": "The window() method erroneously dropped the dimension in case of 1-column zoo series. Fixed now.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "zoo@1.8-6#0",
+    "package": "zoo",
+    "version": "1.8-6",
+    "released": "2019-05-28",
+    "exposure_scripts": 35,
+    "text": "Adding a zero-width zoo series via $<- to an existing zoo series erroneously changed the last column name. This has been fixed now. (Prompted by https://github.com/joshuaulrich/xts/issues/45)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "lfe@2.5#3",
+    "package": "lfe",
+    "version": "2.5",
+    "released": null,
+    "exposure_scripts": 31,
+    "text": "Fixed a bug in btrap which could yield wrong bootstrapped standard errors in getfe.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "sf@0.5-3#9",
+    "package": "sf",
+    "version": "0.5-3",
+    "released": "2017-07-30",
+    "exposure_scripts": 31,
+    "text": "correct bug in `st_union`, `st_difference` and `st_sym_difference` introduced in 0.5-2; #431",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "Hmisc@4.1-0#13",
+    "package": "Hmisc",
+    "version": "4.1-0",
+    "released": "2017-12-19",
+    "exposure_scripts": 26,
+    "text": "describe: fixed bug in html.describe when there is only one variable",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "psych@1.4.2#10",
+    "package": "psych",
+    "version": "1.4.2",
+    "released": "2014-02-03",
+    "exposure_scripts": 26,
+    "text": "Fixed the se calculation in describe which had been incorrectly changed in version 1.4.1. Thanks to Terry Jorgensen and others for reporting this.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "psych@2.2.3#21",
+    "package": "psych",
+    "version": "2.2.3",
+    "released": "2022-03-19",
+    "exposure_scripts": 26,
+    "text": "Fixed a bug in describe for single variables from data frames (reported by Mike Linacre)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "psych@2.3.9#11",
+    "package": "psych",
+    "version": "2.3.9",
+    "released": "2023-09-26",
+    "exposure_scripts": 26,
+    "text": "Fixed a very obscure bug in describe where it would not return variable labels for vectors if asking for quantiles.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "questionr@0.6.3#2",
+    "package": "questionr",
+    "version": "0.6.3",
+    "released": "2018-07-17",
+    "exposure_scripts": 26,
+    "text": "Fix incorrect NAs percentage in `describe` (thanks @gdutz)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "xts@0.8-8#1",
+    "package": "xts",
+    "version": "0.8-8",
+    "released": "2012-11-06",
+    "exposure_scripts": 25,
+    "text": "Fixed bug in reclass() when 'tzone' of object is different than system TZ.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "Matrix@1.5-0#24",
+    "package": "Matrix",
+    "version": "1.5-0",
+    "released": "2022-09-10",
+    "exposure_scripts": 19,
+    "text": "triu(x, k) and tril(x, k) incorrectly required k <= m (instead of k <= n), for m-by-n sparse x. They now accept all k from -m to n, with fewer errors in the m < n case.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "randomForest@4.5-33#0",
+    "package": "randomForest",
+    "version": "4.5-33",
+    "released": "2009-10-18",
+    "exposure_scripts": 19,
+    "text": "Fixed a _long standing_ bug (existed since the original Fortran) in randomForest(): If importance=TRUE and proximity=TRUE, the proximity matrix returned is incorrect. Those computed with importance=FALSE, or with predict.randomForest(..., proximity=TRUE) are correct.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@4.3.0#12",
+    "package": "cobalt",
+    "version": "4.3.0",
+    "released": "2021-02-20",
+    "exposure_scripts": 18,
+    "text": "Fixed a bug in `love.plot()` where samples were not always displayed in the right order. Now they are displayed in the same order they are in `bal.tab()`.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@4.6.0#10",
+    "package": "cobalt",
+    "version": "4.6.0",
+    "released": "2025-04-15",
+    "exposure_scripts": 18,
+    "text": "Fixed a bug where supplying `var.names` to `love.plot()` with a modified `bal.tab` input would throw an error. (#89)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "glmnet@1.5#1",
+    "package": "glmnet",
+    "version": "1.5",
+    "released": "2010-11-04",
+    "exposure_scripts": 18,
+    "text": "`glmnet` (`lambda.min`) : changed value to 0.01 if `nobs < nvars` (`HessianExact`) : changed the sense (it was wrong), (`lambda.min`): renamed it `lambda.min.ratio`. This allows it to be called `lambda.min` in a call though",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@3.2.2#0",
+    "package": "cobalt",
+    "version": "3.2.2",
+    "released": "2018-03-13",
+    "exposure_scripts": 17,
+    "text": "Fixed a bug when using `get.w()` (and `bal.tab()`) with `mnps` objects from `twang` with only one stop method.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "randomForest@4.5-13#0",
+    "package": "randomForest",
+    "version": "4.5-13",
+    "released": null,
+    "exposure_scripts": 17,
+    "text": "Fixed a bug in randomForest() when biasCorr=TRUE for regression.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "randomForest@4.5-25#0",
+    "package": "randomForest",
+    "version": "4.5-25",
+    "released": "2008-04-21",
+    "exposure_scripts": 17,
+    "text": "In regression, the out-of-bag estimate of MSE and R-squared for the first few trees (for which not all observations have been OOB yet), were computed wrong, leading to gross over-estimates of MSEs for the first few trees. This did not affect the final MSE and R-squared for the whole forest; i.e., the first few elements of the `mse' component (and thus the corresponding elements in `rsq') in the randomForest object are wrong, but others are correct. (Thanks to Ulrike Gromping for pointing out this problem, as well as the one fixed in 4.5-24.)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "randomForest@4.5-9#0",
+    "package": "randomForest",
+    "version": "4.5-9",
+    "released": "2005-05-02",
+    "exposure_scripts": 17,
+    "text": "Fixed a bug with unsupervised randomForest(..., keep.forest=TRUE).",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "randomForest@4.6-8#2",
+    "package": "randomForest",
+    "version": "4.6-8",
+    "released": null,
+    "exposure_scripts": 17,
+    "text": "There was a long standing bug in randomForest(..., proximity=TRUE, oob.prox=FALSE) in regression mode. (Thanks to Stefano Romano for the report.)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "Hmisc@4.0-1#9",
+    "package": "Hmisc",
+    "version": "4.0-1",
+    "released": "2016-12-08",
+    "exposure_scripts": 16,
+    "text": "upData: fixed bug when converting existing variable to factor; was not recognizing new storage model and tried to run floor()",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "Hmisc@4.7-1#13",
+    "package": "Hmisc",
+    "version": "4.7-1",
+    "released": "2022-08-15",
+    "exposure_scripts": 16,
+    "text": "fit.mult.impute: fixed bug when using mice. Thanks: Micha\u0142 Krassowski https://github.com/harrelfe/Hmisc/issues/152",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "mice@3.17.0#22",
+    "package": "mice",
+    "version": "3.17.0",
+    "released": "2024-11-27",
+    "exposure_scripts": 16,
+    "text": "Patches a bug in `complete()` that auto-repeated imputed values into cells that should NOT be imputed (occurred as a special case of `rbind()`, where the first set of rows was imputed and the second was not).",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@3.0.0#5",
+    "package": "cobalt",
+    "version": "3.0.0",
+    "released": "2017-10-16",
+    "exposure_scripts": 15,
+    "text": "Fixed bug when using `bal.tab()` with multiply imputed data without adjustment. Fixed bug when using `s.weights` with the `formula` method of `bal.tab()`.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@3.2.2#1",
+    "package": "cobalt",
+    "version": "3.2.2",
+    "released": "2018-03-13",
+    "exposure_scripts": 15,
+    "text": "Fixed a bug when using `bal.tab()` with `twang` objects that contained missing covariate values.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@3.2.2#2",
+    "package": "cobalt",
+    "version": "3.2.2",
+    "released": "2018-03-13",
+    "exposure_scripts": 15,
+    "text": "Fixed a bug when using `int = TRUE` in `bal.tab()` with few covariates.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@3.4.1#0",
+    "package": "cobalt",
+    "version": "3.4.1",
+    "released": "2018-09-15",
+    "exposure_scripts": 15,
+    "text": "Fixed a bug that would occur when `imabalanced.only = TRUE` in `bal.tab()` but all variables were balanced.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@3.4.1#3",
+    "package": "cobalt",
+    "version": "3.4.1",
+    "released": "2018-09-15",
+    "exposure_scripts": 15,
+    "text": "Fixed a bug that would occur when a distance measure was to be assessed with `bal.tab()` and there were missing values in the covariates (thanks to Laura Helmkamp).",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@3.4.1#4",
+    "package": "cobalt",
+    "version": "3.4.1",
+    "released": "2018-09-15",
+    "exposure_scripts": 15,
+    "text": "Fixed a bug that would occur when `estimand` was supplied by the user when using the `default` method of `bal.tab()`.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@4.1.0#13",
+    "package": "cobalt",
+    "version": "4.1.0",
+    "released": "2020-04-11",
+    "exposure_scripts": 15,
+    "text": "Fixed a bug when using the default `bal.tab()` method with objects containing longitudinal treatments.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@4.1.0#14",
+    "package": "cobalt",
+    "version": "4.1.0",
+    "released": "2020-04-11",
+    "exposure_scripts": 15,
+    "text": "Fixed a bug when using `bal.tab()` with continuous treatments and clusters.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@4.1.0#16",
+    "package": "cobalt",
+    "version": "4.1.0",
+    "released": "2020-04-11",
+    "exposure_scripts": 15,
+    "text": "Fixed a bug when using `bal.tab()` with longitudinal treatments and multiple sets of weights.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@4.2.0#8",
+    "package": "cobalt",
+    "version": "4.2.0",
+    "released": "2020-06-04",
+    "exposure_scripts": 15,
+    "text": "Fixed bug when printing `bal.tab` objects with continuous treatments.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@4.3.2#4",
+    "package": "cobalt",
+    "version": "4.3.2",
+    "released": "2022-01-19",
+    "exposure_scripts": 15,
+    "text": "Fixed a bug that would occur when using `cobalt` functions without attaching the package (e.g., `cobalt::bal.tab()`). (#53)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@4.4.1#2",
+    "package": "cobalt",
+    "version": "4.4.1",
+    "released": "2022-11-03",
+    "exposure_scripts": 15,
+    "text": "Fixed a bug with the default method of `bal.tab()` which was ignoring components of the supplied object.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@4.5.1#7",
+    "package": "cobalt",
+    "version": "4.5.1",
+    "released": "2023-04-28",
+    "exposure_scripts": 15,
+    "text": "Fixed a bug when using `bal.tab()` with `stat = \"spearman.correlations\"`.",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@4.5.2#1",
+    "package": "cobalt",
+    "version": "4.5.2",
+    "released": "2023-11-20",
+    "exposure_scripts": 15,
+    "text": "Fixed a bug when using `bal.tab()` with `mnps` objects from `twang`. Thanks to @sherwinkuah. (#74)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "cobalt@4.5.3#1",
+    "package": "cobalt",
+    "version": "4.5.3",
+    "released": "2024-01-10",
+    "exposure_scripts": 15,
+    "text": "Fixed a bug when using `bal.tab()` with the `cluster` argument supplied with the `caret` package loaded. Thanks to @BorgeJorge. (#77)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "psych@1.8.3#58",
+    "package": "psych",
+    "version": "1.8.3",
+    "released": "2018-03-21",
+    "exposure_scripts": 15,
+    "text": "Fixed a print error in mediate for the a path (probabilities were displaying incorrectly.)",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "psych@1.8.9#37",
+    "package": "psych",
+    "version": "1.8.9",
+    "released": "2018-10-04",
+    "exposure_scripts": 15,
+    "text": "Fixed bug in mediate diagram for 2 DVs, one IV",
+    "rule_baseline": "RESULT_CHANGING"
+  },
+  {
+    "entry_id": "psych@2.0.12#24",
+    "package": "psych",
+    "version": "2.0.12",
+    "released": "2020-12-16",
+    "exposure_scripts": 15,
+    "text": "Seems to be something wrong in mediate df 1 IV (fixed?) )",
+    "rule_baseline": "RESULT_CHANGING"
+  }
+]

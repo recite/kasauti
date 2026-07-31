@@ -24,6 +24,7 @@ from __future__ import annotations
 import json
 import os
 import time
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
@@ -296,8 +297,11 @@ def classify_entries(
             output_format=Classification,
             messages=[{"role": "user", "content": entry_prompt(entry)}],
         )
-        out[entry.entry_id] = response.parsed_output
-        cache.put(entry.entry_id, response.parsed_output)
+        parsed = response.parsed_output
+        if parsed is None:
+            continue
+        out[entry.entry_id] = parsed
+        cache.put(entry.entry_id, parsed)
     cache.save()
     return out
 
@@ -420,10 +424,11 @@ def classify_by_rules(entry: Entry) -> Classification:
     from kasauti.archaeology.link import INERT, RESULT_CHANGING
 
     match = RESULT_CHANGING.search(entry.text)
-    if match and not INERT.search(entry.text):
+    inert = INERT.search(entry.text)
+    if match and not inert:
         category, evidence = "RESULT_CHANGING", match.group(0)
-    elif INERT.search(entry.text):
-        category, evidence = "DOC", INERT.search(entry.text).group(0)
+    elif inert:
+        category, evidence = "DOC", inert.group(0)
     else:
         category, evidence = "UNCLEAR", ""
 
@@ -514,7 +519,30 @@ def ingest_reviewed(
     return merged, errors
 
 
-def agreement(entries: list[Entry], cache: ClassificationCache) -> dict[str, object]:
+@dataclass
+class Agreement:
+    """How the rule baseline compares with the readings.
+
+    Attributes:
+        judged: Entries read by hand.
+        rules_agreed: Entries where the rules reached the same category.
+        rules_disagreed: Entries where they did not.
+        categories: Read category to count.
+        silent: Whether-silent to count.
+        moves_published_numbers: Entries that could move a published number.
+        confusion: `"rule->read"` to count, most common first.
+    """
+
+    judged: int = 0
+    rules_agreed: int = 0
+    rules_disagreed: int = 0
+    categories: dict[str, int] = field(default_factory=dict)
+    silent: dict[bool, int] = field(default_factory=dict)
+    moves_published_numbers: int = 0
+    confusion: dict[str, int] = field(default_factory=dict)
+
+
+def agreement(entries: list[Entry], cache: ClassificationCache) -> Agreement:
     """Compare the rule baseline against the read classifications.
 
     This is the validation the plan originally wanted a hand-coded gold set for.
@@ -547,12 +575,12 @@ def agreement(entries: list[Entry], cache: ClassificationCache) -> dict[str, obj
             moves += 1
 
     agreed = sum(n for (rule, read), n in confusion.items() if rule == read)
-    return {
-        "judged": judged,
-        "rules_agreed": agreed,
-        "rules_disagreed": judged - agreed,
-        "categories": dict(categories),
-        "silent": dict(silent_counts),
-        "moves_published_numbers": moves,
-        "confusion": {f"{r}->{d}": n for (r, d), n in confusion.most_common()},
-    }
+    return Agreement(
+        judged=judged,
+        rules_agreed=agreed,
+        rules_disagreed=judged - agreed,
+        categories=dict(categories),
+        silent=dict(silent_counts),
+        moves_published_numbers=moves,
+        confusion={f"{r}->{d}": n for (r, d), n in confusion.most_common()},
+    )

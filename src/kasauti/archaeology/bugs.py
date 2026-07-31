@@ -211,6 +211,24 @@ class Bug:
         """
         return (SEVERITY_WEIGHT.get(self.severity, 0), self.exposure.narrowed or 0)
 
+    @property
+    def path(self) -> Path:
+        """Where the record lives on disk.
+
+        `directory` is optional because a record can be built in memory, but
+        every pipeline stage writes beside a record it loaded, so those stages
+        need the guarantee rather than the option.
+
+        Returns:
+            The record's directory.
+
+        Raises:
+            ValueError: If the record was not loaded from disk.
+        """
+        if self.directory is None:
+            raise ValueError(f"{self.id} was not loaded from disk, so has no path")
+        return self.directory
+
     def has_case(self) -> bool:
         """Whether a verification case sits beside this record.
 

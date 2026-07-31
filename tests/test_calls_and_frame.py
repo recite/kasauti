@@ -1,5 +1,7 @@
 """Call-site extraction and sampling-frame construction."""
 
+import json
+
 import pytest
 
 from kasauti.archaeology.calls import CallSite, extract_python, extract_r
@@ -10,11 +12,44 @@ from kasauti.archaeology.frame import (
     build_frame,
 )
 
+#: Enough of each package's real export list to exercise attribution, written
+#: into a synthetic harvest cache so the frame tests need neither the network nor
+#: an R installation carrying these packages.
+FAKE_EXPORTS = {
+    "plm": ["index", "plm", "vcovHC"],
+    "MASS": ["select", "glm.nb", "rlm"],
+    "stats": ["lm", "glm", "summary", "t.test"],
+    "sandwich": ["vcovHC", "vcovCL", "NeweyWest"],
+    "empty": [],
+}
+
 
 def write(tmp_path, name, source):
     path = tmp_path / name
     path.write_text(source)
     return path
+
+
+@pytest.fixture
+def cache_root(tmp_path):
+    """A harvest cache holding only export lists, which is all the frame reads."""
+    root = tmp_path / "cache"
+    (root / "cran").mkdir(parents=True)
+    for package, exports in FAKE_EXPORTS.items():
+        (root / "cran" / f"{package}.json").write_text(
+            json.dumps(
+                {
+                    "package": package,
+                    "ecosystem": "cran",
+                    "releases": [],
+                    "news_text": "",
+                    "news_source": "",
+                    "exports": exports,
+                    "errors": [],
+                }
+            )
+        )
+    return root
 
 
 class TestExtractPython:
@@ -117,54 +152,57 @@ class TestAttributePython:
 
 
 class TestBuildFrame:
-    def test_python_calls_are_not_attributed_via_r_exports(self):
+    def test_python_calls_are_not_attributed_via_r_exports(self, cache_root):
         # `index` is exported by plm. A pandas method called `index` must not be
         # counted as a plm call.
         sites = [CallSite("a.py", "index", "", 1, "Python")]
-        frame = build_frame(sites, {"Python": 1}, packages=["plm"])
+        frame = build_frame(sites, {"Python": 1}, cache_root, packages=["plm"])
         assert frame.rows == []
 
-    def test_shadowed_name_needs_a_matching_qualifier(self):
+    def test_shadowed_name_needs_a_matching_qualifier(self, cache_root):
         sites = [
             CallSite("a.R", "select", "", 1, "R"),
             CallSite("b.R", "select", "dplyr", 1, "R"),
             CallSite("c.R", "select", "MASS", 1, "R"),
         ]
-        frame = build_frame(sites, {"R": 3}, packages=["MASS"])
+        frame = build_frame(sites, {"R": 3}, cache_root, packages=["MASS"])
         (row,) = frame.rows
         assert row.fname == "select"
         assert row.scripts == 1  # only c.R, the one that said MASS::
         assert frame.shadow_dropped == 2
 
-    def test_counts_distinct_scripts_not_total_calls(self):
+    def test_counts_distinct_scripts_not_total_calls(self, cache_root):
         sites = [
             CallSite("a.R", "lm", "", 200, "R"),
             CallSite("b.R", "lm", "", 1, "R"),
         ]
-        (row,) = build_frame(sites, {"R": 2}, packages=["stats"]).rows
+        (row,) = build_frame(sites, {"R": 2}, cache_root, packages=["stats"]).rows
         assert row.scripts == 2
         assert row.calls == 201
         assert row.share == 1.0
 
-    def test_non_computing_names_are_excluded(self):
+    def test_non_computing_names_are_excluded(self, cache_root):
         sites = [CallSite("a.R", "summary", "", 1, "R")]
-        assert build_frame(sites, {"R": 1}, packages=["stats"]).rows == []
+        assert build_frame(sites, {"R": 1}, cache_root, packages=["stats"]).rows == []
 
-    def test_ambiguous_name_records_every_owner(self):
+    def test_ambiguous_name_records_every_owner(self, cache_root):
         sites = [CallSite("a.R", "vcovHC", "", 1, "R")]
-        (row,) = build_frame(sites, {"R": 1}, packages=["sandwich", "plm"]).rows
+        frame = build_frame(sites, {"R": 1}, cache_root, packages=["sandwich", "plm"])
+        (row,) = frame.rows
         assert row.ambiguous
         assert set(row.packages) == {"sandwich", "plm"}
 
-    def test_unattributed_names_are_reported_not_silently_dropped(self):
+    def test_unattributed_names_are_reported_not_silently_dropped(self, cache_root):
         sites = [CallSite("a.R", "ggplot", "", 1, "R")]
-        frame = build_frame(sites, {"R": 1}, packages=["stats"])
+        frame = build_frame(sites, {"R": 1}, cache_root, packages=["stats"])
         assert frame.rows == []
         assert ("ggplot", 1) in frame.unattributed_top
 
-    def test_reports_uninstalled_packages(self):
-        frame = build_frame([], {"R": 0}, packages=["stats", "definitelyNotAPackage"])
-        assert frame.uninstalled == ["definitelyNotAPackage"]
+    def test_reports_packages_whose_exports_did_not_resolve(self, cache_root):
+        # A package contributing nothing because its export list is empty must
+        # not be mistaken for a package nobody calls.
+        frame = build_frame([], {"R": 0}, cache_root, packages=["sandwich", "empty"])
+        assert frame.no_exports == ["empty"]
 
 
 def test_shadowed_and_non_computing_do_not_overlap():

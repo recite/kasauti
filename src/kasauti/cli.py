@@ -229,10 +229,10 @@ def bug_probe(bug_id: str, bugs_dir: Path, call_sites: Path) -> None:
     result = probe_exposure(
         record.functions,
         record.condition_probe,
-        load_call_index(call_sites, language=language),
+        load_call_index(call_sites, language=language)[0],
     )
 
-    write_exposure(result, record.directory / "exposure.csv")
+    write_exposure(result, record.path / "exposure.csv")
     record.exposure.scripts_calling_function = len(result.calling)
     record.exposure.scripts_meeting_probe = len(result.matching)
     write_bug(advance(record, "PROBED"))
@@ -280,7 +280,7 @@ def bug_papers(bug_id: str, bugs_dir: Path, datasets_dir: Path, enrich: bool) ->
     )
 
     record = load_bug(Path(bugs_dir) / bug_id, Path(bugs_dir))
-    exposure_csv = record.directory / "exposure.csv"
+    exposure_csv = record.path / "exposure.csv"
     if not exposure_csv.exists():
         click.echo(f"{bug_id}: run `kasauti bug probe {bug_id}` first", err=True)
         sys.exit(1)
@@ -304,7 +304,7 @@ def bug_papers(bug_id: str, bugs_dir: Path, datasets_dir: Path, enrich: bool) ->
     in_window = linkage.in_window(record.fixed_on, record.introduced_on)
     write_papers(
         linkage,
-        record.directory / "papers.csv",
+        record.path / "papers.csv",
         record.fixed_on,
         record.introduced_on,
     )
@@ -331,53 +331,233 @@ def bug_papers(bug_id: str, bugs_dir: Path, datasets_dir: Path, enrich: bool) ->
         click.echo(f"  {len(linkage.undated())} archive(s) with no publication date")
 
 
-#: Packages whose changelogs feed the classification queue. R only for now: the
-#: Python funnel has no export restriction, so its candidates are noisier and
-#: mixing two different-quality samples into one rate makes the rate meaningless.
-CLASSIFY_PACKAGES = [
-    "survival",
-    "sandwich",
-    "lmtest",
-    "car",
-    "MASS",
-    "mgcv",
-    "lme4",
-    "plm",
-    "estimatr",
-    "fixest",
-    "quantreg",
-    "AER",
-    "metafor",
-    "nlme",
-    "multiwayvcov",
+#: The selected packages, written by `kasauti frame packages` and checked in.
+PACKAGES_CSV = ROOT / "data/frame/packages.csv"
+
+#: Base R packages, which have no CRAN tarball and so no changelog to mine, but
+#: whose exports the frame still needs in order to attribute `lm` and `glm`.
+BASE_IN_FRAME = ["stats"]
+
+#: Every package shipped with R. A CRAN package that exports one of these names
+#: is masking it, and a bare call is almost certainly base R's -- `Matrix`
+#: exports `diag`, `head`, `crossprod`, and `rowMeans`, and a script calling
+#: `diag()` on an ordinary matrix means none of them.
+SHADOWING_BASE = [
+    "base",
+    "stats",
+    "utils",
+    "methods",
+    "graphics",
+    "grDevices",
+    "tools",
 ]
 
 
-def _exposed_entries(cache_root: Path, call_sites: Path):
+def base_shadow() -> set[str]:
+    """Names base R exports, which a CRAN package may claim only when qualified.
+
+    Returns:
+        Every name exported by a package shipped with R.
+    """
+    from kasauti.archaeology.frame import base_exports
+
+    return set().union(*base_exports(SHADOWING_BASE).values())
+
+
+def classify_packages() -> list[str]:
+    """The packages whose changelogs feed the classification queue.
+
+    R only for now: the Python funnel has no export restriction, so its
+    candidates are noisier, and mixing two different-quality samples into one
+    rate makes the rate meaningless.
+
+    Returns:
+        Package names, most-used in the corpus first.
+    """
+    from kasauti.archaeology.taskviews import read_selection
+
+    return [s.package for s in read_selection(PACKAGES_CSV)]
+
+
+@main.group()
+def frame() -> None:
+    """Build the sampling frame: which packages, and which procedures."""
+
+
+@frame.command("packages")
+@click.option(
+    "--views",
+    "views_cache",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/taskviews.json",
+)
+@click.option(
+    "--usage",
+    "usage_csv",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/package_usage.csv",
+)
+@click.option("--out", type=click.Path(path_type=Path), default=PACKAGES_CSV)
+@click.option(
+    "--min-usage",
+    type=int,
+    default=10,
+    help="Corpus archives a package must appear in to qualify.",
+)
+def frame_packages(views_cache, usage_csv, out, min_usage) -> None:
+    """Select packages: CRAN Task Views intersected with corpus usage."""
+    from kasauti.archaeology.taskviews import (
+        INFERENTIAL_VIEWS,
+        NON_INFERENTIAL,
+        load_usage,
+        load_views,
+        select,
+        write_selection,
+    )
+
+    members = load_views(views_cache)
+    usage = load_usage(usage_csv)
+    selected = select(members, usage, minimum=min_usage)
+    write_selection(selected, out)
+
+    pool = {p for packages in members.values() for p in packages}
+    excluded = sorted(
+        p for p in pool if p in NON_INFERENTIAL and usage.get(p, 0) >= min_usage
+    )
+    click.echo(
+        f"{len(selected)} packages selected from {len(pool)} across "
+        f"{len(INFERENTIAL_VIEWS)} task views, at >= {min_usage} corpus archives"
+    )
+    click.echo(f"  excluded as non-inferential: {', '.join(excluded)}")
+    click.echo(f"  written to {out}")
+
+
+@frame.command("harvest")
+@click.option(
+    "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
+)
+@click.option("--refresh", is_flag=True, help="Re-fetch even if cached.")
+def frame_harvest(cache_root, refresh) -> None:
+    """Fetch every selected package's changelog, releases, and exports."""
+    from kasauti.archaeology.harvest import harvest
+    from kasauti.archaeology.parse import parse_news
+
+    packages = classify_packages() + BASE_IN_FRAME
+    no_news, no_exports = [], []
+    for index, package in enumerate(packages, start=1):
+        if package in BASE_IN_FRAME:
+            continue
+        got = harvest(package, "cran", Path(cache_root), refresh=refresh)
+        entries = len(parse_news(got).entries)
+        if not got.news_text:
+            no_news.append(package)
+        if not got.exports:
+            no_exports.append(package)
+        click.echo(
+            f"[{index:3d}/{len(packages)}] {package:20s} "
+            f"{got.news_bytes:8d} bytes  {entries:5d} entries  "
+            f"{len(got.exports):5d} exports"
+        )
+
+    click.echo(f"\n{len(packages) - 1} CRAN packages harvested")
+    if no_news:
+        click.echo(f"  no changelog ({len(no_news)}): {', '.join(no_news)}")
+    if no_exports:
+        click.echo(f"  no exports ({len(no_exports)}): {', '.join(no_exports)}")
+
+
+@frame.command("build")
+@click.option(
+    "--call-sites",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/call_sites.csv",
+)
+@click.option(
+    "--extraction",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/extraction_report.json",
+)
+@click.option(
+    "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
+)
+@click.option(
+    "--out-csv",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/sampling_frame.csv",
+)
+@click.option(
+    "--out-md", type=click.Path(path_type=Path), default=ROOT / "docs/sampling-frame.md"
+)
+def frame_build(call_sites, extraction, cache_root, out_csv, out_md) -> None:
+    """Rank the procedures the corpus calls, and write the frame."""
+    import json as _json
+
+    from kasauti.archaeology.calls import read_call_sites
+    from kasauti.archaeology.frame import build_frame, render_report, write_frame
+
+    coverage = _json.loads(Path(extraction).read_text())
+    scripts_parsed = {lang: stats["files_parsed"] for lang, stats in coverage.items()}
+    built = build_frame(
+        read_call_sites(call_sites),
+        scripts_parsed,
+        Path(cache_root),
+        packages=classify_packages() + BASE_IN_FRAME,
+    )
+
+    write_frame(built, Path(out_csv))
+    Path(out_md).parent.mkdir(parents=True, exist_ok=True)
+    Path(out_md).write_text(render_report(built, coverage))
+    click.echo(
+        f"{len(built.rows)} procedures across {len(built.packages)} packages; "
+        f"wrote {out_csv} and {out_md}"
+    )
+    if built.no_exports:
+        click.echo(f"  no exports resolved: {', '.join(built.no_exports)}")
+
+
+def _exposed_entries(
+    cache_root: Path, call_sites: Path, packages: list[str] | None = None
+):
     """Load the entries that have corpus exposure, with their exposure counts.
 
     Args:
         cache_root: Harvest cache directory.
         call_sites: Extracted call sites CSV.
+        packages: Packages to mine. Defaults to the selected frame.
 
     Returns:
-        A `(entries, exposure)` pair, where exposure maps entry id to the number
-        of corpus scripts calling an affected function.
+        An `(entries, exposure, per_package, funnel)` tuple. `exposure` maps
+        entry id to the number of corpus scripts calling an affected function;
+        `per_package` maps package to `(entries_parsed, entries_exposed)`, so a
+        package that contributes nothing is visible rather than assumed clean.
     """
     from kasauti.archaeology.harvest import harvest
     from kasauti.archaeology.link import build_bugs, load_call_index, load_exports
     from kasauti.archaeology.parse import parse_news
 
-    entries = []
-    for package in CLASSIFY_PACKAGES:
-        entries += parse_news(harvest(package, "cran", cache_root)).entries
+    packages = packages or classify_packages()
+    entries, parsed = [], {}
+    for package in packages:
+        found = parse_news(harvest(package, "cran", cache_root)).entries
+        parsed[package] = len(found)
+        entries += found
 
-    bugs, _ = build_bugs(
-        entries, load_exports(CLASSIFY_PACKAGES), load_call_index(call_sites)
+    index, qualified = load_call_index(call_sites)
+    bugs, funnel = build_bugs(
+        entries,
+        load_exports(packages + BASE_IN_FRAME, cache_root),
+        index,
+        qualified,
+        shadowed=base_shadow(),
     )
     exposure = {b.entry.entry_id: b.total_exposed for b in bugs}
     exposed = [b.entry for b in bugs]
-    return exposed, exposure
+
+    seen: dict[str, int] = {}
+    for entry in exposed:
+        seen[entry.package] = seen.get(entry.package, 0) + 1
+    per_package = {p: (parsed[p], seen.get(p, 0)) for p in packages}
+    return exposed, exposure, per_package, funnel
 
 
 @main.group()
@@ -420,7 +600,7 @@ def classify_pending(limit, out, cache_file, cache_root, call_sites) -> None:
 
     from kasauti.archaeology.classify import ClassificationCache, pending_payload
 
-    entries, exposure = _exposed_entries(cache_root, call_sites)
+    entries, exposure, _, _ = _exposed_entries(cache_root, call_sites)
     store = ClassificationCache(cache_file)
     payload = pending_payload(entries, store, exposure, limit)
 
@@ -497,21 +677,29 @@ def classify_report(cache_file, cache_root, call_sites, out) -> None:
     """
     from kasauti.archaeology.classify import ClassificationCache, agreement
 
-    entries, _ = _exposed_entries(cache_root, call_sites)
+    entries, exposure, per_package, _ = _exposed_entries(cache_root, call_sites)
     store = ClassificationCache(cache_file)
     stats = agreement(entries, store)
 
-    judged = stats["judged"]
+    judged = stats.judged
     if not judged:
         click.echo(
             "nothing classified yet; run `kasauti classify pending` first", err=True
         )
         sys.exit(1)
 
+    # Every entry is read by hand, so the queue is finite and the tail is real.
+    # An unjudged tail is acceptable; an unreported one is not, because a
+    # shortlist drawn from a partial reading looks exactly like a complete one.
+    unjudged = [e for e in entries if not store.get(e.entry_id)]
+    tail_below = (
+        max(exposure.get(e.entry_id, 0) for e in unjudged) if unjudged else None
+    )
+
     lines = [
         "# Classification of exposed changelog entries",
         "",
-        f"{len(entries)} entries from {len(CLASSIFY_PACKAGES)} R packages survive the",
+        f"{len(entries)} entries from {len(per_package)} R packages survive the",
         "funnel with corpus exposure. Of those, "
         f"**{judged}** have been read and judged.",
         "",
@@ -519,12 +707,28 @@ def classify_report(cache_file, cache_root, call_sites, out) -> None:
         "noisier; mixing two different-quality samples into one rate would make the",
         "rate meaningless.",
         "",
+        "## Coverage",
+        "",
+        f"Entries are queued in descending corpus exposure, so the {judged} judged",
+        "are the most-exposed ones. What is left unread is the tail:",
+        "",
+        f"* judged: **{judged}** of {len(entries)} ({judged / len(entries):.0%})",
+        f"* unjudged: **{len(unjudged)}**"
+        + (
+            f", none exposed to more than **{tail_below}** corpus scripts"
+            if tail_below is not None
+            else ""
+        ),
+        "",
+        "Every finding below is drawn from the judged set only. A bug sitting in",
+        "the unjudged tail has not been ruled out; it has not been looked at.",
+        "",
         "## What the reading changed",
         "",
         "The regular-expression layer agreed with the reading on "
-        f"**{stats['rules_agreed']}**",
-        f"of {judged} entries and disagreed on **{stats['rules_disagreed']}** "
-        f"({stats['rules_disagreed'] / judged:.0%}).",
+        f"**{stats.rules_agreed}**",
+        f"of {judged} entries and disagreed on **{stats.rules_disagreed}** "
+        f"({stats.rules_disagreed / judged:.0%}).",
         "",
         "This is the validation a hand-coded gold set was going to provide. The rules",
         "are the baseline, the reading is the reference, and the disagreement rate is",
@@ -533,7 +737,7 @@ def classify_report(cache_file, cache_root, call_sites, out) -> None:
         "| rules said | reading said | n |",
         "|---|---|---|",
     ]
-    for pair, count in stats["confusion"].items():
+    for pair, count in stats.confusion.items():
         rule, read = pair.split("->")
         mark = "" if rule == read else " **"
         lines.append(f"| {rule} | {read}{mark} | {count} |")
@@ -545,16 +749,16 @@ def classify_report(cache_file, cache_root, call_sites, out) -> None:
         "| category | n |",
         "|---|---|",
     ]
-    for name, count in sorted(stats["categories"].items(), key=lambda kv: -kv[1]):
+    for name, count in sorted(stats.categories.items(), key=lambda kv: -kv[1]):
         lines.append(f"| {name} | {count} |")
 
-    silent = stats["silent"]
+    silent = stats.silent
     lines += [
         "",
         f"Silent (quietly wrong, no error or warning): "
         f"**{silent.get(True, 0)}**; loud: {silent.get(False, 0)}.",
         "",
-        f"**{stats['moves_published_numbers']}** entries could have moved a number "
+        f"**{stats.moves_published_numbers}** entries could have moved a number "
         "in a published table -- silent result-changing bugs, plus behaviour",
         "changes, which move results whether or not anyone calls them defects.",
         "",
@@ -587,9 +791,34 @@ def classify_report(cache_file, cache_root, call_sites, out) -> None:
         )
     lines.append("")
 
+    # Packages that yielded nothing are the point of this table. Absence of
+    # candidates is either a package that admits little or a package the harvest
+    # could not read, and the two are indistinguishable unless both are listed.
+    silent_packages = sorted(p for p, (_, found) in per_package.items() if not found)
+    lines += [
+        "## Yield by package",
+        "",
+        "Changelog candor varies enormously, and a package with no candidates has",
+        "not been shown to be correct. Both columns travel together for that",
+        "reason.",
+        "",
+        "| package | entries parsed | exposed candidates |",
+        "|---|---|---|",
+    ]
+    for package, (parsed, exposed_n) in sorted(
+        per_package.items(), key=lambda kv: (-kv[1][1], kv[0])
+    ):
+        lines.append(f"| `{package}` | {parsed} | {exposed_n} |")
+    lines += [
+        "",
+        f"**{len(silent_packages)}** of {len(per_package)} packages yielded no "
+        "exposed candidate at all.",
+        "",
+    ]
+
     Path(out).parent.mkdir(parents=True, exist_ok=True)
     Path(out).write_text("\n".join(lines) + "\n")
-    disagreed = stats["rules_disagreed"]
+    disagreed = stats.rules_disagreed
     click.echo(
         f"{judged}/{len(entries)} judged; rules disagreed on {disagreed} "
         f"({disagreed / judged:.0%}); wrote {out}"
@@ -635,23 +864,21 @@ def dashboard(out, bugs_dir, cache_file, cache_root, call_sites) -> None:
     from kasauti.dashboard import write as write_page
 
     python_packages = ["statsmodels", "scikit-learn", "scipy", "numpy"]
-    r_entries = sum(
-        len(parse_news(harvest(p, "cran", cache_root)).entries)
-        for p in CLASSIFY_PACKAGES
-    )
+    r_packages = classify_packages()
     py_entries = sum(
         len(parse_news(harvest(p, "pypi", cache_root)).entries) for p in python_packages
     )
 
-    entries, exposure = _exposed_entries(cache_root, call_sites)
+    entries, exposure, _, counts_at = _exposed_entries(cache_root, call_sites)
+    r_entries = counts_at.entries
     store = ClassificationCache(cache_file)
     stats = agreement(entries, store)
-    counts = Counter(stats["categories"])
+    counts = Counter(stats.categories)
 
     funnel = [
         {"label": "changelog entries (R)", "n": r_entries},
-        {"label": "claim a wrong result", "n": 464},
-        {"label": "name a computing function", "n": 230},
+        {"label": "claim a wrong result", "n": counts_at.result_changing},
+        {"label": "name a computing function", "n": counts_at.with_named_function},
         {"label": "called in the corpus", "n": len(entries)},
         {"label": "read as result-changing", "n": counts.get("RESULT_CHANGING", 0)},
     ]
@@ -695,9 +922,9 @@ def dashboard(out, bugs_dir, cache_file, cache_root, call_sites) -> None:
     payload = Dashboard(
         corpus={
             "entries": r_entries + py_entries,
-            "packages": len(CLASSIFY_PACKAGES) + len(python_packages),
+            "packages": len(r_packages) + len(python_packages),
             "note": (
-                f"{r_entries:,} entries from {len(CLASSIFY_PACKAGES)} R packages and "
+                f"{r_entries:,} entries from {len(r_packages)} R packages and "
                 f"{py_entries:,} from {len(python_packages)} Python projects. Only the "
                 "R side is classified: the Python funnel has no export restriction, so "
                 "mixing the two would make the rate meaningless."
@@ -707,9 +934,9 @@ def dashboard(out, bugs_dir, cache_file, cache_root, call_sites) -> None:
         classification={
             "confusion": [
                 {"rules": k.split("->")[0], "read": k.split("->")[1], "n": v}
-                for k, v in stats["confusion"].items()
+                for k, v in stats.confusion.items()
             ],
-            "moves_published": stats["moves_published_numbers"],
+            "moves_published": stats.moves_published_numbers,
         },
         bugs=bug_rows,
         shortlist=shortlist[:20],

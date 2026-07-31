@@ -21,7 +21,7 @@ from datetime import date
 from pathlib import Path
 
 from kasauti.archaeology.calls import read_call_sites
-from kasauti.archaeology.frame import NON_COMPUTING, r_namespace_exports
+from kasauti.archaeology.frame import NON_COMPUTING, package_exports
 from kasauti.archaeology.parse import Entry
 
 #: Language asserting that a number the package previously returned was wrong.
@@ -178,6 +178,8 @@ def build_bugs(
     entries: list[Entry],
     package_exports: dict[str, set[str]],
     call_index: dict[str, set[str]],
+    qualified: dict[tuple[str, str], set[str]] | None = None,
+    shadowed: set[str] | None = None,
 ) -> tuple[list[Bug], Funnel]:
     """Turn parsed entries into ranked bugs with corpus exposure.
 
@@ -185,11 +187,20 @@ def build_bugs(
         entries: All parsed changelog entries.
         package_exports: Package name to the set of names it exports.
         call_index: Function name to the corpus scripts calling it.
+        qualified: `(function, qualifier)` to calling scripts, needed to resolve
+            shadowed names.
+        shadowed: Names base R also exports. A bare `diag()` is base R's, so
+            `Matrix` may claim it only where the call says `Matrix::diag`.
+            Without this, `Matrix` tops the ranking on the strength of `diag`,
+            `head`, `crossprod`, and `rowMeans` -- names every script uses and
+            almost none of them means Matrix's.
 
     Returns:
         A `(bugs, funnel)` pair, bugs sorted by exposure descending.
     """
     funnel = Funnel(entries=len(entries))
+    qualified = qualified or {}
+    shadowed = shadowed or set()
     bugs = []
     for entry in entries:
         if not is_result_changing(entry.text):
@@ -202,7 +213,15 @@ def build_bugs(
             continue
         funnel.with_named_function += 1
 
-        exposed = {f: call_index[f] for f in functions if call_index.get(f)}
+        exposed = {}
+        for function in functions:
+            scripts = (
+                qualified.get((function, entry.package), set())
+                if function in shadowed
+                else call_index.get(function, set())
+            )
+            if scripts:
+                exposed[function] = scripts
         if not exposed:
             continue
         funnel.with_corpus_exposure += 1
@@ -226,38 +245,46 @@ def build_bugs(
     return bugs, funnel
 
 
-def load_call_index(path: Path, language: str = "R") -> dict[str, set[str]]:
-    """Build a function-to-scripts index from extracted call sites.
+def load_call_index(
+    path: Path, language: str = "R"
+) -> tuple[dict[str, set[str]], dict[tuple[str, str], set[str]]]:
+    """Build function-to-scripts indexes from extracted call sites.
+
+    Two indexes, because one is not enough for names more than one package
+    claims. The unqualified index answers "which scripts call something called
+    `diag`"; the qualified index answers "which scripts call `Matrix::diag`",
+    which is the only honest answer when base R exports `diag` too.
 
     Args:
         path: CSV written by `calls.write_call_sites`.
         language: Which language's calls to index.
 
     Returns:
-        Function name to the set of script paths calling it.
+        An `(index, qualified)` pair: function name to calling scripts, and
+        `(function, qualifier)` to calling scripts.
     """
     index: dict[str, set[str]] = defaultdict(set)
+    qualified: dict[tuple[str, str], set[str]] = defaultdict(set)
     for site in read_call_sites(path):
-        if site.language == language:
-            index[site.fname].add(site.path)
-    return dict(index)
+        if site.language != language:
+            continue
+        index[site.fname].add(site.path)
+        if site.qualifier:
+            qualified[(site.fname, site.qualifier)].add(site.path)
+    return dict(index), dict(qualified)
 
 
-def load_exports(packages: list[str]) -> dict[str, set[str]]:
-    """Fetch each package's exported names from its installed namespace.
+def load_exports(packages: list[str], cache_root: Path) -> dict[str, set[str]]:
+    """Fetch each package's exported names.
 
     Args:
         packages: Package names.
+        cache_root: Harvest cache root, which holds the tarball-derived exports.
 
     Returns:
         Package name to its set of exports.
     """
-    by_function = r_namespace_exports(packages)
-    exports: dict[str, set[str]] = defaultdict(set)
-    for function, owners in by_function.items():
-        for owner in owners:
-            exports[owner].add(function)
-    return dict(exports)
+    return package_exports(packages, cache_root)
 
 
 @dataclass

@@ -4,7 +4,14 @@ from datetime import date
 
 import pytest
 
-from kasauti.archaeology.harvest import Harvest, Release, _parse_cran_date
+from kasauti.archaeology.harvest import (
+    Harvest,
+    Release,
+    _parse_cran_date,
+    _strip_r_comments,
+    parse_namespace,
+    r_definitions,
+)
 from kasauti.archaeology.link import (
     affected_functions,
     build_bugs,
@@ -37,6 +44,60 @@ class TestParseCranDate:
     def test_missing_or_unparseable_is_none(self):
         assert _parse_cran_date(None) is None
         assert _parse_cran_date("sometime last year") is None
+
+
+class TestParseNamespace:
+    def test_comments_inside_an_export_block_are_not_exports(self):
+        # sandwich opens its export list with `## core ingredients`, which a
+        # regex over raw text harvests as though it were a function name.
+        namespace = 'export(\n  ## core ingredients\n  "sandwich",\n  vcovHC\n)'
+        assert parse_namespace(namespace) == ["sandwich", "vcovHC"]
+
+    def test_s3_methods_register_the_composite_not_the_generic(self):
+        # A changelog says "vcovHC.mlm was wrong", so the composite is worth
+        # having -- but `print` belongs to base R, not to the package.
+        exports = parse_namespace("S3method(print, foo)\nS3method(vcovHC, mlm)")
+        assert exports == ["print.foo", "vcovHC.mlm"]
+
+    def test_operator_methods_are_quoted_and_still_register(self):
+        # metafor writes `S3method("[", escalc)`; a word-only pattern skips it.
+        assert parse_namespace('S3method("[", escalc)') == ["[.escalc"]
+
+    def test_export_pattern_resolves_against_the_package_sources(self):
+        # metafor exports by regex alone. Unresolved, it would report no exports
+        # and so no candidates, which reads as a package with nothing wrong.
+        exports = parse_namespace(
+            'exportPattern("^[^\\\\.]")', {"rma", "rma.uni", ".hidden"}
+        )
+        assert exports == ["rma", "rma.uni"]
+
+    def test_export_pattern_without_sources_yields_nothing_rather_than_guessing(self):
+        assert parse_namespace('exportPattern("^[^.]")') == []
+
+    def test_quoted_and_multiline_export_lists(self):
+        exports = parse_namespace('export("[.escalc",\n       coef.rma)\nexport(rma)')
+        assert exports == ["[.escalc", "coef.rma", "rma"]
+
+
+class TestRDefinitions:
+    def test_chained_assignment_names_every_function(self):
+        # metafor defines its central estimator as `rma <- rma.uni <- function`;
+        # matching only the innermost name loses `rma` entirely.
+        assert r_definitions("rma <- rma.uni <- function(yi, vi) {") == {
+            "rma",
+            "rma.uni",
+        }
+
+    def test_ignores_non_function_bindings(self):
+        assert r_definitions("threshold <- 0.05\nfit <- function(x) x") == {"fit"}
+
+
+class TestStripRComments:
+    def test_a_hash_inside_a_string_is_not_a_comment(self):
+        assert _strip_r_comments('export("a#b")  # gone') == 'export("a#b")  '
+
+    def test_line_structure_survives(self):
+        assert _strip_r_comments("a # one\nb # two") == "a \nb "
 
 
 class TestParseNews:
@@ -209,6 +270,44 @@ class TestBuildBugs:
         )
         assert bugs[0].total_exposed == 2
 
+    def test_a_name_base_r_owns_counts_only_where_qualified(self):
+        # Matrix exports `diag`. Nearly every `diag()` call in the corpus means
+        # base R's, and counting them all put Matrix at the top of the queue on
+        # 3,562 scripts it has nothing to do with.
+        entries = [Entry("Matrix", "1.5-0", None, "diag<- was incorrect", 0)]
+        bugs, _ = build_bugs(
+            entries,
+            {"Matrix": {"diag"}},
+            {"diag": {"a.R", "b.R", "c.R"}},
+            qualified={("diag", "Matrix"): {"c.R"}},
+            shadowed={"diag"},
+        )
+        assert bugs[0].total_exposed == 1
+
+    def test_a_shadowed_name_never_qualified_drops_out_entirely(self):
+        entries = [Entry("Matrix", "1.5-0", None, "diag<- was incorrect", 0)]
+        bugs, funnel = build_bugs(
+            entries,
+            {"Matrix": {"diag"}},
+            {"diag": {"a.R"}},
+            qualified={},
+            shadowed={"diag"},
+        )
+        assert bugs == []
+        assert funnel.with_named_function == 1
+        assert funnel.with_corpus_exposure == 0
+
+    def test_a_name_base_r_does_not_own_is_untouched(self):
+        entries = [Entry("p", "1.0", None, "bug in vcovHC was incorrect", 0)]
+        bugs, _ = build_bugs(
+            entries,
+            {"p": {"vcovHC"}},
+            {"vcovHC": {"a.R", "b.R"}},
+            qualified={},
+            shadowed={"diag"},
+        )
+        assert bugs[0].total_exposed == 2
+
 
 class TestClassification:
     def test_rules_flag_a_claimed_wrong_result(self):
@@ -323,5 +422,5 @@ class TestClassification:
             Classification(category="RESULT_CHANGING", silent=True, source="rules"),
         )
         stats = agreement(entries, cache)
-        assert stats["judged"] == 1
-        assert stats["rules_disagreed"] == 1
+        assert stats.judged == 1
+        assert stats.rules_disagreed == 1

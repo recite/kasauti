@@ -18,11 +18,33 @@ from __future__ import annotations
 import csv
 import json
 import subprocess
+import tempfile
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from kasauti.archaeology.calls import CallSite
+from kasauti.archaeology.harvest import harvest
+
+#: Packages that ship with R rather than through CRAN. They have no source
+#: tarball, so their exports come from the interpreter -- which costs nothing,
+#: since a machine with R has them by definition.
+BASE_PACKAGES = {
+    "base",
+    "compiler",
+    "datasets",
+    "grDevices",
+    "graphics",
+    "grid",
+    "methods",
+    "parallel",
+    "splines",
+    "stats",
+    "stats4",
+    "tcltk",
+    "tools",
+    "utils",
+}
 
 #: Packages whose functions produce numbers that end up in a results table. The
 #: corpus's single most-used package is ggplot2, which is irrelevant here: a bug
@@ -251,22 +273,25 @@ class FrameRow:
         return len(self.packages) > 1
 
 
-def r_namespace_exports(packages: list[str]) -> dict[str, list[str]]:
-    """Ask R which functions each package exports.
+def base_exports(packages: list[str]) -> dict[str, set[str]]:
+    """Ask R which functions each base package exports.
 
-    Uses the installed namespaces rather than a hand-written list, so the mapping
-    is authoritative for the versions actually present and cannot drift.
+    Base packages ship with R rather than through CRAN, so they have no source
+    tarball to read NAMESPACE from -- but they are installed wherever R exists,
+    so asking the interpreter imposes no ceiling on coverage. `stats` alone
+    accounts for `lm`, `glm`, and `t.test`, so skipping it is not an option.
 
     Args:
-        packages: Package names to query.
+        packages: Base package names to query.
 
     Returns:
-        Function name to the packages exporting it. Packages that are not
-        installed are silently skipped; call `missing_packages` to see which.
+        Package name to its set of exports.
 
     Raises:
         RuntimeError: If R itself fails to run.
     """
+    if not packages:
+        return {}
     listing = ", ".join(f'"{p}"' for p in packages)
     script = (
         f"pkgs <- c({listing}); out <- list();"
@@ -284,40 +309,140 @@ def r_namespace_exports(packages: list[str]) -> dict[str, list[str]]:
     )
     if proc.returncode != 0:
         raise RuntimeError(f"failed to query R namespaces:\n{proc.stderr[-1500:]}")
-
-    by_package = json.loads(proc.stdout)
-    exports: dict[str, list[str]] = defaultdict(list)
-    for package, functions in by_package.items():
-        for function in functions:
-            exports[function].append(package)
-    return dict(exports)
+    return {p: set(names) for p, names in json.loads(proc.stdout).items()}
 
 
-def missing_packages(packages: list[str]) -> list[str]:
-    """Report which of the requested packages are not installed.
+#: Introspects a Python distribution's public API. R declares its exports in a
+#: file; Python has no such file, so the names have to come from the objects
+#: themselves. Methods are collected alongside module-level names because
+#: release notes name them that way -- statsmodels writes "fit_regularized was
+#: wrong", and `fit_regularized` exists only as a method on a model class.
+PYTHON_EXPORTS = """
+import importlib, inspect, json, pkgutil, sys, warnings
+warnings.simplefilter("ignore")
+# statsmodels ships sandbox and example modules that print, and in some cases
+# fit models, at import time. Importing them pollutes stdout and wastes minutes,
+# which is why the result is written to a file rather than printed.
+SKIP = ("test", "tests", "sandbox", "examples", "example", "benchmarks", "setup",
+        "conftest", "_build_utils", "datasets", "docs")
+root = importlib.import_module(sys.argv[1])
+names, modules = set(), [root]
+if hasattr(root, "__path__"):
+    for info in pkgutil.walk_packages(root.__path__, root.__name__ + "."):
+        parts = info.name.split(".")
+        if any(p.startswith("_") or p in SKIP for p in parts):
+            continue
+        try:
+            modules.append(importlib.import_module(info.name))
+        except BaseException:
+            continue
+for module in modules:
+    for attr in dir(module):
+        if attr.startswith("_"):
+            continue
+        try:
+            obj = getattr(module, attr)
+        except BaseException:
+            continue
+        if inspect.isroutine(obj):
+            names.add(attr)
+        elif inspect.isclass(obj):
+            names.add(attr)
+            for method, _ in inspect.getmembers(obj, inspect.isroutine):
+                if not method.startswith("_"):
+                    names.add(method)
+open(sys.argv[2], "w").write(json.dumps(sorted(names)))
+"""
 
-    Coverage matters: a function exported only by an uninstalled package cannot be
-    attributed, and would silently drop out of the frame.
+#: Distribution name to the module it installs, where they differ.
+PYTHON_MODULES = {"scikit-learn": "sklearn"}
+
+
+def python_exports(package: str, timeout: int = 900) -> set[str]:
+    """Introspect a Python package's public names in a throwaway environment.
+
+    The Python funnel had no export restriction, which is why its candidates
+    were noisier than R's and were left out of the classified rate: without one,
+    every English word in a release note that happens to match a call in the
+    corpus becomes a candidate. `uv` makes the fix cheap -- the package is
+    installed into a temporary environment and imported, so nothing has to be
+    present on this machine beforehand.
 
     Args:
-        packages: Package names to check.
+        package: PyPI distribution name.
+        timeout: Seconds before giving up.
 
     Returns:
-        The subset that is not installed.
+        Public functions, classes, and methods. Empty if the package cannot be
+        installed or imported, which shows up as zero yield downstream.
     """
-    listing = ", ".join(f'"{p}"' for p in packages)
-    script = (
-        f"pkgs <- c({listing}); "
-        "cat(paste(pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly=TRUE)], "
-        "collapse=' '))"
-    )
-    proc = subprocess.run(  # noqa: S603
-        ["Rscript", "--vanilla", "-e", script],  # noqa: S607
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    return proc.stdout.split()
+    module = PYTHON_MODULES.get(package, package.replace("-", "_"))
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "exports.json"
+        proc = subprocess.run(  # noqa: S603
+            [  # noqa: S607
+                "uv",
+                "run",
+                "--quiet",
+                "--no-project",
+                "--with",
+                package,
+                "python",
+                "-c",
+                PYTHON_EXPORTS,
+                module,
+                str(out),
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=timeout,
+        )
+        if proc.returncode != 0 or not out.exists():
+            return set()
+        return set(json.loads(out.read_text()))
+
+
+def package_exports(packages: list[str], cache_root: Path) -> dict[str, set[str]]:
+    """Resolve each package's exported names.
+
+    CRAN packages are read from the NAMESPACE inside the source tarball the
+    harvest already downloads. That removes the install requirement, which was
+    the real constraint on how many packages the study could cover: a package
+    only had to be buildable on this machine to be studied.
+
+    Args:
+        packages: Package names.
+        cache_root: Harvest cache root, where the tarball-derived exports live.
+
+    Returns:
+        Package name to its set of exports. A package absent from the harvest
+        contributes an empty set rather than an error, and shows up as zero
+        yield downstream.
+    """
+    base = [p for p in packages if p in BASE_PACKAGES]
+    exports = base_exports(base)
+    for package in packages:
+        if package in BASE_PACKAGES:
+            continue
+        exports[package] = set(harvest(package, "cran", cache_root).exports)
+    return exports
+
+
+def by_function(exports: dict[str, set[str]]) -> dict[str, list[str]]:
+    """Invert a package-to-exports mapping.
+
+    Args:
+        exports: Package name to its set of exports.
+
+    Returns:
+        Function name to the packages exporting it.
+    """
+    owners: dict[str, list[str]] = defaultdict(list)
+    for package, names in exports.items():
+        for name in names:
+            owners[name].append(package)
+    return {name: sorted(packages) for name, packages in owners.items()}
 
 
 @dataclass
@@ -327,7 +452,11 @@ class Frame:
     Attributes:
         rows: Procedures ranked by the number of scripts calling them.
         scripts_parsed: Parsed script counts by language, the frame denominator.
-        uninstalled: Inferential packages that could not be introspected.
+        packages: Packages attributed against.
+        no_exports: Packages whose export list came back empty, which means the
+            frame cannot attribute anything to them. Kept visible because a
+            package that contributes nothing for want of a NAMESPACE looks
+            exactly like a package nobody uses.
         unattributed_top: The most-called functions that no inferential package
             claims, kept as a visible check that the curation is not dropping
             something important.
@@ -337,7 +466,8 @@ class Frame:
 
     rows: list[FrameRow] = field(default_factory=list)
     scripts_parsed: dict[str, int] = field(default_factory=dict)
-    uninstalled: list[str] = field(default_factory=list)
+    packages: list[str] = field(default_factory=list)
+    no_exports: list[str] = field(default_factory=list)
     unattributed_top: list[tuple[str, int]] = field(default_factory=list)
     shadow_dropped: int = 0
 
@@ -345,6 +475,7 @@ class Frame:
 def build_frame(
     call_sites: list[CallSite],
     scripts_parsed: dict[str, int],
+    cache_root: Path,
     packages: list[str] | None = None,
 ) -> Frame:
     """Rank called procedures by how many scripts use them.
@@ -356,6 +487,7 @@ def build_frame(
         call_sites: Extracted call sites across the corpus.
         scripts_parsed: Parsed script count per language, for the share
             denominator.
+        cache_root: Harvest cache root, which holds each package's exports.
         packages: Inferential packages to attribute against. Defaults to
             `INFERENTIAL_PACKAGES`.
 
@@ -363,7 +495,8 @@ def build_frame(
         The assembled frame.
     """
     packages = packages or INFERENTIAL_PACKAGES
-    exports = r_namespace_exports(packages)
+    per_package = package_exports(packages, cache_root)
+    exports = by_function(per_package)
 
     # The two languages are attributed by different mechanisms and must not be
     # mixed: matching a Python call named `index` against R's export list would
@@ -418,7 +551,8 @@ def build_frame(
     return Frame(
         rows=rows,
         scripts_parsed=scripts_parsed,
-        uninstalled=missing_packages(packages),
+        packages=sorted(per_package),
+        no_exports=sorted(p for p, names in per_package.items() if not names),
         unattributed_top=unattributed.most_common(40),
         shadow_dropped=shadow_dropped,
     )
@@ -513,11 +647,34 @@ def render_report(frame: Frame, extraction: dict[str, dict]) -> str:
         "not counted as a call. Scripts that fail to parse are counted, not",
         "dropped; that rate is a property of the archives.",
         "",
+        "## Which packages",
+        "",
+        f"The frame covers **{len(frame.packages)}** packages, selected by",
+        "intersecting two sources, neither of them the author's memory: the",
+        "packages CRAN's expert-maintained Task Views list for a field, and the",
+        "packages replication archives in the corpus actually load. A package",
+        "qualifies by being both recognized by the field and used in the",
+        "literature.",
+        "",
+        "The earlier version of this frame named its packages by hand. Measuring",
+        "the corpus afterwards showed what that costs: `lfe`, loaded by 222",
+        "archives, had simply been forgotten -- and a package left off the list is",
+        "indistinguishable from a package with nothing wrong.",
+        "",
+        "Judgment survives in two exclusion rules, both stated at the level of a",
+        "category rather than a package, and both falsifiable in a way an",
+        "inclusion list is not. `INFERENTIAL_VIEWS` picks which of CRAN's 49 views",
+        "describe inference rather than infrastructure or a distant laboratory",
+        "domain. `NON_INFERENTIAL` drops packages whose whole job is plotting,",
+        "formatting, or data manipulation -- unavoidable, because `ggplot2` is",
+        "genuinely part of the Spatial and NetworkAnalysis toolkits, so no choice",
+        "of views excludes it.",
+        "",
         "## How a call is attributed to a package",
         "",
-        "**R.** A name is attributed to every installed package in the curated",
-        "list that exports it, established by `getNamespaceExports` rather than by",
-        "a hand-written table. Names the tidyverse routinely masks -- `filter`,",
+        "**R.** A name is attributed to every package in the frame that exports",
+        "it, read from the `NAMESPACE` inside the CRAN source tarball rather than",
+        "from a hand-written table. Names the tidyverse routinely masks -- `filter`,",
         "`select`, `lag`, `slice` -- count only when written `pkg::name`, since a",
         "bare `filter()` in a script that loads dplyr is dplyr's. That rule",
         f"discarded {frame.shadow_dropped} script-function pairs, which is the",
@@ -536,10 +693,17 @@ def render_report(frame: Frame, extraction: dict[str, dict]) -> str:
         "a reported coefficient.",
         "",
     ]
-    if frame.uninstalled:
+    out += [
+        "Exports come from the `NAMESPACE` inside each package's CRAN source",
+        "tarball, not from an installed copy, so coverage is not limited to what",
+        "one machine can build. Base packages, which have no tarball, are read",
+        "from the interpreter.",
+        "",
+    ]
+    if frame.no_exports:
         out += [
-            f"Not introspectable (not installed, so unattributable): "
-            f"`{'`, `'.join(frame.uninstalled)}`.",
+            "No export list resolved, so nothing can be attributed to them: "
+            f"`{'`, `'.join(frame.no_exports)}`.",
             "",
         ]
 

@@ -40,6 +40,29 @@ R_NEWS_CANDIDATES = [
     "inst/ChangeLog",
 ]
 
+#: `export(a, b)` and its siblings, whose contents are a comma-separated name
+#: list. `exportPattern` is deliberately absent: it names a regex rather than a
+#: set, and is resolved separately against the package's own sources.
+NAMESPACE_EXPORT = re.compile(r"\bexport(?:Classes|Methods)?\s*\(")
+#: `exportPattern("^[^.]")` -- a regex standing in for a name list, common in
+#: older packages. Unresolved it would leave those packages with no exports at
+#: all, and so no candidates, which reads as "clean" rather than "unreadable".
+NAMESPACE_PATTERN = re.compile(r"\bexportPattern\s*\(\s*([\"'])(.*?)\1\s*\)")
+#: `S3method(generic, class)`, registering `generic.class`. The composite is what
+#: a changelog names ("vcovHC.mlm was wrong"); the bare generic is not added,
+#: since `print` belongs to base R however many methods a package writes for it.
+#: The generic is quoted when it is an operator -- `S3method("[", escalc)` -- so
+#: the token is read up to the comma rather than assumed to be a word.
+NAMESPACE_S3 = re.compile(r"\bS3method\s*\(")
+#: A top-level function definition in an R source file, used to enumerate the
+#: names an `exportPattern` regex is matched against. The captured group is the
+#: whole left-hand side, because R lets one definition name several functions:
+#: metafor defines its central estimator as `rma <- rma.uni <- function(...)`,
+#: and matching only the innermost name would lose `rma` entirely.
+R_DEFINITION = re.compile(
+    r"^\s*((?:[\"'`]?[A-Za-z.][\w.]*[\"'`]?\s*(?:<-|=)\s*)+)function\s*\(",
+    re.MULTILINE,
+)
 USER_AGENT = "kasauti/0.1 (research; differential testing of statistical software)"
 
 GITHUB_API = "https://api.github.com/repos"
@@ -92,6 +115,8 @@ class Harvest:
         releases: Dated release history, oldest first.
         news_text: Raw changelog text.
         news_source: Where the text came from, for the audit trail.
+        exports: Names the package exports, from NAMESPACE. Empty for PyPI
+            packages, whose exports are resolved by import rather than by file.
         errors: Non-fatal problems encountered.
     """
 
@@ -100,6 +125,7 @@ class Harvest:
     releases: list[Release] = field(default_factory=list)
     news_text: str = ""
     news_source: str = ""
+    exports: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
     @property
@@ -213,20 +239,26 @@ def cran_releases(package: str) -> tuple[list[Release], list[str]]:
     return releases, errors
 
 
-def cran_news(package: str, version: str | None = None) -> tuple[str, str, list[str]]:
-    """Fetch a CRAN package's changelog from its source tarball.
+def cran_source(
+    package: str, version: str | None = None
+) -> tuple[str, str, list[str], list[str]]:
+    """Fetch a CRAN package's changelog and export list from its source tarball.
 
     The tarball is the most complete source: NEWS files are cumulative, so the
     newest one carries the full history, and packages that expose nothing through
-    CRAN's rendered news page often still ship a NEWS file.
+    CRAN's rendered news page often still ship a NEWS file. It also carries
+    NAMESPACE, which is why exports come from here rather than from an installed
+    copy -- there is no install to do, so no ceiling on how many packages the
+    frame can cover.
 
     Args:
         package: CRAN package name.
         version: Version to download. Defaults to the current release.
 
     Returns:
-        A `(text, source, errors)` triple. `text` is empty when the package ships
-        no recognizable changelog.
+        A `(text, source, exports, errors)` tuple. `text` is empty when the
+        package ships no recognizable changelog; `exports` is empty when it ships
+        no NAMESPACE, which for a modern package means the download failed.
     """
     errors: list[str] = []
     if version is None:
@@ -235,7 +267,7 @@ def cran_news(package: str, version: str | None = None) -> tuple[str, str, list[
             response.raise_for_status()
             version = response.json().get("Version")
         except (requests.RequestException, ValueError) as exc:
-            return "", "", [f"could not resolve current version: {exc}"]
+            return "", "", [], [f"could not resolve current version: {exc}"]
 
     urls = [
         f"{CRAN_SRC}/{package}_{version}.tar.gz",
@@ -249,41 +281,184 @@ def cran_news(package: str, version: str | None = None) -> tuple[str, str, list[
             with tempfile.TemporaryDirectory() as tmp:
                 archive = Path(tmp) / "pkg.tar.gz"
                 archive.write_bytes(response.content)
-                text, source, error = _read_news_from_tarball(archive, package)
+                text, source, exports, error = _read_tarball(archive, package)
                 if error:
                     errors.append(error)
-                if text:
-                    return text, f"{url}::{source}", errors
-                return "", "", [*errors, f"no changelog file in {url}"]
+                if not text:
+                    errors.append(f"no changelog file in {url}")
+                if not exports:
+                    errors.append(f"no NAMESPACE in {url}")
+                return text, f"{url}::{source}" if text else "", exports, errors
         except (requests.RequestException, tarfile.TarError, OSError) as exc:
             errors.append(f"{url}: {exc}")
-    return "", "", [*errors, "tarball not retrievable"]
+    return "", "", [], [*errors, "tarball not retrievable"]
 
 
-def _read_news_from_tarball(archive: Path, package: str) -> tuple[str, str, str | None]:
-    """Pull the first recognizable changelog out of an R source tarball.
+def _strip_r_comments(text: str) -> str:
+    """Remove `#` comments from R source, respecting string literals.
+
+    Real NAMESPACE files carry comments inside `export(...)` blocks -- sandwich
+    opens its export list with `## core ingredients` -- so a regex applied to raw
+    text harvests the comment as though it were a function name.
+
+    Args:
+        text: R source.
+
+    Returns:
+        The source with comments blanked out, line structure preserved.
+    """
+    kept = []
+    for line in text.split("\n"):
+        quote, escaped, cut = "", False, len(line)
+        for index, char in enumerate(line):
+            if escaped:
+                escaped = False
+            elif quote:
+                if char == "\\":
+                    escaped = True
+                elif char == quote:
+                    quote = ""
+            elif char in "\"'`":
+                quote = char
+            elif char == "#":
+                cut = index
+                break
+        kept.append(line[:cut])
+    return "\n".join(kept)
+
+
+def _balanced(text: str, start: int) -> str:
+    """Return the contents of the parenthesis group opening at `start`.
+
+    Args:
+        text: Source text.
+        start: Index of the opening parenthesis.
+
+    Returns:
+        The text between the parentheses, empty if unbalanced.
+    """
+    depth = 0
+    for index in range(start, len(text)):
+        if text[index] == "(":
+            depth += 1
+        elif text[index] == ")":
+            depth -= 1
+            if depth == 0:
+                return text[start + 1 : index]
+    return ""
+
+
+def parse_namespace(text: str, definitions: set[str] | None = None) -> list[str]:
+    """Extract the names a package exports from its NAMESPACE file.
+
+    This replaces asking a running R session, which required every package to be
+    installed and so capped the study at the packages one machine could build.
+
+    Args:
+        text: Contents of NAMESPACE.
+        definitions: Names defined in the package's own R sources, needed to
+            resolve `exportPattern` regexes into an actual name list.
+
+    Returns:
+        The exported names, sorted.
+    """
+    clean = _strip_r_comments(text)
+    names: set[str] = set()
+
+    for match in NAMESPACE_EXPORT.finditer(clean):
+        body = _balanced(clean, match.end() - 1)
+        for raw in body.split(","):
+            name = raw.strip().strip("\"'`").strip()
+            if name:
+                names.add(name)
+
+    for match in NAMESPACE_S3.finditer(clean):
+        parts = [
+            part.strip().strip("\"'`").strip()
+            for part in _balanced(clean, match.end() - 1).split(",")
+        ]
+        if len(parts) >= 2 and parts[0] and parts[1]:
+            names.add(f"{parts[0]}.{parts[1]}")
+
+    for _, pattern in NAMESPACE_PATTERN.findall(clean):
+        if not definitions:
+            continue
+        try:
+            compiled = re.compile(pattern.replace("\\\\", "\\"))
+        except re.error:
+            continue
+        names |= {name for name in definitions if compiled.search(name)}
+
+    return sorted(name for name in names if name)
+
+
+def _read_tarball(
+    archive: Path, package: str
+) -> tuple[str, str, list[str], str | None]:
+    """Pull the changelog and the export list out of an R source tarball.
+
+    Both come from one open: the tarball is fetched into a temporary directory
+    and discarded, so reading NAMESPACE separately would mean downloading every
+    package twice.
 
     Args:
         archive: Path to the `.tar.gz`.
         package: Package name, which prefixes every path inside the tarball.
 
     Returns:
-        A `(text, member_name, error)` triple.
+        A `(text, member_name, exports, error)` tuple.
     """
+    text, source = "", ""
+    exports: list[str] = []
     try:
         with tarfile.open(archive, "r:gz") as tar:
             members = {m.name: m for m in tar.getmembers() if m.isfile()}
+
+            def read(name: str) -> str:
+                handle = tar.extractfile(members[name])
+                return handle.read().decode("utf-8", errors="replace") if handle else ""
+
             for candidate in R_NEWS_CANDIDATES:
                 name = f"{package}/{candidate}"
-                if name not in members:
-                    continue
-                handle = tar.extractfile(members[name])
-                if handle is None:
-                    continue
-                return handle.read().decode("utf-8", errors="replace"), candidate, None
+                if name in members:
+                    text = read(name)
+                    if text:
+                        source = candidate
+                        break
+
+            namespace = f"{package}/NAMESPACE"
+            if namespace in members:
+                raw = read(namespace)
+                definitions: set[str] = set()
+                if NAMESPACE_PATTERN.search(raw):
+                    for name in members:
+                        if name.startswith(f"{package}/R/") and name.endswith(
+                            (".R", ".r", ".S", ".q")
+                        ):
+                            definitions |= r_definitions(read(name))
+                exports = parse_namespace(raw, definitions)
     except (tarfile.TarError, OSError) as exc:
-        return "", "", f"could not read tarball: {exc}"
-    return "", "", None
+        return "", "", [], f"could not read tarball: {exc}"
+    return text, source, exports, None
+
+
+def r_definitions(source: str) -> set[str]:
+    """Enumerate the functions an R source file defines at top level.
+
+    Args:
+        source: Contents of an R source file.
+
+    Returns:
+        Every name bound to a function, including all names in a chained
+        assignment.
+    """
+    names: set[str] = set()
+    for chain in R_DEFINITION.findall(source):
+        for part in re.split(r"<-|=", chain):
+            name = part.strip().strip("\"'`").strip()
+            if name:
+                names.add(name)
+    return names
 
 
 def pypi_releases(package: str) -> tuple[list[Release], list[str]]:
@@ -329,14 +504,15 @@ def harvest_cran(package: str) -> Harvest:
         The harvest, with any non-fatal problems in `errors`.
     """
     releases, errors = cran_releases(package)
-    text, source, news_errors = cran_news(package)
+    text, source, exports, source_errors = cran_source(package)
     return Harvest(
         package=package,
         ecosystem="cran",
         releases=releases,
         news_text=text,
         news_source=source,
-        errors=errors + news_errors,
+        exports=exports,
+        errors=errors + source_errors,
     )
 
 
@@ -450,8 +626,12 @@ def harvest(
         The harvest.
     """
     path = cache_path(cache_root, ecosystem, package)
-    if path.exists() and not refresh:
-        payload = json.loads(path.read_text())
+    payload = json.loads(path.read_text()) if path.exists() else None
+    # A cache written before exports were collected is stale, not merely partial:
+    # serving it would leave the package with no attributable functions and so no
+    # candidates, which is indistinguishable from a package with nothing wrong.
+    stale = payload is not None and ecosystem == "cran" and "exports" not in payload
+    if payload is not None and not refresh and not stale:
         return Harvest(
             package=payload["package"],
             ecosystem=payload["ecosystem"],
@@ -466,6 +646,7 @@ def harvest(
             ],
             news_text=payload["news_text"],
             news_source=payload["news_source"],
+            exports=payload.get("exports", []),
             errors=payload["errors"],
         )
 

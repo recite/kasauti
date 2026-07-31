@@ -42,6 +42,45 @@
     "silent": true,
     "source": "agent"
   },
+  "Hmisc@4.0-1#9": {
+    "category": "ERROR_TO_WORKING",
+    "conditions": "upData() converting an existing variable to a factor",
+    "confidence": "HIGH",
+    "evidence_quote": "tried to run floor()",
+    "functions": [
+      "upData"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "Hmisc@4.1-0#13": {
+    "category": "DOC",
+    "conditions": "HTML rendering of describe() output for a single variable",
+    "confidence": "HIGH",
+    "evidence_quote": "fixed bug in html.describe",
+    "functions": [
+      "describe"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "Hmisc@4.7-1#13": {
+    "category": "UNCLEAR",
+    "conditions": "fit.mult.impute() fed mice output; the entry does not say what went wrong",
+    "confidence": "LOW",
+    "evidence_quote": "fixed bug when using mice",
+    "functions": [
+      "fit.mult.impute"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": false,
+    "source": "agent"
+  },
   "MASS@unknown#100": {
     "category": "FEATURE",
     "conditions": "",
@@ -76,6 +115,202 @@
     "evidence_quote": "the log-likelihood returned for fitdistr(, \"geometric\") was incorrect",
     "functions": [
       "fitdistr"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "MatchIt@4.1.0#6": {
+    "category": "ERROR_TO_WORKING",
+    "conditions": "matchit() with no data argument",
+    "confidence": "MEDIUM",
+    "evidence_quote": "Fixed a bug when no argument was supplied to `data`",
+    "functions": [
+      "matchit"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "MatchIt@4.3.2#0": {
+    "category": "ERROR_TO_WORKING",
+    "conditions": "matchit(method='subclass'); the q.cut component was absent from the result",
+    "confidence": "HIGH",
+    "evidence_quote": "the `q.cut` component ... was not included",
+    "functions": [
+      "matchit"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "MatchIt@4.4.0#7": {
+    "category": "RESULT_CHANGING",
+    "conditions": "matchit(method='nearest') with ratio > 1 and reuse.max specified; a control could be matched repeatedly to the same treated unit, so the requested ratio was not delivered and every downstream estimate used the wrong matched set",
+    "confidence": "HIGH",
+    "evidence_quote": "thereby essentially ignoring the `ratio` argument",
+    "functions": [
+      "matchit"
+    ],
+    "introduced_version": null,
+    "severity": "HIGH",
+    "silent": true,
+    "source": "agent"
+  },
+  "MatchIt@4.4.0#8": {
+    "category": "RESULT_CHANGING",
+    "conditions": "matchit(method='nearest') with distance supplied as a matrix containing Inf",
+    "confidence": "MEDIUM",
+    "evidence_quote": "when `distance` was supplied as a matrix and `Inf` values were present",
+    "functions": [
+      "matchit"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "MatchIt@4.5.0#8": {
+    "category": "RESULT_CHANGING",
+    "conditions": "matchit(method='cem', k2k=TRUE, k2k.method=NULL)",
+    "confidence": "MEDIUM",
+    "evidence_quote": "Fixed a bug when using `matchit()` with `method = \"cem\"`",
+    "functions": [
+      "matchit"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "MatchIt@4.7.2#0": {
+    "category": "ERROR_TO_WORKING",
+    "conditions": "matchit() given an irrelevant argument",
+    "confidence": "HIGH",
+    "evidence_quote": "would yield the spurious error",
+    "functions": [
+      "matchit"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "Matrix@0.3-8#3": {
+    "category": "DOC",
+    "conditions": "packaging only; no computation involved",
+    "confidence": "HIGH",
+    "evidence_quote": "Removes around 100 non-source files wrongly bundled",
+    "functions": [],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "Matrix@1.2-6#1": {
+    "category": "ERROR_TO_WORKING",
+    "conditions": "diagonal matrix multiplication; spurious warnings only",
+    "confidence": "HIGH",
+    "evidence_quote": "did trigger wrong warnings",
+    "functions": [
+      "crossprod"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "Matrix@1.5-0#11": {
+    "category": "UNCLEAR",
+    "conditions": "dimnames symmetrization; the entry does not say a value changed",
+    "confidence": "LOW",
+    "evidence_quote": "resolving some earlier inconsistencies",
+    "functions": [
+      "dimnames"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "Matrix@1.5-0#17": {
+    "category": "RESULT_CHANGING",
+    "conditions": "`diag<-` on a structured dense Matrix (dpoMatrix and similar); the result kept a class asserting properties it no longer had",
+    "confidence": "MEDIUM",
+    "evidence_quote": "diag<- incorrectly preserved the class of dense matrices",
+    "functions": [
+      "diag"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "Matrix@1.5-0#24": {
+    "category": "ERROR_TO_WORKING",
+    "conditions": "triu/tril with k beyond m on an m-by-n sparse matrix; previously an error",
+    "confidence": "HIGH",
+    "evidence_quote": "They now accept all k from -m to n, with fewer errors",
+    "functions": [
+      "triu",
+      "tril"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "Matrix@1.5-0#25": {
+    "category": "RESULT_CHANGING",
+    "conditions": "crossprod/tcrossprod mixing Rsparse and Tsparse representations",
+    "confidence": "HIGH",
+    "evidence_quote": "the old result was even wrong when it had worked",
+    "functions": [
+      "crossprod",
+      "tcrossprod"
+    ],
+    "introduced_version": null,
+    "severity": "HIGH",
+    "silent": true,
+    "source": "agent"
+  },
+  "Matrix@1.5-0#69": {
+    "category": "RESULT_CHANGING",
+    "conditions": "anyNA on triangular, symmetric, or pattern dense Matrix classes",
+    "confidence": "HIGH",
+    "evidence_quote": "had incorrectly returned anyNA(.@x) in many cases, giving false positives",
+    "functions": [
+      "anyNA"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "Matrix@1.5-2#1": {
+    "category": "BEHAVIOR_CHANGE",
+    "conditions": "validity checking now errors where it previously passed",
+    "confidence": "MEDIUM",
+    "evidence_quote": "and fail in that case",
+    "functions": [
+      "validity"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "Matrix@1.6-2#47": {
+    "category": "RESULT_CHANGING",
+    "conditions": "triu/tril with nonzero k on triangular or packed sparse matrices",
+    "confidence": "HIGH",
+    "evidence_quote": "was often wrong for nonzero k, setting too many bands to zero",
+    "functions": [
+      "triu",
+      "tril"
     ],
     "introduced_version": null,
     "severity": "MEDIUM",
@@ -220,6 +455,241 @@
     "evidence_quote": "Fix bug in logit()",
     "functions": [
       "logit"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "cobalt@3.0.0#5": {
+    "category": "RESULT_CHANGING",
+    "conditions": "bal.tab() on multiply imputed data without adjustment, and s.weights via the formula method",
+    "confidence": "MEDIUM",
+    "evidence_quote": "Fixed bug when using `bal.tab()` with multiply imputed data",
+    "functions": [
+      "bal.tab"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "cobalt@3.2.2#0": {
+    "category": "UNCLEAR",
+    "conditions": "twang mnps objects carrying a single stop method",
+    "confidence": "LOW",
+    "evidence_quote": "Fixed a bug when using `get.w()`",
+    "functions": [
+      "bal.tab",
+      "get.w"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "cobalt@3.2.2#1": {
+    "category": "UNCLEAR",
+    "conditions": "bal.tab() on twang objects with missing covariate values",
+    "confidence": "LOW",
+    "evidence_quote": "that contained missing covariate values",
+    "functions": [
+      "bal.tab"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "cobalt@3.2.2#2": {
+    "category": "UNCLEAR",
+    "conditions": "bal.tab(int=TRUE) with few covariates",
+    "confidence": "LOW",
+    "evidence_quote": "Fixed a bug when using `int = TRUE`",
+    "functions": [
+      "bal.tab"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "cobalt@3.4.1#0": {
+    "category": "ERROR_TO_WORKING",
+    "conditions": "bal.tab(imbalanced.only=TRUE) when every variable is balanced",
+    "confidence": "MEDIUM",
+    "evidence_quote": "but all variables were balanced",
+    "functions": [
+      "bal.tab"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "cobalt@3.4.1#3": {
+    "category": "UNCLEAR",
+    "conditions": "a distance measure assessed with missing values in the covariates",
+    "confidence": "LOW",
+    "evidence_quote": "there were missing values in the covariates",
+    "functions": [
+      "bal.tab"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "cobalt@3.4.1#4": {
+    "category": "UNCLEAR",
+    "conditions": "estimand supplied explicitly to the default bal.tab() method",
+    "confidence": "LOW",
+    "evidence_quote": "when `estimand` was supplied by the user",
+    "functions": [
+      "bal.tab"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "cobalt@4.1.0#13": {
+    "category": "UNCLEAR",
+    "conditions": "the default bal.tab() method with longitudinal treatments",
+    "confidence": "LOW",
+    "evidence_quote": "with objects containing longitudinal treatments",
+    "functions": [
+      "bal.tab"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "cobalt@4.1.0#14": {
+    "category": "UNCLEAR",
+    "conditions": "bal.tab() with continuous treatments and clusters",
+    "confidence": "LOW",
+    "evidence_quote": "with continuous treatments and clusters",
+    "functions": [
+      "bal.tab"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "cobalt@4.1.0#16": {
+    "category": "UNCLEAR",
+    "conditions": "bal.tab() with longitudinal treatments and multiple sets of weights",
+    "confidence": "LOW",
+    "evidence_quote": "with longitudinal treatments and multiple sets of weights",
+    "functions": [
+      "bal.tab"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "cobalt@4.2.0#8": {
+    "category": "DOC",
+    "conditions": "printing bal.tab objects with continuous treatments",
+    "confidence": "HIGH",
+    "evidence_quote": "Fixed bug when printing `bal.tab` objects",
+    "functions": [
+      "bal.tab"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "cobalt@4.3.0#12": {
+    "category": "BEHAVIOR_CHANGE",
+    "conditions": "sample display order in love.plot()",
+    "confidence": "HIGH",
+    "evidence_quote": "samples were not always displayed in the right order",
+    "functions": [
+      "love.plot"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": true,
+    "source": "agent"
+  },
+  "cobalt@4.3.2#4": {
+    "category": "ERROR_TO_WORKING",
+    "conditions": "calling cobalt::bal.tab() without attaching the package",
+    "confidence": "HIGH",
+    "evidence_quote": "without attaching the package",
+    "functions": [
+      "bal.tab"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "cobalt@4.4.1#2": {
+    "category": "RESULT_CHANGING",
+    "conditions": "the default bal.tab() method, which silently ignored components of the object it was given",
+    "confidence": "MEDIUM",
+    "evidence_quote": "which was ignoring components of the supplied object",
+    "functions": [
+      "bal.tab"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "cobalt@4.5.1#7": {
+    "category": "UNCLEAR",
+    "conditions": "bal.tab(stat='spearman.correlations')",
+    "confidence": "LOW",
+    "evidence_quote": "with `stat = \"spearman.correlations\"`",
+    "functions": [
+      "bal.tab"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "cobalt@4.5.2#1": {
+    "category": "UNCLEAR",
+    "conditions": "bal.tab() on twang mnps objects",
+    "confidence": "LOW",
+    "evidence_quote": "with `mnps` objects from `twang`",
+    "functions": [
+      "bal.tab"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "cobalt@4.5.3#1": {
+    "category": "UNCLEAR",
+    "conditions": "bal.tab(cluster=) with the caret package loaded",
+    "confidence": "LOW",
+    "evidence_quote": "with the `caret` package loaded",
+    "functions": [
+      "bal.tab"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "cobalt@4.6.0#10": {
+    "category": "ERROR_TO_WORKING",
+    "conditions": "var.names supplied to love.plot() with a modified bal.tab input",
+    "confidence": "HIGH",
+    "evidence_quote": "would throw an error",
+    "functions": [
+      "love.plot"
     ],
     "introduced_version": null,
     "severity": "LOW",
@@ -617,6 +1087,46 @@
     "evidence_quote": "Fix bug in the Wald test in IV estimations when variables are removed because of collinearity",
     "functions": [
       "feols"
+    ],
+    "introduced_version": null,
+    "severity": "HIGH",
+    "silent": true,
+    "source": "agent"
+  },
+  "glmnet@1.5#1": {
+    "category": "RESULT_CHANGING",
+    "conditions": "the HessianExact path, whose sense was inverted; also lambda.min renamed to lambda.min.ratio and its default changed when nobs < nvars",
+    "confidence": "MEDIUM",
+    "evidence_quote": "changed the sense (it was wrong)",
+    "functions": [
+      "glmnet"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "lfe@2.5#2": {
+    "category": "BEHAVIOR_CHANGE",
+    "conditions": "multiway (two or more) clustering; negative eigenvalues now forced to zero, revertible with psdef=FALSE",
+    "confidence": "HIGH",
+    "evidence_quote": "Multiway clustered standard errors now incorporate the negative Eigenvalue adjustment of Cameron, Gelbach, Miller",
+    "functions": [
+      "felm"
+    ],
+    "introduced_version": null,
+    "severity": "HIGH",
+    "silent": true,
+    "source": "agent"
+  },
+  "lfe@2.5#3": {
+    "category": "RESULT_CHANGING",
+    "conditions": "bootstrapped standard errors for fixed effects via getfe()/btrap()",
+    "confidence": "HIGH",
+    "evidence_quote": "could yield wrong bootstrapped standard errors in getfe",
+    "functions": [
+      "btrap",
+      "getfe"
     ],
     "introduced_version": null,
     "severity": "HIGH",
@@ -1109,6 +1619,19 @@
     "silent": true,
     "source": "agent"
   },
+  "mice@3.17.0#22": {
+    "category": "RESULT_CHANGING",
+    "conditions": "complete() on an mids object built by rbind() where the first block was imputed and the second was not; imputed values were copied into cells that should have stayed observed",
+    "confidence": "HIGH",
+    "evidence_quote": "auto-repeated imputed values into cells that should NOT be imputed",
+    "functions": [
+      "complete"
+    ],
+    "introduced_version": null,
+    "severity": "HIGH",
+    "silent": true,
+    "source": "agent"
+  },
   "nlme@3.1-118#0": {
     "category": "ERROR_TO_WORKING",
     "conditions": "self-starting model",
@@ -1293,6 +1816,188 @@
     "introduced_version": null,
     "severity": "LOW",
     "silent": false,
+    "source": "agent"
+  },
+  "psych@1.4.2#10": {
+    "category": "RESULT_CHANGING",
+    "conditions": "describe() standard errors in version 1.4.1 only",
+    "confidence": "HIGH",
+    "evidence_quote": "Fixed the se calculation in describe which had been incorrectly changed",
+    "functions": [
+      "describe"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "psych@1.6.4#22": {
+    "category": "RESULT_CHANGING",
+    "conditions": "any alpha() call reporting a standard error",
+    "confidence": "HIGH",
+    "evidence_quote": "to correctly find the s.e. of alpha. I was slightly overestimating",
+    "functions": [
+      "alpha"
+    ],
+    "introduced_version": null,
+    "severity": "HIGH",
+    "silent": true,
+    "source": "agent"
+  },
+  "psych@1.7.8#30": {
+    "category": "RESULT_CHANGING",
+    "conditions": "alpha() on a two-item scale, reporting alpha with one item dropped",
+    "confidence": "HIGH",
+    "evidence_quote": "I was not correctly reporting the alpha if one item was dropped",
+    "functions": [
+      "alpha"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "psych@1.8.12#30": {
+    "category": "BEHAVIOR_CHANGE",
+    "conditions": "alpha() on items needing key reversal; between 1.8.8 and 1.8.12 the warning was missing, so a reversal-needing scale reported quietly",
+    "confidence": "MEDIUM",
+    "evidence_quote": "properly warns when it needs to reverse keys",
+    "functions": [
+      "alpha"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": false,
+    "source": "agent"
+  },
+  "psych@1.8.3#58": {
+    "category": "RESULT_CHANGING",
+    "conditions": "the a path in mediate() output; the probabilities printed were wrong, which is the number that reaches a paper even though the entry calls it a print bug",
+    "confidence": "MEDIUM",
+    "evidence_quote": "probabilities were displaying incorrectly",
+    "functions": [
+      "mediate"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "psych@1.8.4#12": {
+    "category": "ERROR_TO_WORKING",
+    "conditions": "alpha() from a correlation matrix with n.obs specified",
+    "confidence": "HIGH",
+    "evidence_quote": "was not working from a correlation matrix",
+    "functions": [
+      "alpha"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "psych@1.8.9#37": {
+    "category": "DOC",
+    "conditions": "the mediate() diagram with two DVs and one IV",
+    "confidence": "HIGH",
+    "evidence_quote": "Fixed bug in mediate diagram",
+    "functions": [
+      "mediate"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "psych@1.9.12#26": {
+    "category": "RESULT_CHANGING",
+    "conditions": "any ICC() call reporting confidence intervals; the interval was built at alpha/2 rather than alpha, so coverage was wrong",
+    "confidence": "HIGH",
+    "evidence_quote": "Confidence intervals in ICC were incorrectly based upon alpha/2 instead of alpha",
+    "functions": [
+      "ICC"
+    ],
+    "introduced_version": null,
+    "severity": "HIGH",
+    "silent": true,
+    "source": "agent"
+  },
+  "psych@2.0.12#24": {
+    "category": "UNCLEAR",
+    "conditions": "mediate() degrees of freedom with a single IV; the entry is not sure it is fixed",
+    "confidence": "LOW",
+    "evidence_quote": "Seems to be something wrong in mediate df 1 IV (fixed?)",
+    "functions": [
+      "mediate"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "psych@2.0.8#13": {
+    "category": "RESULT_CHANGING",
+    "conditions": "alpha() with missing data imputed",
+    "confidence": "LOW",
+    "evidence_quote": "the imputation was not working quite right",
+    "functions": [
+      "alpha"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "psych@2.2.3#21": {
+    "category": "UNCLEAR",
+    "conditions": "describe() on a single variable taken from a data frame",
+    "confidence": "LOW",
+    "evidence_quote": "Fixed a bug in describe for single variables",
+    "functions": [
+      "describe"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "psych@2.3.9#11": {
+    "category": "DOC",
+    "conditions": "variable labels for vectors when quantiles are requested",
+    "confidence": "HIGH",
+    "evidence_quote": "would not return variable labels for vectors",
+    "functions": [
+      "describe"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "psych@2.4.4#3": {
+    "category": "RESULT_CHANGING",
+    "conditions": "alpha() on data with missing values, where average R was formed from the covariance rather than the correlation",
+    "confidence": "HIGH",
+    "evidence_quote": "need to use cor rather than cov2cor when treating missing data",
+    "functions": [
+      "alpha"
+    ],
+    "introduced_version": null,
+    "severity": "HIGH",
+    "silent": true,
+    "source": "agent"
+  },
+  "psych@2.4.4#42": {
+    "category": "RESULT_CHANGING",
+    "conditions": "alpha() deriving the correlation matrix indirectly through cov2cor",
+    "confidence": "MEDIUM",
+    "evidence_quote": "finds R from cov2cor instead of directly",
+    "functions": [
+      "alpha"
+    ],
+    "introduced_version": null,
+    "severity": "HIGH",
+    "silent": true,
     "source": "agent"
   },
   "quantreg@3.08#0": {
@@ -1481,6 +2186,84 @@
     "silent": false,
     "source": "agent"
   },
+  "questionr@0.6.3#2": {
+    "category": "RESULT_CHANGING",
+    "conditions": "the missing-value percentage reported by describe()",
+    "confidence": "HIGH",
+    "evidence_quote": "Fix incorrect NAs percentage in `describe`",
+    "functions": [
+      "describe"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "randomForest@4.5-13#0": {
+    "category": "RESULT_CHANGING",
+    "conditions": "randomForest() regression with biasCorr=TRUE",
+    "confidence": "MEDIUM",
+    "evidence_quote": "Fixed a bug in randomForest() when biasCorr=TRUE for regression",
+    "functions": [
+      "randomForest"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "randomForest@4.5-25#0": {
+    "category": "RESULT_CHANGING",
+    "conditions": "the first few trees' OOB MSE and R-squared; the entry states the whole-forest figures were unaffected, which bounds the damage to per-tree diagnostics",
+    "confidence": "HIGH",
+    "evidence_quote": "This did not affect the final MSE and R-squared for the whole forest",
+    "functions": [
+      "randomForest"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": true,
+    "source": "agent"
+  },
+  "randomForest@4.5-33#0": {
+    "category": "RESULT_CHANGING",
+    "conditions": "randomForest() with importance=TRUE and proximity=TRUE together; the proximity matrix was wrong, and only in that combination",
+    "confidence": "HIGH",
+    "evidence_quote": "the proximity matrix returned is incorrect",
+    "functions": [
+      "randomForest"
+    ],
+    "introduced_version": null,
+    "severity": "HIGH",
+    "silent": true,
+    "source": "agent"
+  },
+  "randomForest@4.5-9#0": {
+    "category": "UNCLEAR",
+    "conditions": "unsupervised randomForest() with keep.forest=TRUE",
+    "confidence": "LOW",
+    "evidence_quote": "Fixed a bug with unsupervised randomForest",
+    "functions": [
+      "randomForest"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "randomForest@4.6-8#2": {
+    "category": "RESULT_CHANGING",
+    "conditions": "randomForest() regression with proximity=TRUE and oob.prox=FALSE",
+    "confidence": "MEDIUM",
+    "evidence_quote": "There was a long standing bug",
+    "functions": [
+      "randomForest"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
   "sandwich@2.2-8#0": {
     "category": "RESULT_CHANGING",
     "conditions": "mlm objects having only an intercept",
@@ -1530,6 +2313,34 @@
     ],
     "introduced_version": null,
     "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "sf@0.5-3#9": {
+    "category": "RESULT_CHANGING",
+    "conditions": "st_union, st_difference, st_sym_difference in 0.5-2 only",
+    "confidence": "HIGH",
+    "evidence_quote": "correct bug in `st_union`, `st_difference` and `st_sym_difference`",
+    "functions": [
+      "st_union",
+      "st_difference",
+      "st_sym_difference"
+    ],
+    "introduced_version": null,
+    "severity": "HIGH",
+    "silent": true,
+    "source": "agent"
+  },
+  "sf@1.0-1#0": {
+    "category": "RESULT_CHANGING",
+    "conditions": "st_intersection with the s2 engine active (the default from 1.0-0)",
+    "confidence": "HIGH",
+    "evidence_quote": "when using s2 attributes were assigned wrongly",
+    "functions": [
+      "st_intersection"
+    ],
+    "introduced_version": null,
+    "severity": "HIGH",
     "silent": true,
     "source": "agent"
   },
@@ -2149,6 +2960,227 @@
     "introduced_version": null,
     "severity": "LOW",
     "silent": false,
+    "source": "agent"
+  },
+  "xts@0.10-0#13": {
+    "category": "RESULT_CHANGING",
+    "conditions": "endpoints() on a series indexed before 1970-01-01",
+    "confidence": "HIGH",
+    "evidence_quote": "caused incorrect results if the index was less than the epoch",
+    "functions": [
+      "endpoints"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "xts@0.10-0#14": {
+    "category": "RESULT_CHANGING",
+    "conditions": "diff() on a logical xts object; the returned index type was wrong",
+    "confidence": "MEDIUM",
+    "evidence_quote": "return an object with a POSIXct index",
+    "functions": [
+      "diff"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": true,
+    "source": "agent"
+  },
+  "xts@0.10-0#25": {
+    "category": "ERROR_TO_WORKING",
+    "conditions": "to.period() with name=NULL",
+    "confidence": "HIGH",
+    "evidence_quote": "errored when name=NULL",
+    "functions": [
+      "to.period"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "xts@0.10-0#26": {
+    "category": "RESULT_CHANGING",
+    "conditions": ".index* accessors on a series whose tzone is not the system zone",
+    "confidence": "HIGH",
+    "evidence_quote": "did not account for timezones",
+    "functions": [
+      "xts"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "xts@0.10-0#5": {
+    "category": "RESULT_CHANGING",
+    "conditions": "endpoints() on sparse data sharing month and day across different years",
+    "confidence": "HIGH",
+    "evidence_quote": "Fixed bug in endpoints() when called on sparse data",
+    "functions": [
+      "endpoints"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "xts@0.10-0#6": {
+    "category": "UNCLEAR",
+    "conditions": "subsetting a logical xts object",
+    "confidence": "LOW",
+    "evidence_quote": "did not do the same checks on logical xts objects",
+    "functions": [
+      "xts"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "xts@0.10-1#10": {
+    "category": "RESULT_CHANGING",
+    "conditions": "endpoints() on sub-second timestamps, where integer division was applied to non-integer arguments",
+    "confidence": "HIGH",
+    "evidence_quote": "due to sub-second representation error",
+    "functions": [
+      "endpoints"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "xts@0.11-1#0": {
+    "category": "RESULT_CHANGING",
+    "conditions": ".xts() called with an explicit tclass, which was overridden to POSIXct",
+    "confidence": "HIGH",
+    "evidence_quote": "incorrectly set to POSIXct regardless of user-provided value",
+    "functions": [
+      "xts"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "xts@0.11-1#1": {
+    "category": "FEATURE",
+    "conditions": "performance only; results unchanged",
+    "confidence": "HIGH",
+    "evidence_quote": "Fix performance regression",
+    "functions": [
+      "xts"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": false,
+    "source": "agent"
+  },
+  "xts@0.11-1#4": {
+    "category": "BEHAVIOR_CHANGE",
+    "conditions": "plot tick and grid mark placement with by='quarters' in 0.10-2",
+    "confidence": "MEDIUM",
+    "evidence_quote": "This ran but produced an incorrect result in 0.10-2",
+    "functions": [
+      "plot"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": true,
+    "source": "agent"
+  },
+  "xts@0.12.1#6": {
+    "category": "RESULT_CHANGING",
+    "conditions": "time-of-day subsetting by hour alone",
+    "confidence": "HIGH",
+    "evidence_quote": "subsetting by hour only returned wrong results",
+    "functions": [
+      "xts"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "xts@0.8-8#2": {
+    "category": "RESULT_CHANGING",
+    "conditions": "xts() on a one-column matrix or data.frame; dimensions were dropped",
+    "confidence": "HIGH",
+    "evidence_quote": "dropped dims when 'x' is a 1-column matrix or data.frame",
+    "functions": [
+      "xts"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": true,
+    "source": "agent"
+  },
+  "xts@0.9-4#1": {
+    "category": "RESULT_CHANGING",
+    "conditions": "to.period() with indexAt set to 'firstof' or 'lastof'",
+    "confidence": "HIGH",
+    "evidence_quote": "Fixed to.period() bug when 'indexAt' is \"firstof\" or \"lastof\"",
+    "functions": [
+      "to.period"
+    ],
+    "introduced_version": null,
+    "severity": "MEDIUM",
+    "silent": true,
+    "source": "agent"
+  },
+  "zoo@1.2-0#4": {
+    "category": "RESULT_CHANGING",
+    "conditions": "zoo() given ordered factors; the ordering was discarded",
+    "confidence": "HIGH",
+    "evidence_quote": "\"ordered\" class was dropped",
+    "functions": [
+      "zoo"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": true,
+    "source": "agent"
+  },
+  "zoo@1.7-13#0": {
+    "category": "RESULT_CHANGING",
+    "conditions": "window() on a one-column zoo series",
+    "confidence": "HIGH",
+    "evidence_quote": "erroneously dropped the dimension in case of 1-column zoo series",
+    "functions": [
+      "window"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": true,
+    "source": "agent"
+  },
+  "zoo@1.7-5#0": {
+    "category": "RESULT_CHANGING",
+    "conditions": "aggregate() on a zoo object whose index is a timeDate",
+    "confidence": "MEDIUM",
+    "evidence_quote": "fixed a bug in the aggregate() method",
+    "functions": [
+      "aggregate"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": true,
+    "source": "agent"
+  },
+  "zoo@1.8-6#0": {
+    "category": "RESULT_CHANGING",
+    "conditions": "adding a zero-width zoo series with $<-; the last column was renamed",
+    "confidence": "HIGH",
+    "evidence_quote": "erroneously changed the last column name",
+    "functions": [
+      "zoo"
+    ],
+    "introduced_version": null,
+    "severity": "LOW",
+    "silent": true,
     "source": "agent"
   }
 }

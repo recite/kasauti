@@ -17,14 +17,37 @@ Parsing uses each language's own parser -- R's `getParseData`, Python's
 not counted as a call. Scripts that fail to parse are counted, not
 dropped; that rate is a property of the archives.
 
+## Which packages
+
+The frame covers **132** packages, selected by
+intersecting two sources, neither of them the author's memory: the
+packages CRAN's expert-maintained Task Views list for a field, and the
+packages replication archives in the corpus actually load. A package
+qualifies by being both recognized by the field and used in the
+literature.
+
+The earlier version of this frame named its packages by hand. Measuring
+the corpus afterwards showed what that costs: `lfe`, loaded by 222
+archives, had simply been forgotten -- and a package left off the list is
+indistinguishable from a package with nothing wrong.
+
+Judgment survives in two exclusion rules, both stated at the level of a
+category rather than a package, and both falsifiable in a way an
+inclusion list is not. `INFERENTIAL_VIEWS` picks which of CRAN's 49 views
+describe inference rather than infrastructure or a distant laboratory
+domain. `NON_INFERENTIAL` drops packages whose whole job is plotting,
+formatting, or data manipulation -- unavoidable, because `ggplot2` is
+genuinely part of the Spatial and NetworkAnalysis toolkits, so no choice
+of views excludes it.
+
 ## How a call is attributed to a package
 
-**R.** A name is attributed to every installed package in the curated
-list that exports it, established by `getNamespaceExports` rather than by
-a hand-written table. Names the tidyverse routinely masks -- `filter`,
+**R.** A name is attributed to every package in the frame that exports
+it, read from the `NAMESPACE` inside the CRAN source tarball rather than
+from a hand-written table. Names the tidyverse routinely masks -- `filter`,
 `select`, `lag`, `slice` -- count only when written `pkg::name`, since a
 bare `filter()` in a script that loads dplyr is dplyr's. That rule
-discarded 2444 script-function pairs, which is the
+discarded 13148 script-function pairs, which is the
 conservative direction: genuine bare `stats::filter` uses are lost, but
 nothing is overcounted.
 
@@ -39,42 +62,47 @@ Plotting, printing, extraction, and family constructors are excluded: a
 bug in `ggplot2`, the corpus's most-used package overall, does not change
 a reported coefficient.
 
-Not introspectable (not installed, so unattributable): `rddtools`.
+Exports come from the `NAMESPACE` inside each package's CRAN source
+tarball, not from an installed copy, so coverage is not limited to what
+one machine can build. Base packages, which have no tarball, are read
+from the interpreter.
+
+No export list resolved, so nothing can be attributed to them: `mapdata`.
 
 ## Top procedures, R (n = 9343 parsed scripts)
 
 | # | function | package | scripts | share |
 |---|---|---|---|---|
-| 1 | `rnorm` | stats | 690 | 7.4% |
-| 2 | `lm` | stats | 643 | 6.9% |
-| 3 | `quantile` | stats | 420 | 4.5% |
-| 4 | `runif` | stats | 413 | 4.4% |
-| 5 | `sd` | stats | 343 | 3.7% |
-| 6 | `glm` | stats | 206 | 2.2% |
-| 7 | `pnorm` | stats | 188 | 2.0% |
-| 8 | `median` | stats | 185 | 2.0% |
-| 9 | `coeftest` | lmtest | 120 | 1.3% |
-| 10 | `feols` | fixest | 117 | 1.3% |
-| 11 | `qnorm` | stats | 117 | 1.3% |
-| 12 | `cor` | stats | 116 | 1.2% |
-| 13 | `var` | stats | 114 | 1.2% |
-| 14 | `weighted.mean` | stats | 103 | 1.1% |
-| 15 | `dnorm` | stats | 99 | 1.1% |
-| 16 | `optim` | stats | 85 | 0.9% |
-| 17 | `vcovHC` | plm;sandwich | 76 | 0.8% |
-| 18 | `rbinom` | stats | 74 | 0.8% |
-| 19 | `style.tex` | fixest | 69 | 0.7% |
-| 20 | `pt` | stats | 67 | 0.7% |
-| 21 | `model.response` | stats | 66 | 0.7% |
-| 22 | `pchisq` | stats | 66 | 0.7% |
-| 23 | `anova` | stats | 64 | 0.7% |
-| 24 | `index` | plm | 59 | 0.6% |
-| 25 | `rq` | quantreg | 58 | 0.6% |
-| 26 | `dist` | stats | 55 | 0.6% |
-| 27 | `lm_robust` | estimatr | 55 | 0.6% |
-| 28 | `mvrnorm` | MASS | 54 | 0.6% |
-| 29 | `t.test` | stats | 54 | 0.6% |
-| 30 | `ts` | stats | 53 | 0.6% |
+| 1 | `length` | Matrix | 3268 | 35.0% |
+| 2 | `names` | raster | 1954 | 20.9% |
+| 3 | `rep` | Matrix;memisc | 1887 | 20.2% |
+| 4 | `is.na` | Matrix | 1820 | 19.5% |
+| 5 | `nrow` | raster | 1739 | 18.6% |
+| 6 | `as.numeric` | Matrix;memisc | 1486 | 15.9% |
+| 7 | `mean` | Matrix;raster | 1412 | 15.1% |
+| 8 | `cbind` | mice | 1353 | 14.5% |
+| 9 | `unique` | memisc;raster | 1245 | 13.3% |
+| 10 | `rbind` | mice | 1233 | 13.2% |
+| 11 | `which` | Matrix | 1067 | 11.4% |
+| 12 | `ggplot` | rms | 985 | 10.5% |
+| 13 | `as.character` | memisc;raster | 948 | 10.1% |
+| 14 | `log` | raster | 855 | 9.2% |
+| 15 | `ncol` | raster | 820 | 8.8% |
+| 16 | `as.data.frame` | raster | 739 | 7.9% |
+| 17 | `dim` | Matrix;memisc | 724 | 7.7% |
+| 18 | `rnorm` | stats | 690 | 7.4% |
+| 19 | `as.integer` | Matrix;memisc | 668 | 7.1% |
+| 20 | `lm` | stats | 643 | 6.9% |
+| 21 | `sample` | memisc | 638 | 6.8% |
+| 22 | `as.matrix` | Matrix;raster | 620 | 6.6% |
+| 23 | `merge` | memisc;raster;sp | 589 | 6.3% |
+| 24 | `subset` | raster | 546 | 5.8% |
+| 25 | `as.vector` | Matrix;memisc;raster | 518 | 5.5% |
+| 26 | `diag` | Matrix | 466 | 5.0% |
+| 27 | `head` | Matrix;memisc;raster | 446 | 4.8% |
+| 28 | `quantile` | raster;stats | 420 | 4.5% |
+| 29 | `as.Date` | zoo | 416 | 4.5% |
+| 30 | `runif` | stats | 413 | 4.4% |
 
 ## Top procedures, Python (n = 6233 parsed scripts)
 
@@ -119,31 +147,31 @@ bounds.
 
 | package | script-calls | distinct functions |
 |---|---|---|
+| `raster` | 20242 | 219 |
+| `Matrix` | 17855 | 137 |
+| `memisc` | 10682 | 38 |
 | `stats` | 6437 | 266 |
+| `mice` | 2726 | 12 |
+| `sp` | 2677 | 117 |
+| `sf` | 2615 | 130 |
 | `numpy.random` | 1746 | 55 |
+| `srvyr` | 1509 | 54 |
+| `rms` | 1095 | 15 |
+| `zoo` | 770 | 26 |
 | `fixest` | 457 | 43 |
 | `scipy.stats` | 441 | 256 |
+| `Hmisc` | 410 | 81 |
+| `spdep` | 401 | 68 |
+| `lfe` | 377 | 19 |
+| `metafor` | 364 | 20 |
 | `plm` | 280 | 16 |
 | `scipy.optimize` | 274 | 126 |
+| `xts` | 273 | 41 |
+| `optmatch` | 247 | 5 |
 | `nlme` | 245 | 63 |
-| `lmtest` | 242 | 17 |
+| `lmtest` | 243 | 18 |
 | `sandwich` | 238 | 21 |
-| `quantreg` | 238 | 61 |
 | `MASS` | 223 | 40 |
-| `sklearn.metrics` | 208 | 102 |
-| `sklearn.linear_model` | 191 | 74 |
-| `lme4` | 186 | 26 |
-| `VGAM` | 164 | 30 |
-| `survival` | 161 | 14 |
-| `estimatr` | 102 | 12 |
-| `mgcv` | 91 | 16 |
-| `car` | 70 | 14 |
-| `statsmodels` | 63 | 13 |
-| `MatchIt` | 59 | 4 |
-| `pscl` | 51 | 7 |
-| `metafor` | 49 | 7 |
-| `AER` | 44 | 4 |
-| `multiwayvcov` | 28 | 1 |
 
 ## What the frame says
 

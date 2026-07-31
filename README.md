@@ -67,6 +67,50 @@ A bug directory that has reached verification contains a `case.yaml`, so it is
 discovered by the same runner as any translation case. The lifecycle falls out of
 the files.
 
+## Which packages, and why not the ones I remembered
+
+The frame covers **131 R packages**, chosen by intersecting two sources, neither of
+them my judgment: the packages CRAN's expert-maintained [Task
+Views](https://cran.r-project.org/web/views/) list for a field, and the packages
+replication archives in the corpus actually load. A package qualifies by being both
+recognized by the field and used in the literature — 28 relevant views list 3,509
+packages, of which 131 appear in at least 10 corpus archives.
+
+The first version of this frame named 15 packages from memory. Measuring the corpus
+afterwards showed what that costs. `lfe` — Simen Gaure's fixed-effects estimator,
+loaded by **222 archives** — had simply been forgotten, and its changelog turned out
+to hold the single most-exposed candidate in the study: a change to how multiway
+clustered standard errors handle negative eigenvalues, touching 245 scripts. A
+package left off a hand-written list is indistinguishable from a package with
+nothing wrong.
+
+Judgment survives in two exclusion rules, both stated at the level of a category
+rather than a package, and both falsifiable in a way an inclusion list is not:
+
+- **`INFERENTIAL_VIEWS`** — which of CRAN's 49 views describe inference rather than
+  software infrastructure, presentation, or a distant laboratory domain.
+- **`NON_INFERENTIAL`** — packages whose whole job is plotting, formatting, or data
+  manipulation. Unavoidable, because `ggplot2` is genuinely part of the Spatial and
+  NetworkAnalysis toolkits, so no choice of views excludes it.
+
+Cast wide at the package level, filter narrow at the function level. `broom` is the
+proof: it is mostly extraction, `tidy` and `glance` are already excluded as
+non-computing, and so it contributes almost nothing — without anyone having to
+decide that it should.
+
+**Exports come from the tarball, not from an install.** Attribution used to ask a
+running R session `getNamespaceExports(pkg)`, which meant a package had to build on
+this machine to be studied — and that build ceiling, not any principle, was what
+capped the study at 15 packages. The `NAMESPACE` file sits inside the source tarball
+already being downloaded for `NEWS`, so both come out of one read. Checked against
+the installed namespaces it replaces, the parse loses **2 names across 28 packages**,
+both traceable to a version difference rather than to the parser.
+
+**A name base R also exports counts only when qualified.** `Matrix` exports `diag`,
+`head`, `crossprod`, and `rowMeans`. Counting every bare `diag()` in the corpus put
+`Matrix` at the top of the queue on 3,562 scripts that meant base R's, burying `lfe`
+at 245. This generalizes the rule that already existed for tidyverse-masked names.
+
 ## The bug pipeline
 
 Five stages, each leaving a durable artifact, so a session picks up where the last
@@ -159,6 +203,10 @@ kasauti bug status               # the record's pipeline state
 kasauti bug index                # validate records, regenerate all four views
 kasauti bug probe <bug-id>       # narrow exposure by the conditions probe
 kasauti bug papers <bug-id>      # resolve scripts to DOIs, dates, journals
+kasauti frame packages           # select packages: task views ∩ corpus usage
+kasauti frame harvest            # fetch changelogs, releases, exports
+kasauti frame build              # rank the procedures the corpus calls
+kasauti classify report          # judged-vs-unjudged coverage, yield by package
 make check                       # lint, types, tests
 ```
 
@@ -186,8 +234,23 @@ a classified catalogue, and "both right, conventions differ" is both the largest
 and the most useful to practitioners.
 
 Changelogs are self-reported. `survival` documents 114 versions meticulously; `MASS`
-has no version structure at all. Raw bug counts across packages measure candor at
-least as much as bugginess, so NEWS thoroughness travels with every count.
+has no version structure at all. **27 of the 131 selected packages ship no
+machine-readable changelog whatsoever** — `arm`, `MCMCpack`, `lavaan`, `rdrobust`,
+`grf` among them. They contribute zero candidates, and that is a fact about their
+release notes, not about their correctness. Raw bug counts across packages measure
+candor at least as much as bugginess, so NEWS thoroughness travels with every count.
+
+**The classification tail is unread, not cleared.** Every entry is judged by hand, so
+the queue is finite: 228 of 409 exposed entries are read, worked in descending
+exposure, and nothing in the unjudged 181 touches more than 25 corpus scripts.
+`kasauti classify report` states this each time it runs. A bug sitting in that tail
+has not been ruled out; it has not been looked at.
+
+**Python coverage is bounded by the corpus, not by the selection.** Of 6,233 parsed
+Python scripts, the inferential imports are `numpy` (2,914), `scipy` (881), `sklearn`
+(254), and `statsmodels` (46); the next econometrics library, `linearmodels`, appears
+in 4. Adding Python packages would add changelog text and no exposure. R's `lm` alone
+appears in 643 scripts — an order of magnitude more than all of statsmodels.
 
 Publication date is a weak proxy for when an analysis was run, in both directions.
 One archive here went up six weeks *after* the fix that would have affected it.
