@@ -9,8 +9,8 @@ rate meaningless.
 
 ## What the reading changed
 
-The regular-expression layer agreed with the reading on **93**
-of 163 entries and disagreed on **70** (43%).
+The regular-expression layer agreed with the reading on **92**
+of 163 entries and disagreed on **71** (44%).
 
 This is the validation a hand-coded gold set was going to provide. The rules
 are the baseline, the reading is the reference, and the disagreement rate is
@@ -18,9 +18,9 @@ how much the reading was worth.
 
 | rules said | reading said | n |
 |---|---|---|
-| RESULT_CHANGING | RESULT_CHANGING | 93 |
+| RESULT_CHANGING | RESULT_CHANGING | 92 |
 | RESULT_CHANGING | DOC ** | 27 |
-| RESULT_CHANGING | ERROR_TO_WORKING ** | 22 |
+| RESULT_CHANGING | ERROR_TO_WORKING ** | 23 |
 | RESULT_CHANGING | UNCLEAR ** | 16 |
 | RESULT_CHANGING | BEHAVIOR_CHANGE ** | 4 |
 | RESULT_CHANGING | FEATURE ** | 1 |
@@ -29,16 +29,16 @@ how much the reading was worth.
 
 | category | n |
 |---|---|
-| RESULT_CHANGING | 93 |
+| RESULT_CHANGING | 92 |
 | DOC | 27 |
-| ERROR_TO_WORKING | 22 |
+| ERROR_TO_WORKING | 23 |
 | UNCLEAR | 16 |
 | BEHAVIOR_CHANGE | 4 |
 | FEATURE | 1 |
 
-Silent (quietly wrong, no error or warning): **90**; loud: 73.
+Silent (quietly wrong, no error or warning): **89**; loud: 74.
 
-**90** entries could have moved a number in a published table -- silent result-changing bugs, plus behaviour
+**89** entries could have moved a number in a published table -- silent result-changing bugs, plus behaviour
 changes, which move results whether or not anyone calls them defects.
 
 ## Shortlist: silent, result-changing, high severity
@@ -65,7 +65,6 @@ could plausibly hit, with nothing to signal it had happened.
 | `plm@1.2-6#1` | `pgmm` | different lags for GMM instruments |
 | `plm@1.2-6#4` | `plmtest` | two-tailed tests; p-values were divided by 2 instead of multiplied |
 | `plm@1.2-8#2` | `vcovBK` | matrices degenerating into vectors |
-| `plm@1.5-13#0` | `vcovHC` | method='white' when any group has exactly one element |
 | `plm@1.5-9#3` | `phtest` | method='aux' with NA values, or the between model (wrong degrees of freedom) |
 | `quantreg@3.08#0` | `anova.rqlist` | numerator degrees of freedom were p*(m-1) instead of (p-1)*(m-1) |
 | `quantreg@3.73#1` | `anova.rqlist`, `rq.test.rank` | chi-squared statistic divided by numerator df twice |

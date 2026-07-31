@@ -59,9 +59,103 @@
       "silent": true,
       "status": "VERIFIED",
       "window_censored": true
+    },
+    {
+      "bug_id": "r/plm/1.5-13-vcovhc-white-singleton",
+      "category": "ERROR_TO_WORKING",
+      "condition_probe": "(?=.*vcovHC)(?=.*white)",
+      "conditions": "A panel where at least one group has exactly one observation, with method='white1' or 'white2'. The default method is 'arellano', which is unaffected. Verified: arellano is identical across versions on both a balanced panel and one with a singleton, and white1 is identical on the balanced panel, so the singleton really is the trigger.",
+      "fixed_in": "1.5-13",
+      "fixed_on": "",
+      "functions": "vcovHC",
+      "language": "r",
+      "magnitude": "Verified against plm 1.5-12. With a singleton group, white1 and white2 both raise \"non-conformable arguments\" and produce no value; the fixed version returns 0.1161825457 and 0.1271608291. arellano is unaffected on both panels. Separately and not attributable to this fix, white2 on a balanced panel moves from 0.1161825457 to 0.1271608291 across the decade between the two backends: in 1.5-12 white2 returned exactly what white1 returned, and by 2.6.7 it is a distinct estimator.",
+      "package": "plm",
+      "papers_in_window": null,
+      "papers_linked": 8,
+      "scripts_calling_function": 76,
+      "scripts_meeting_probe": 11,
+      "severity": "LOW",
+      "silent": false,
+      "status": "VERIFIED",
+      "window_censored": true
     }
   ],
   "papers": {
+    "r/plm/1.5-13-vcovhc-white-singleton": [
+      {
+        "doi": "https://doi.org/10.7910/DVN/AAY3TQ",
+        "in_window": "False",
+        "journal": "JPE",
+        "published": "2023-03-02",
+        "repo_id": "AAY3TQ",
+        "source": "dataverse",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.7910/DVN/HLO4XC",
+        "in_window": "False",
+        "journal": "qje",
+        "published": "2022-05-24",
+        "repo_id": "HLO4XC",
+        "source": "dataverse",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.7910/DVN/HWVUER",
+        "in_window": "False",
+        "journal": "IOJ",
+        "published": "2022-07-28",
+        "repo_id": "HWVUER",
+        "source": "dataverse",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.7910/DVN/Q9TFN2",
+        "in_window": "False",
+        "journal": "JPE",
+        "published": "2025-02-27",
+        "repo_id": "Q9TFN2",
+        "source": "dataverse",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.7910/DVN/TIL7KK",
+        "in_window": "False",
+        "journal": "JPE",
+        "published": "2024-07-12",
+        "repo_id": "TIL7KK",
+        "source": "dataverse",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.7910/DVN/VELJKG",
+        "in_window": "False",
+        "journal": "qje",
+        "published": "2019-08-06",
+        "repo_id": "VELJKG",
+        "source": "dataverse",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.5281/zenodo.10012820",
+        "in_window": "False",
+        "journal": "",
+        "published": "",
+        "repo_id": "10012820",
+        "source": "zenodo",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.5281/zenodo.10145562",
+        "in_window": "False",
+        "journal": "",
+        "published": "",
+        "repo_id": "10145562",
+        "source": "zenodo",
+        "title": ""
+      }
+    ],
     "r/sandwich/2.5-0-vcovhc-mlm-sign": [
       {
         "doi": "https://doi.org/10.5281/zenodo.10012820",

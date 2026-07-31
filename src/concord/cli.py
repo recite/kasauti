@@ -297,6 +297,10 @@ def bug_papers(bug_id: str, bugs_dir: Path, datasets_dir: Path, enrich: bool) ->
         for paper in linkage.papers:
             enrich_paper(paper, ROOT / "data/cache/papers")
 
+    # With no fix date, no archive can be placed relative to the bug at all.
+    # Recording zero would read as "no papers affected" when the truth is "not
+    # determinable" -- the same conflation the censored bucket exists to avoid.
+    undated_fix = record.fixed_on is None
     in_window = linkage.in_window(record.fixed_on, record.introduced_on)
     write_papers(
         linkage,
@@ -304,15 +308,20 @@ def bug_papers(bug_id: str, bugs_dir: Path, datasets_dir: Path, enrich: bool) ->
         record.fixed_on,
         record.introduced_on,
     )
-    record.exposure.papers_in_window = len(in_window)
-    if record.censored:
+    record.exposure.papers_in_window = None if undated_fix else len(in_window)
+    if record.censored and not undated_fix:
         record.exposure.papers_censored = len(in_window)
     write_bug(advance(record, "LINKED"))
 
+    if undated_fix:
+        window = "window undeterminable: the changelog does not date the fix"
+    else:
+        window = f"{len(in_window)} published before the fix" + (
+            " (window left-censored)" if record.censored else ""
+        )
     click.echo(
         f"{bug_id}: {len(scripts)} script(s) -> {len(linkage.papers)} archive(s), "
-        f"{len(in_window)} published before the fix"
-        + (" (window left-censored)" if record.censored else "")
+        f"{window}"
     )
     if linkage.by_source:
         click.echo(f"  by source: {linkage.by_source}")

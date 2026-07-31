@@ -1,0 +1,68 @@
+id: plm_vcovhc_singleton
+title: "plm 1.5-13: vcovHC white methods and a singleton group"
+family: version_regression
+
+# plm 1.5-13 (undated in the changelog):
+#   "fixed bug in vcovHC(..., method="white") from degenerating diag() if any
+#    group has only 1 element."
+#
+# Requires plm 1.5-12 in a side library:
+#   Rscript -e 'install.packages(
+#     "https://cran.r-project.org/src/contrib/Archive/plm/plm_1.5-12.tar.gz",
+#     repos = NULL, type = "source", lib = "/tmp/rlibs/plm_1.5-12")'
+#
+# The comparison spans plm 1.5-12 to 2.6.7 -- a decade of releases, not one fix.
+# Only the singleton quantities isolate this entry; the balanced white2 gap
+# below is some other change in between, and is recorded rather than attributed.
+
+backends:
+  - name: buggy
+    cmd: ["Rscript", "--vanilla", "run_r.R", "/tmp/rlibs/plm_1.5-12"]
+    label: "plm 1.5-12 (before the fix)"
+    optional: true
+  - name: fixed
+    cmd: ["Rscript", "--vanilla", "run_r.R"]
+    label: "plm 2.6.7 (current)"
+
+agree_tol: 1.0e-8
+numeric_tol: 1.0e-5
+
+quantities:
+  se.x@singleton_white1:
+    expect: DIVERGE
+    reason: >
+      The bug, and it is louder than the changelog reads. With a singleton
+      group plm 1.5-12 does not return a wrong number: it raises
+      "non-conformable arguments" and returns nothing. R's diag() on a
+      length-one numeric returns an identity matrix of that size rather than a
+      1x1, and the dimension mismatch propagates to an error rather than to a
+      plausible wrong covariance. This surfaces as UNCOMPARABLE rather than
+      DIVERGE, which is the engine being right: a quantity one backend never
+      produced cannot be compared, and pretending otherwise would invent a
+      number. The declared expectation is moot for that reason and kept only to
+      carry this note.
+  se.z@singleton_white1:
+    expect: DIVERGE
+    reason: As se.x@singleton_white1 -- the whole method raises.
+  se.x@singleton_white2:
+    expect: DIVERGE
+    reason: As se.x@singleton_white1.
+  se.z@singleton_white2:
+    expect: DIVERGE
+    reason: As se.x@singleton_white1.
+  se.x@balanced_white2:
+    expect: DIVERGE
+    reason: >
+      Not this bug. On a balanced panel, with no singleton anywhere, white2
+      still moves between the two versions (0.1161825457 to 0.1271608291) --
+      in 1.5-12 white2 returned exactly what white1 returned, and in 2.6.7 it
+      does not. Something between the two releases made white2 a distinct
+      estimator. Ten years separate the backends, so this is recorded as an
+      observation about the version span rather than attributed to the 1.5-13
+      entry.
+  se.z@balanced_white2:
+    expect: DIVERGE
+    reason: As se.x@balanced_white2 -- a separate change, not this fix.
+
+# arellano agrees exactly on both panels, and white1 agrees on the balanced
+# panel. That confinement is what shows the singleton is the trigger.

@@ -40,13 +40,13 @@
   },
   {
     "entry_id": "plm@1.5-13#0",
-    "category": "RESULT_CHANGING",
-    "silent": true,
+    "category": "ERROR_TO_WORKING",
+    "silent": false,
     "functions": [
       "vcovHC"
     ],
-    "conditions": "method='white' when any group has exactly one element",
-    "severity": "HIGH",
+    "conditions": "a group with exactly one observation, method='white1' or 'white2'; corrected by verification -- plm 1.5-12 raises \"non-conformable arguments\" rather than returning a wrong number",
+    "severity": "LOW",
     "evidence_quote": "degenerating diag() if any group has only 1 element",
     "confidence": "HIGH"
   },

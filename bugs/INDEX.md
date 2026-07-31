@@ -1,6 +1,6 @@
 # Bug record
 
-3 records: 3 verified, 0 refuted or not reproduced, 0 still open.
+4 records: 4 verified, 0 refuted or not reproduced, 0 still open.
 
 Exposure is reported as a pair. `calls` counts scripts calling an
 affected function and is an upper bound; `probe` counts those also
@@ -13,6 +13,7 @@ condition, never that it did. Neither number means much alone.
 | [`r/sandwich/2.5-0-vcovhc-mlm-sign`](r/sandwich/2.5-0-vcovhc-mlm-sign/) | HIGH | yes | 76 | 1 | 0* | VERIFIED |
 | [`python/scikit-learn/1.1.0-nmi-unbounded`](python/scikit-learn/1.1.0-nmi-unbounded/) | HIGH | yes | 0 | 0 | 0* | VERIFIED |
 | [`r/sandwich/3.0-2-vcovcl-hc2-glm`](r/sandwich/3.0-2-vcovcl-hc2-glm/) | MEDIUM | yes | 37 | 6 | 0* | VERIFIED |
+| [`r/plm/1.5-13-vcovhc-white-singleton`](r/plm/1.5-13-vcovhc-white-singleton/) | LOW | no | 76 | 11 | -- | VERIFIED |
 
 `*` marks a left-censored window: the version that introduced the
 defect is not recorded, so the paper count covers everything published

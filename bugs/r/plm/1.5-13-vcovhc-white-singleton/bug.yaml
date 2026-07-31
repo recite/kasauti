@@ -1,0 +1,30 @@
+id: r/plm/1.5-13-vcovhc-white-singleton
+package: plm
+ecosystem: cran
+entry_id: plm@1.5-13#0
+fixed_in: 1.5-13
+fixed_on: null
+introduced_in: null
+introduced_on: null
+functions:
+- vcovHC
+conditions: 'A panel where at least one group has exactly one observation, with method=''white1''
+  or ''white2''. The default method is ''arellano'', which is unaffected. Verified: arellano
+  is identical across versions on both a balanced panel and one with a singleton, and white1
+  is identical on the balanced panel, so the singleton really is the trigger.'
+condition_probe: (?=.*vcovHC)(?=.*white)
+category: ERROR_TO_WORKING
+silent: false
+severity: LOW
+status: VERIFIED
+exposure:
+  scripts_calling_function: 76
+  scripts_meeting_probe: 11
+  papers_in_window: null
+  papers_censored: 0
+magnitude: 'Verified against plm 1.5-12. With a singleton group, white1 and white2 both raise
+  "non-conformable arguments" and produce no value; the fixed version returns 0.1161825457
+  and 0.1271608291. arellano is unaffected on both panels. Separately and not attributable
+  to this fix, white2 on a balanced panel moves from 0.1161825457 to 0.1271608291 across the
+  decade between the two backends: in 1.5-12 white2 returned exactly what white1 returned,
+  and by 2.6.7 it is a distinct estimator.'

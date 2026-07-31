@@ -1228,16 +1228,16 @@
     "source": "agent"
   },
   "plm@1.5-13#0": {
-    "category": "RESULT_CHANGING",
-    "conditions": "method='white' when any group has exactly one element",
+    "category": "ERROR_TO_WORKING",
+    "conditions": "a group with exactly one observation, method='white1' or 'white2'; corrected by verification -- plm 1.5-12 raises \"non-conformable arguments\" rather than returning a wrong number",
     "confidence": "HIGH",
     "evidence_quote": "degenerating diag() if any group has only 1 element",
     "functions": [
       "vcovHC"
     ],
     "introduced_version": null,
-    "severity": "HIGH",
-    "silent": true,
+    "severity": "LOW",
+    "silent": false,
     "source": "agent"
   },
   "plm@1.5-9#3": {

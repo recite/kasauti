@@ -1,0 +1,30 @@
+{
+  "case_id": "plm_vcovhc_singleton",
+  "backend": "buggy",
+  "env": {
+    "language": "R",
+    "version": "4.6.0",
+    "packages": {
+      "plm": "1.5.12"
+    }
+  },
+  "status": "ok",
+  "quantities": {
+    "se.x@balanced_arellano": 0.0617369648939749,
+    "se.z@balanced_arellano": 0.105921591544905,
+    "se.x@balanced_white1": 0.116182545725592,
+    "se.z@balanced_white1": 0.118866294762059,
+    "se.x@balanced_white2": 0.116182545725592,
+    "se.z@balanced_white2": 0.118866294762059,
+    "se.x@singleton_arellano": 0.0617369648939749,
+    "se.z@singleton_arellano": 0.105921591544905,
+    "se.x@singleton_white1": null,
+    "se.z@singleton_white1": null,
+    "se.x@singleton_white2": null,
+    "se.z@singleton_white2": null
+  },
+  "diagnostics": {
+    "plm_version": "1.5.12"
+  },
+  "error": null
+}
