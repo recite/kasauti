@@ -5,7 +5,7 @@ from datetime import date
 import pytest
 import yaml
 
-from concord.archaeology.bugs import (
+from kasauti.archaeology.bugs import (
     Bug,
     BugError,
     Exposure,
@@ -16,8 +16,8 @@ from concord.archaeology.bugs import (
     validate,
     write_bug,
 )
-from concord.archaeology.link import looks_vendored, probe_exposure
-from concord.archaeology.papers import (
+from kasauti.archaeology.link import looks_vendored, probe_exposure
+from kasauti.archaeology.papers import (
     Paper,
     link_scripts,
     load_dataverse_index,

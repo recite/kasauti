@@ -76,7 +76,7 @@ this case is the evidence for it.
 Rscript -e 'install.packages(
   "https://cran.r-project.org/src/contrib/Archive/sandwich/sandwich_2.4-0.tar.gz",
   repos = NULL, type = "source", lib = "/tmp/rlibs/sandwich_2.4-0")'
-concord run sandwich_mlm_sign
+kasauti run sandwich_mlm_sign
 ```
 
 The `buggy` backend is marked `optional`, so the suite still runs without the

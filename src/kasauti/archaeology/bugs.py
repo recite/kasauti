@@ -584,7 +584,7 @@ def render_by_paper(bugs: list[Bug]) -> str:
         "",
     ]
     if not archives:
-        out.append("No linkage has been run yet (`concord bug papers <id>`).")
+        out.append("No linkage has been run yet (`kasauti bug papers <id>`).")
         return "\n".join(out) + "\n"
 
     out += [

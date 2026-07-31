@@ -69,5 +69,5 @@ the question the user asked, not merely a convention to choose between.
 ## Reproducing
 
 ```bash
-concord run glm_weights_semantics
+kasauti run glm_weights_semantics
 ```

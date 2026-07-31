@@ -1,4 +1,4 @@
-"""concord -- differential testing for statistical software.
+"""kasauti -- differential testing for statistical software.
 
 Two pipelines over one comparison core:
 

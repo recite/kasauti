@@ -29,7 +29,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from concord.archaeology.parse import Entry
+from kasauti.archaeology.parse import Entry
 
 MODEL = "claude-opus-5"
 
@@ -417,7 +417,7 @@ def classify_by_rules(entry: Entry) -> Classification:
     Returns:
         A classification with `source="rules"`.
     """
-    from concord.archaeology.link import INERT, RESULT_CHANGING
+    from kasauti.archaeology.link import INERT, RESULT_CHANGING
 
     match = RESULT_CHANGING.search(entry.text)
     if match and not INERT.search(entry.text):

@@ -35,7 +35,7 @@ import requests
 
 HARVARD_API = "https://dataverse.harvard.edu/api/datasets/export"
 ZENODO_API = "https://zenodo.org/api/records"
-USER_AGENT = "concord/0.1 (research; differential testing of statistical software)"
+USER_AGENT = "kasauti/0.1 (research; differential testing of statistical software)"
 
 #: Replication archives are titled "Replication Data for: <paper title>" on
 #: Dataverse and "Replication package for: <paper title>" on Zenodo. Stripping

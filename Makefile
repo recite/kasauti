@@ -23,10 +23,10 @@ test:  ## Unit tests (no subprocesses, no network)
 check: lint types test  ## Everything CI would run
 
 run:  ## Run the full cross-implementation suite
-	uv run concord run --all
+	uv run kasauti run --all
 
 report:  ## Regenerate reports/latest.md
-	uv run concord report
+	uv run kasauti report
 
 clean:
 	rm -rf .pytest_cache .ruff_cache dist build

@@ -14,12 +14,12 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
-from concord.schema import BackendSpec, CaseSpec, Result
+from kasauti.schema import BackendSpec, CaseSpec, Result
 
 #: Seconds before a backend is killed. Generous: some cases fit mixed models.
 DEFAULT_TIMEOUT = 600
 
-#: Shared backend helpers, exported to every backend as CONCORD_LIB.
+#: Shared backend helpers, exported to every backend as KASAUTI_LIB.
 LIB_DIR = Path(__file__).resolve().parents[2] / "lib"
 
 
@@ -129,7 +129,7 @@ def run_backend(
     # Backend scripts live at different depths under `cases/` and `bugs/`, so
     # the shared helper location is exported rather than reached by a relative
     # path. Moving a case between roots must not break it.
-    env = {**os.environ, "CONCORD_LIB": str(LIB_DIR)}
+    env = {**os.environ, "KASAUTI_LIB": str(LIB_DIR)}
     try:
         proc = subprocess.run(  # noqa: S603
             cmd,

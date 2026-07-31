@@ -1,4 +1,4 @@
-source(file.path(Sys.getenv("CONCORD_LIB", file.path("..", "..", "..", "lib")), "concord.R"))
+source(file.path(Sys.getenv("KASAUTI_LIB", file.path("..", "..", "..", "lib")), "kasauti.R"))
 
 body <- function(data_path) {
   d <- read.csv(data_path)

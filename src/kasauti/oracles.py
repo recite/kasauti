@@ -17,8 +17,8 @@ import math
 import operator
 from dataclasses import dataclass
 
-from concord.compare import relative_difference
-from concord.schema import CaseSpec, Invariant, Result
+from kasauti.compare import relative_difference
+from kasauti.schema import CaseSpec, Invariant, Result
 
 _BINARY = {
     ast.Add: operator.add,

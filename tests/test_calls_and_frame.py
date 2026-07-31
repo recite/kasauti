@@ -2,8 +2,8 @@
 
 import pytest
 
-from concord.archaeology.calls import CallSite, extract_python, extract_r
-from concord.archaeology.frame import (
+from kasauti.archaeology.calls import CallSite, extract_python, extract_r
+from kasauti.archaeology.frame import (
     NON_COMPUTING,
     SHADOWED,
     attribute_python,

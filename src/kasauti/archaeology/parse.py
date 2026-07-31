@@ -13,7 +13,7 @@ import re
 from dataclasses import dataclass, field
 from datetime import date
 
-from concord.archaeology.harvest import Harvest
+from kasauti.archaeology.harvest import Harvest
 
 #: `\section{Changes in version 3.8-3 (2024-12-16)}`, and lme4's all-caps
 #: `\section{CHANGES IN VERSION 2.0-6}`.

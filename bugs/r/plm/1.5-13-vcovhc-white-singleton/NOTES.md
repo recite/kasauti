@@ -82,6 +82,6 @@ case.
 Rscript -e 'install.packages(
   "https://cran.r-project.org/src/contrib/Archive/plm/plm_1.5-12.tar.gz",
   repos = NULL, type = "source", lib = "/tmp/rlibs/plm_1.5-12")'
-concord run plm_vcovhc_singleton
-concord bug probe r/plm/1.5-13-vcovhc-white-singleton
+kasauti run plm_vcovhc_singleton
+kasauti bug probe r/plm/1.5-13-vcovhc-white-singleton
 ```

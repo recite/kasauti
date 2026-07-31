@@ -7,10 +7,10 @@ from pathlib import Path
 
 import click
 
-from concord import report as report_module
-from concord.compare import compare_case
-from concord.loader import discover_cases, select_cases
-from concord.runner import DEFAULT_TIMEOUT, run_case
+from kasauti import report as report_module
+from kasauti.compare import compare_case
+from kasauti.loader import discover_cases, select_cases
+from kasauti.runner import DEFAULT_TIMEOUT, run_case
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -119,8 +119,8 @@ def report(cases_dir: Path | None, reports_dir: Path) -> None:
         cases_dir: Directory holding case definitions.
         reports_dir: Where to write the report.
     """
-    from concord.runner import CaseRun
-    from concord.schema import Result
+    from kasauti.runner import CaseRun
+    from kasauti.schema import Result
 
     runs = []
     for spec in discover_cases(*([cases_dir] if cases_dir else CASE_ROOTS)):
@@ -133,7 +133,7 @@ def report(cases_dir: Path | None, reports_dir: Path) -> None:
             runs.append(CaseRun(spec=spec, results=results))
 
     if not runs:
-        click.echo("no results on disk; run `concord run --all` first", err=True)
+        click.echo("no results on disk; run `kasauti run --all` first", err=True)
         sys.exit(1)
 
     md_path, _ = report_module.write(runs, reports_dir)
@@ -153,7 +153,7 @@ def bug_index(bugs_dir: Path) -> None:
     Args:
         bugs_dir: Directory holding bug records.
     """
-    from concord.archaeology.bugs import (
+    from kasauti.archaeology.bugs import (
         discover_bugs,
         export_findings,
         render_by_paper,
@@ -185,7 +185,7 @@ def bug_status(bugs_dir: Path) -> None:
     Args:
         bugs_dir: Directory holding bug records.
     """
-    from concord.archaeology.bugs import discover_bugs
+    from kasauti.archaeology.bugs import discover_bugs
 
     records = discover_bugs(bugs_dir)
     click.echo(f"{'bug':40} {'sev':7} {'calls':>6} {'probe':>6} {'papers':>7} status")
@@ -219,8 +219,8 @@ def bug_probe(bug_id: str, bugs_dir: Path, call_sites: Path) -> None:
         bugs_dir: Directory holding bug records.
         call_sites: Extracted call sites CSV.
     """
-    from concord.archaeology.bugs import advance, load_bug, write_bug
-    from concord.archaeology.link import load_call_index, probe_exposure, write_exposure
+    from kasauti.archaeology.bugs import advance, load_bug, write_bug
+    from kasauti.archaeology.link import load_call_index, probe_exposure, write_exposure
 
     record = load_bug(Path(bugs_dir) / bug_id, Path(bugs_dir))
     # The call index is per language: a Python bug must be probed against Python
@@ -271,9 +271,9 @@ def bug_papers(bug_id: str, bugs_dir: Path, datasets_dir: Path, enrich: bool) ->
     """
     import csv as _csv
 
-    from concord.archaeology.bugs import advance, load_bug, write_bug
-    from concord.archaeology.papers import enrich as enrich_paper
-    from concord.archaeology.papers import (
+    from kasauti.archaeology.bugs import advance, load_bug, write_bug
+    from kasauti.archaeology.papers import enrich as enrich_paper
+    from kasauti.archaeology.papers import (
         link_scripts,
         load_dataverse_index,
         write_papers,
@@ -282,7 +282,7 @@ def bug_papers(bug_id: str, bugs_dir: Path, datasets_dir: Path, enrich: bool) ->
     record = load_bug(Path(bugs_dir) / bug_id, Path(bugs_dir))
     exposure_csv = record.directory / "exposure.csv"
     if not exposure_csv.exists():
-        click.echo(f"{bug_id}: run `concord bug probe {bug_id}` first", err=True)
+        click.echo(f"{bug_id}: run `kasauti bug probe {bug_id}` first", err=True)
         sys.exit(1)
 
     with exposure_csv.open(newline="") as handle:
@@ -364,9 +364,9 @@ def _exposed_entries(cache_root: Path, call_sites: Path):
         A `(entries, exposure)` pair, where exposure maps entry id to the number
         of corpus scripts calling an affected function.
     """
-    from concord.archaeology.harvest import harvest
-    from concord.archaeology.link import build_bugs, load_call_index, load_exports
-    from concord.archaeology.parse import parse_news
+    from kasauti.archaeology.harvest import harvest
+    from kasauti.archaeology.link import build_bugs, load_call_index, load_exports
+    from kasauti.archaeology.parse import parse_news
 
     entries = []
     for package in CLASSIFY_PACKAGES:
@@ -418,7 +418,7 @@ def classify_pending(limit, out, cache_file, cache_root, call_sites) -> None:
     """
     import json as _json
 
-    from concord.archaeology.classify import ClassificationCache, pending_payload
+    from kasauti.archaeology.classify import ClassificationCache, pending_payload
 
     entries, exposure = _exposed_entries(cache_root, call_sites)
     store = ClassificationCache(cache_file)
@@ -453,7 +453,7 @@ def classify_ingest(reviewed, cache_file) -> None:
     """
     import json as _json
 
-    from concord.archaeology.classify import ClassificationCache, ingest_reviewed
+    from kasauti.archaeology.classify import ClassificationCache, ingest_reviewed
 
     if not Path(reviewed).exists():
         click.echo(f"no reviewed file at {reviewed}", err=True)
@@ -495,7 +495,7 @@ def classify_report(cache_file, cache_root, call_sites, out) -> None:
         call_sites: Extracted call sites CSV.
         out: Destination markdown.
     """
-    from concord.archaeology.classify import ClassificationCache, agreement
+    from kasauti.archaeology.classify import ClassificationCache, agreement
 
     entries, _ = _exposed_entries(cache_root, call_sites)
     store = ClassificationCache(cache_file)
@@ -504,7 +504,7 @@ def classify_report(cache_file, cache_root, call_sites, out) -> None:
     judged = stats["judged"]
     if not judged:
         click.echo(
-            "nothing classified yet; run `concord classify pending` first", err=True
+            "nothing classified yet; run `kasauti classify pending` first", err=True
         )
         sys.exit(1)
 
@@ -627,12 +627,12 @@ def dashboard(out, bugs_dir, cache_file, cache_root, call_sites) -> None:
     """
     from collections import Counter
 
-    from concord.archaeology.bugs import discover_bugs
-    from concord.archaeology.classify import ClassificationCache, agreement
-    from concord.archaeology.harvest import harvest
-    from concord.archaeology.parse import parse_news
-    from concord.dashboard import Dashboard
-    from concord.dashboard import write as write_page
+    from kasauti.archaeology.bugs import discover_bugs
+    from kasauti.archaeology.classify import ClassificationCache, agreement
+    from kasauti.archaeology.harvest import harvest
+    from kasauti.archaeology.parse import parse_news
+    from kasauti.dashboard import Dashboard
+    from kasauti.dashboard import write as write_page
 
     python_packages = ["statsmodels", "scikit-learn", "scipy", "numpy"]
     r_entries = sum(

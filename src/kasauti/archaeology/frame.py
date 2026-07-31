@@ -22,7 +22,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from concord.archaeology.calls import CallSite
+from kasauti.archaeology.calls import CallSite
 
 #: Packages whose functions produce numbers that end up in a results table. The
 #: corpus's single most-used package is ggplot2, which is irrelevant here: a bug

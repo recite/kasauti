@@ -1,4 +1,4 @@
-# concord
+# kasauti
 
 Are the numbers right?
 
@@ -48,7 +48,7 @@ Only the third can say who is *right*. Only the second needs no second implement
 ```
 cases/<family>/<case>/        translation: cross-implementation comparisons
 bugs/<language>/<package>/<version-slug>/    archaeology: one directory per bug
-lib/                         shared backend helpers, located via $CONCORD_LIB
+lib/                         shared backend helpers, located via $KASAUTI_LIB
 ```
 
 A bug belongs to exactly one package in exactly one language, so that is the
@@ -75,9 +75,9 @@ one stopped instead of re-deriving the shortlist:
 | stage | command | artifact | status |
 |---|---|---|---|
 | triage | hand-written from a changelog entry | `bug.yaml` | `CANDIDATE` |
-| probe | `concord bug probe <id>` | `exposure.csv` | `PROBED` |
-| papers | `concord bug papers <id>` | `papers.csv` | `LINKED` |
-| verify | `concord run <case-id>` | results JSON | `VERIFIED` / `REFUTED` / `NOT_REPRODUCED` |
+| probe | `kasauti bug probe <id>` | `exposure.csv` | `PROBED` |
+| papers | `kasauti bug papers <id>` | `papers.csv` | `LINKED` |
+| verify | `kasauti run <case-id>` | results JSON | `VERIFIED` / `REFUTED` / `NOT_REPRODUCED` |
 | write | hand-written | `NOTES.md` | — |
 
 **Failed candidates stay in the tree.** `REFUTED` and `NOT_REPRODUCED` are results.
@@ -153,12 +153,12 @@ things that changed about the world.
 
 ```bash
 make install
-concord list                     # every case, both tracks
-concord run --all --strict       # non-zero exit on any undocumented divergence
-concord bug status               # the record's pipeline state
-concord bug index                # validate records, regenerate all four views
-concord bug probe <bug-id>       # narrow exposure by the conditions probe
-concord bug papers <bug-id>      # resolve scripts to DOIs, dates, journals
+kasauti list                     # every case, both tracks
+kasauti run --all --strict       # non-zero exit on any undocumented divergence
+kasauti bug status               # the record's pipeline state
+kasauti bug index                # validate records, regenerate all four views
+kasauti bug probe <bug-id>       # narrow exposure by the conditions probe
+kasauti bug papers <bug-id>      # resolve scripts to DOIs, dates, journals
 make check                       # lint, types, tests
 ```
 

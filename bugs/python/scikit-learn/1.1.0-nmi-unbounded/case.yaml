@@ -12,7 +12,7 @@ family: version_regression
 # "numpy.dtype size changed, may indicate binary incompatibility" at import,
 # before any of the statistics run. Python 3.10 is pinned for the same reason:
 # scikit-learn 1.0.2 ships no wheel for anything newer. `--no-project` keeps uv
-# from applying concord's own `requires-python = ">=3.11"` to these environments.
+# from applying kasauti's own `requires-python = ">=3.11"` to these environments.
 
 backends:
   - name: buggy

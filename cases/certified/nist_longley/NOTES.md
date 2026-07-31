@@ -62,7 +62,7 @@ metamorphic path.
 ## Reproducing
 
 ```bash
-concord run nist_longley
+kasauti run nist_longley
 ```
 
 Certified values and data transcribed from

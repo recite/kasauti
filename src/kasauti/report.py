@@ -11,9 +11,9 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 
-from concord.compare import Comparison, compare_case, summarize
-from concord.oracles import check_certified, check_invariants
-from concord.runner import CaseRun
+from kasauti.compare import Comparison, compare_case, summarize
+from kasauti.oracles import check_certified, check_invariants
+from kasauti.runner import CaseRun
 
 _VERDICT_MARK = {"AGREE": "=", "NUMERIC": "~", "DIVERGE": "!="}
 
@@ -152,7 +152,7 @@ def render(runs: list[CaseRun]) -> str:
     new = [c for c in all_comparisons if c.is_new_finding]
 
     head = [
-        "# concord -- cross-implementation report",
+        "# kasauti -- cross-implementation report",
         "",
         f"{len(runs)} cases, {len(all_comparisons)} compared quantities.",
         "",

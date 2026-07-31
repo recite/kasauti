@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from concord.compare import (
+from kasauti.compare import (
     EXPECTED,
     NEW_FINDING,
     RESOLVED,
@@ -16,7 +16,7 @@ from concord.compare import (
     summarize,
     worst,
 )
-from concord.schema import CaseSpec, QuantitySpec, Result
+from kasauti.schema import CaseSpec, QuantitySpec, Result
 
 
 def make_spec(**kwargs) -> CaseSpec:

@@ -1,4 +1,4 @@
-source(file.path(Sys.getenv("CONCORD_LIB", file.path("..", "..", "..", "lib")), "concord.R"))
+source(file.path(Sys.getenv("KASAUTI_LIB", file.path("..", "..", "..", "lib")), "kasauti.R"))
 suppressPackageStartupMessages(library(logistf))
 
 # Firth's penalized likelihood is the principled answer to separation: the Jeffreys

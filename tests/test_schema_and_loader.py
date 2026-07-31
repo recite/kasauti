@@ -4,8 +4,8 @@ import json
 
 import pytest
 
-from concord.loader import CaseError, discover_cases, load_case, select_cases
-from concord.schema import Result
+from kasauti.loader import CaseError, discover_cases, load_case, select_cases
+from kasauti.schema import Result
 
 CASE_YAML = """
 id: demo
@@ -143,7 +143,7 @@ def test_repository_cases_all_parse():
     """Every case shipped in this repo must load and declare a reason for
     each expected divergence. Guards against a malformed case landing.
     """
-    from concord.cli import ROOT
+    from kasauti.cli import ROOT
 
     cases = discover_cases(ROOT / "cases")
     assert cases, "no cases discovered"

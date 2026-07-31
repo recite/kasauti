@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "concord"
+name = "kasauti"
 version = "0.1.0"
 description = "Differential testing for statistical software: do independent implementations agree, and did they used to be wrong?"
 readme = "README.md"
@@ -20,10 +20,10 @@ dependencies = [
 ]
 
 [project.scripts]
-concord = "concord.cli:main"
+kasauti = "kasauti.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/concord"]
+packages = ["src/kasauti"]
 
 [tool.ruff]
 line-length = 88
@@ -40,7 +40,7 @@ convention = "google"
 "tests/**" = ["S101", "S105", "S106", "S108", "RUF012", "D"]
 # The page is one HTML/CSS/JS template string. Wrapping its lines to 88 would
 # mangle markup for no reader's benefit.
-"src/concord/dashboard.py" = ["E501"]
+"src/kasauti/dashboard.py" = ["E501"]
 # Case backend scripts are standalone programs run by subprocess: printing is the
 # interface, and they are not importable modules.
 "cases/**" = ["T20", "S", "D", "N", "INP"]

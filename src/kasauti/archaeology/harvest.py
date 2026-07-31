@@ -40,7 +40,7 @@ R_NEWS_CANDIDATES = [
     "inst/ChangeLog",
 ]
 
-USER_AGENT = "concord/0.1 (research; differential testing of statistical software)"
+USER_AGENT = "kasauti/0.1 (research; differential testing of statistical software)"
 
 GITHUB_API = "https://api.github.com/repos"
 GITHUB_RAW = "https://raw.githubusercontent.com"

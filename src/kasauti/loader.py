@@ -7,7 +7,7 @@ from typing import Any
 
 import yaml
 
-from concord.schema import BackendSpec, CaseSpec, Invariant, QuantitySpec
+from kasauti.schema import BackendSpec, CaseSpec, Invariant, QuantitySpec
 
 
 class CaseError(ValueError):

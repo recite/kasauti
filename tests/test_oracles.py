@@ -4,13 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from concord.oracles import (
+from kasauti.oracles import (
     InvariantError,
     check_certified,
     check_invariants,
     evaluate_expression,
 )
-from concord.schema import CaseSpec, Invariant, Result
+from kasauti.schema import CaseSpec, Invariant, Result
 
 
 def make_spec(**kwargs) -> CaseSpec:

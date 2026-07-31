@@ -90,7 +90,7 @@ Two consequences worth carrying forward:
 Rscript -e 'install.packages(
   "https://cran.r-project.org/src/contrib/Archive/sandwich/sandwich_3.0-1.tar.gz",
   repos = NULL, type = "source", lib = "/tmp/rlibs/sandwich_3.0-1")'
-concord run sandwich_vcovcl_hc2
-concord bug probe sandwich-3.0-2-vcovcl-hc2-glm
-concord bug papers sandwich-3.0-2-vcovcl-hc2-glm --enrich
+kasauti run sandwich_vcovcl_hc2
+kasauti bug probe sandwich-3.0-2-vcovcl-hc2-glm
+kasauti bug papers sandwich-3.0-2-vcovcl-hc2-glm --enrich
 ```

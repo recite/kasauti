@@ -86,7 +86,7 @@ cmd: ["uv", "run", "--quiet", "--no-project", "--python", "3.10",
 - **`numpy<2`** — the wheel is compiled against the numpy 1.x C ABI. Resolving
   numpy 2.x fails at import with `numpy.dtype size changed, may indicate binary
   incompatibility`, before any statistics run.
-- **`--no-project`** — otherwise `uv` applies concord's own
+- **`--no-project`** — otherwise `uv` applies kasauti's own
   `requires-python = ">=3.11"` to the child environment.
 
 This bounds how far back Python archaeology can reach: a fix released before
@@ -97,6 +97,6 @@ ceiling. Bug selection for Python has to account for it.
 ## Reproducing
 
 ```bash
-concord run sklearn_nmi_unbounded
-concord bug probe python/scikit-learn/1.1.0-nmi-unbounded
+kasauti run sklearn_nmi_unbounded
+kasauti bug probe python/scikit-learn/1.1.0-nmi-unbounded
 ```

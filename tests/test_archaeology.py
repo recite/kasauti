@@ -4,13 +4,13 @@ from datetime import date
 
 import pytest
 
-from concord.archaeology.harvest import Harvest, Release, _parse_cran_date
-from concord.archaeology.link import (
+from kasauti.archaeology.harvest import Harvest, Release, _parse_cran_date
+from kasauti.archaeology.link import (
     affected_functions,
     build_bugs,
     is_result_changing,
 )
-from concord.archaeology.parse import Entry, parse_news
+from kasauti.archaeology.parse import Entry, parse_news
 
 
 def make_harvest(news, releases=()):
@@ -212,7 +212,7 @@ class TestBuildBugs:
 
 class TestClassification:
     def test_rules_flag_a_claimed_wrong_result(self):
-        from concord.archaeology.classify import classify_by_rules
+        from kasauti.archaeology.classify import classify_by_rules
 
         entry = Entry("p", "1.0", None, "the variance was incorrect", 0)
         result = classify_by_rules(entry)
@@ -221,7 +221,7 @@ class TestClassification:
         assert result.confidence == "LOW"
 
     def test_rules_flag_prose_as_doc(self):
-        from concord.archaeology.classify import classify_by_rules
+        from kasauti.archaeology.classify import classify_by_rules
 
         entry = Entry("p", "1.0", None, "fixed a typo in the documentation", 0)
         assert classify_by_rules(entry).category == "DOC"
@@ -230,13 +230,13 @@ class TestClassification:
         # The obvious pattern for a loud failure fires on 19% of candidates and
         # is a false positive on every one sampled: changelog authors write
         # "error" to mean a mistake in the code, not a raised exception.
-        from concord.archaeology.classify import classify_by_rules
+        from kasauti.archaeology.classify import classify_by_rules
 
         entry = Entry("p", "1.0", None, "Small error in plot.survfit was fixed", 0)
         assert classify_by_rules(entry).silent is False
 
     def test_moves_published_numbers_needs_silence(self):
-        from concord.archaeology.classify import Classification
+        from kasauti.archaeology.classify import Classification
 
         loud = Classification(category="RESULT_CHANGING", silent=False)
         quiet = Classification(category="RESULT_CHANGING", silent=True)
@@ -247,7 +247,7 @@ class TestClassification:
         assert behaviour.moves_published_numbers
 
     def test_cache_round_trips_source(self, tmp_path):
-        from concord.archaeology.classify import Classification, ClassificationCache
+        from kasauti.archaeology.classify import Classification, ClassificationCache
 
         cache = ClassificationCache(tmp_path / "c.json")
         cache.put(
@@ -257,7 +257,7 @@ class TestClassification:
         assert ClassificationCache(tmp_path / "c.json").get("p@1.0#0").source == "agent"
 
     def test_pending_skips_what_is_cached_and_ranks_by_exposure(self, tmp_path):
-        from concord.archaeology.classify import (
+        from kasauti.archaeology.classify import (
             Classification,
             ClassificationCache,
             pending_payload,
@@ -277,7 +277,7 @@ class TestClassification:
         assert payload[0]["rule_baseline"] == "RESULT_CHANGING"
 
     def test_ingest_rejects_a_bad_record_by_name(self, tmp_path):
-        from concord.archaeology.classify import ClassificationCache, ingest_reviewed
+        from kasauti.archaeology.classify import ClassificationCache, ingest_reviewed
 
         cache = ClassificationCache(tmp_path / "c.json")
         merged, errors = ingest_reviewed(
@@ -293,7 +293,7 @@ class TestClassification:
         assert any("no entry_id" in e for e in errors)
 
     def test_ingest_defaults_to_agent_provenance(self, tmp_path):
-        from concord.archaeology.classify import ClassificationCache, ingest_reviewed
+        from kasauti.archaeology.classify import ClassificationCache, ingest_reviewed
 
         cache = ClassificationCache(tmp_path / "c.json")
         ingest_reviewed(
@@ -304,7 +304,7 @@ class TestClassification:
     def test_agreement_ignores_rule_generated_records(self, tmp_path):
         # A rate computed over records the rules themselves wrote would be
         # 100% agreement by construction.
-        from concord.archaeology.classify import (
+        from kasauti.archaeology.classify import (
             Classification,
             ClassificationCache,
             agreement,

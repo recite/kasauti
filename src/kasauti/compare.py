@@ -13,7 +13,7 @@ import math
 from dataclasses import dataclass, field
 from itertools import combinations
 
-from concord.schema import CaseSpec, Result
+from kasauti.schema import CaseSpec, Result
 
 #: Verdicts on a single quantity, ordered from best to worst. `compare` reports
 #: the worst verdict across all backend pairs, so one divergent pair is enough to

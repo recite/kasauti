@@ -20,9 +20,9 @@ from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 
-from concord.archaeology.calls import read_call_sites
-from concord.archaeology.frame import NON_COMPUTING, r_namespace_exports
-from concord.archaeology.parse import Entry
+from kasauti.archaeology.calls import read_call_sites
+from kasauti.archaeology.frame import NON_COMPUTING, r_namespace_exports
+from kasauti.archaeology.parse import Entry
 
 #: Language asserting that a number the package previously returned was wrong.
 #: Deliberately narrow: "improved", "changed", and "updated" are excluded because
