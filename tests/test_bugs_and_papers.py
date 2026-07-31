@@ -319,3 +319,27 @@ class TestWindow:
         # Counting them would inflate the numerator with archives that cannot
         # be placed on the timeline at all.
         assert not Paper("x", "zenodo").in_window(date(2018, 8, 17), None)
+
+
+def test_every_verified_record_still_runs_through_the_shared_harness():
+    """The split moved the runner out; this is what would notice if it broke.
+
+    kasauti no longer owns `schema`, `loader`, `runner`, `compare`, `oracles`, or
+    `report` -- they live in milaan, because a version regression and a
+    cross-implementation comparison are the same kind of object. A verified
+    record is required to carry a `case.yaml`, so if the dependency ever stops
+    resolving, this fails loudly rather than the suite quietly finding no cases.
+    """
+    from milaan.loader import discover_cases
+
+    from kasauti.archaeology.bugs import discover_bugs
+    from kasauti.cli import ROOT
+
+    verified = {b.id for b in discover_bugs(ROOT / "bugs") if b.status == "VERIFIED"}
+    discovered = {
+        c.directory.relative_to(ROOT / "bugs").as_posix()
+        for c in discover_cases(ROOT / "bugs")
+    }
+    assert verified, "no verified records found"
+    assert verified <= discovered
+    assert all(c.family == "version_regression" for c in discover_cases(ROOT / "bugs"))

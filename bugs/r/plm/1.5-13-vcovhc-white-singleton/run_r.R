@@ -1,4 +1,4 @@
-source(file.path(Sys.getenv("KASAUTI_LIB", file.path("..", "..", "..", "lib")), "kasauti.R"))
+source(file.path(Sys.getenv("MILAAN_LIB", file.path("..", "..", "..", "lib")), "milaan.R"))
 
 flags <- cc_args()$flags
 lib <- if (length(flags)) flags[[1]] else ""

@@ -1,4 +1,4 @@
-source(file.path(Sys.getenv("KASAUTI_LIB", file.path("..", "..", "lib")), "kasauti.R"))
+source(file.path(Sys.getenv("MILAAN_LIB", file.path("..", "..", "lib")), "milaan.R"))
 library(lfe)
 
 # No archived install is needed for this one, which is unusual and worth saying.

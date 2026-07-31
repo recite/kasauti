@@ -13,10 +13,10 @@ import sys
 from pathlib import Path
 
 sys.path.insert(
-    0, os.environ.get("KASAUTI_LIB", str(Path(__file__).resolve().parents[4] / "lib"))
+    0, os.environ.get("MILAAN_LIB", str(Path(__file__).resolve().parents[4] / "lib"))
 )
 
-import kasauti_py as cc  # noqa: E402
+import milaan_py as cc  # noqa: E402
 from sklearn.metrics import normalized_mutual_info_score  # noqa: E402
 
 

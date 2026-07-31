@@ -1,4 +1,4 @@
-source(file.path(Sys.getenv("KASAUTI_LIB", file.path("..", "..", "lib")), "kasauti.R"))
+source(file.path(Sys.getenv("MILAAN_LIB", file.path("..", "..", "lib")), "milaan.R"))
 
 # Library path arrives as a flag, so one script serves the buggy and the fixed
 # version. Same trick as sandwich-2.5-0-vcovhc-mlm-sign.

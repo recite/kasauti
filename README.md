@@ -1,20 +1,20 @@
 # kasauti
 
-Are the numbers right?
+**कसौटी** — touchstone.
 
-Two questions about statistical software, one comparison engine.
+Package changelogs are a confession log. This mines them for fixes that changed
+results, works out when each bug was live, and traces it to the published
+replication archives that called the affected function during that window.
 
-**Translation** — the same procedure is implemented independently in R and Python.
-Run both, diff the numbers. Where they agree, that is weak evidence both are right.
-Where they disagree, something is worth knowing: usually a default, occasionally a bug.
+Then it runs the buggy version and the fixed version against the same data and
+reports what actually moved — because a changelog entry is a claim, and a claim
+about a wrong number is worth exactly as much as the number that proves it.
 
-**Archaeology** — package changelogs are a confession log. Mine them for fixes that
-changed results, work out when the bug was live, and trace it to the replication
-archives that called the affected function during that window.
-
-The two share a core, because archaeology's payoff step — install the buggy version
-and the fixed version, run the same script under both, diff the numbers — is the
-translation engine with *backend = package version* instead of *backend = language*.
+Sibling to [recite/milaan](https://github.com/recite/milaan), which asks the other
+question: do R and Python agree *today*. That repository owns the comparison
+harness, and this one depends on it — verifying a bug means running one package
+against its own past self, which is the same machinery with *backend = package
+version* instead of *backend = language*.
 
 ## What it has found
 
@@ -22,34 +22,23 @@ Every number below was measured by running the thing, not predicted.
 
 | finding | |
 |---|---|
-| R and Python's Newey–West standard errors differ **7×** out of the box | neither is wrong; R prewhitens and auto-selects bandwidth, statsmodels does neither |
-| R's `glm` reports **p = 0.9995** where Firth reports **p = 0.0011** | separated data; the Wald statistic collapses as the standard error diverges |
-| `sklearn.LogisticRegression()` silently applies L2 at `C=1.0` | its "unpenalized" coefficient is a function of `tol`, not of the data |
-| GLM residual df is **30 or 3** for the same fit | statsmodels `freq_weights` vs R `glm(weights=)`; coefficients and SEs agree exactly |
-| Normal equations keep **7.1** correct digits where R's QR keeps **13.0** | NIST Longley; every backend agrees to 7 digits, so comparison alone calls it unanimous |
 | `lfe` before 2.5 understated a clustered standard error **5.78×** | two-way clustering with a non-PSD CGM covariance; t goes 83.0 → 14.4, coefficients identical |
 | `sandwich` 2.5-0 flipped the sign of cross-equation covariances | verified against 2.4-0; within-equation blocks bit-identical |
+| `fixest` 0.10.3's extracted fixed effects miss the fit by **3.37** | four dimensions; they fail their own defining identity, so the case adjudicates itself |
+| `sandwich` 3.0-2 moved cluster-robust HC2 on a glm by 4.7e-3 | 7 of 9 measured quantities bit-identical, which confines it to the documented conditions |
 | `scikit-learn` 1.0.2 returns **1.25** from a metric bounded on [0, 1] | `normalized_mutual_info_score`, `average_method` of `min` or `geometric` |
+| `mgcv` 1.9-0's multinomial variance fix — **NOT_REPRODUCED** | a recorded failure; the lead did not survive execution |
 
-## Three oracles, because agreement is not correctness
-
-Two packages sharing a wrong formula agree, and you learn nothing. So a case can
-be judged three ways, and each catches what the others cannot:
-
-| oracle | question | example |
-|---|---|---|
-| **comparison** | do independent implementations agree? | `hac_newey_west` |
-| **metamorphic** | does one implementation agree with *itself* under a transformation that cannot change the answer? | `glm_weights_semantics` |
-| **certified** | does it match a known-true value? | `nist_longley` |
-
-Only the third can say who is *right*. Only the second needs no second implementation.
+Cross-language findings — Newey–West differing 7×, `sklearn`'s silent L2, the NIST
+Longley digit counts — moved to [milaan](https://github.com/recite/milaan) with the
+harness.
 
 ## Layout
 
 ```
-cases/<family>/<case>/        translation: cross-implementation comparisons
-bugs/<language>/<package>/<version-slug>/    archaeology: one directory per bug
-lib/                         shared backend helpers, located via $KASAUTI_LIB
+bugs/<language>/<package>/<version-slug>/    one directory per bug
+data/                        harvested changelogs, the frame, classifications
+docs/                        the dashboard published to GitHub Pages
 ```
 
 A bug belongs to exactly one package in exactly one language, so that is the
@@ -65,7 +54,7 @@ bugs/findings.json   the same, plus per-archive detail
 ```
 
 A bug directory that has reached verification contains a `case.yaml`, so it is
-discovered by the same runner as any translation case. The lifecycle falls out of
+discovered by milaan's runner like any other comparison. The lifecycle falls out of
 the files.
 
 ## Which packages, and why not the ones I remembered
@@ -232,12 +221,13 @@ things that changed about the world.
 
 ```bash
 make install
-kasauti list                     # every case, both tracks
+kasauti list                     # every verified bug, as a runnable case
 kasauti run --all --strict       # non-zero exit on any undocumented divergence
 kasauti bug status               # the record's pipeline state
 kasauti bug index                # validate records, regenerate all four views
 kasauti bug probe <bug-id>       # narrow exposure by the conditions probe
 kasauti bug papers <bug-id>      # resolve scripts to DOIs, dates, journals
+kasauti bug rank                 # order candidates by estimated paper reach
 kasauti frame packages           # select packages: task views ∩ corpus usage
 kasauti frame harvest            # fetch changelogs, releases, exports
 kasauti frame build              # rank the procedures the corpus calls

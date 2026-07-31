@@ -7,22 +7,27 @@ from pathlib import Path
 
 import click
 
-from kasauti import report as report_module
-from kasauti.compare import compare_case
-from kasauti.loader import discover_cases, select_cases
-from kasauti.runner import DEFAULT_TIMEOUT, run_case
+# The harness lives in milaan, which asks the other question -- does R agree with
+# Python today. A verified bug record is a version-regression case in exactly that
+# sense (does this package agree with its own past self), so the two repositories
+# share one runner rather than one copy each.
+from milaan import report as report_module
+from milaan.compare import compare_case
+from milaan.loader import discover_cases, select_cases
+from milaan.runner import DEFAULT_TIMEOUT, run_case
 
 ROOT = Path(__file__).resolve().parents[2]
 
-#: Both tracks are discovered together: cross-implementation cases and verified
-#: bug regressions are the same kind of object to the runner.
-CASE_ROOTS = [ROOT / "cases", ROOT / "bugs"]
+#: Only bug records now. Cross-implementation comparisons moved to milaan; what
+#: remains here are version regressions, one per verified bug, which the same
+#: runner executes because they write the same result schema.
+CASE_ROOTS = [ROOT / "bugs"]
 
 
 @click.group()
 @click.version_option()
 def main() -> None:
-    """Differential testing for statistical software."""
+    """Changelog archaeology: which package bugs reached published work."""
 
 
 @main.command("list")
@@ -119,8 +124,8 @@ def report(cases_dir: Path | None, reports_dir: Path) -> None:
         cases_dir: Directory holding case definitions.
         reports_dir: Where to write the report.
     """
-    from kasauti.runner import CaseRun
-    from kasauti.schema import Result
+    from milaan.runner import CaseRun
+    from milaan.schema import Result
 
     runs = []
     for spec in discover_cases(*([cases_dir] if cases_dir else CASE_ROOTS)):

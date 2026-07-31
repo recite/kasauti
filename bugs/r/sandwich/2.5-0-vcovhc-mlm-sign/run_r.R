@@ -1,4 +1,4 @@
-source(file.path(Sys.getenv("KASAUTI_LIB", file.path("..", "..", "..", "lib")), "kasauti.R"))
+source(file.path(Sys.getenv("MILAAN_LIB", file.path("..", "..", "..", "lib")), "milaan.R"))
 
 # The library path is passed as a flag by the case, so the same script serves
 # both the buggy and the fixed version. This is the whole archaeology trick: a

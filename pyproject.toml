@@ -5,15 +5,19 @@ build-backend = "hatchling.build"
 [project]
 name = "kasauti"
 version = "0.1.0"
-description = "Differential testing for statistical software: do independent implementations agree, and did they used to be wrong?"
+description = "Changelog archaeology for statistical software: which package bugs were live when a paper was written, and did its scripts touch them?"
 readme = "README.md"
 license = "MIT"
 authors = [{ name = "Gaurav Sood", email = "gsood07@gmail.com" }]
-keywords = ["statistics", "differential-testing", "reproducibility", "replication"]
+keywords = ["statistics", "reproducibility", "replication", "software-archaeology", "changelogs"]
 requires-python = ">=3.11"
 dependencies = [
     "click>=8.1",
     "pyyaml>=6.0",
+    # The harness. Verified bug records are version-regression cases -- does this
+    # package agree with its own past self -- which is the same machinery milaan
+    # uses to ask whether R agrees with Python, so the two share one runner.
+    "milaan",
     "requests>=2.31",
     "anthropic>=0.69",
     "pydantic>=2.0",
@@ -41,9 +45,12 @@ convention = "google"
 # The page is one HTML/CSS/JS template string. Wrapping its lines to 88 would
 # mangle markup for no reader's benefit.
 "src/kasauti/dashboard.py" = ["E501"]
-# Case backend scripts are standalone programs run by subprocess: printing is the
+# Bug backend scripts are standalone programs run by subprocess: printing is the
 # interface, and they are not importable modules.
-"cases/**" = ["T20", "S", "D", "N", "INP"]
+"bugs/**" = ["T20", "S", "D", "N", "INP", "E402"]
+
+[tool.uv.sources]
+milaan = { path = "../milaan", editable = true }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -67,6 +74,7 @@ dev = [
 test = [
     "pytest>=8",
     "pytest-cov>=6",
+    # Needed by the bug records' backend scripts, not by the archaeology itself.
     "numpy>=2.0",
     "scipy>=1.11",
     "statsmodels>=0.14",
