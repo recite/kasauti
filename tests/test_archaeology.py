@@ -320,6 +320,21 @@ class TestBuildBugs:
         assert funnel.with_named_function == 1
         assert funnel.with_corpus_exposure == 0
 
+    def test_a_plotting_packages_name_is_not_credited_to_a_computing_one(self):
+        # `alpha` is Cronbach's alpha in psych and colour transparency in
+        # scales. In this corpus it is written scales::alpha eight times against
+        # psych::alpha six, so counting bare alpha() put seven psych entries
+        # near the top of the shortlist on the strength of ggplot2 code.
+        entries = [Entry("psych", "2.4.4", None, "Fix a bug in alpha", 0)]
+        bugs, _ = build_bugs(
+            entries,
+            {"psych": {"alpha"}},
+            {"alpha": {"plot.R", "plot2.R", "scale.R"}},
+            qualified={("alpha", "psych"): {"scale.R"}},
+            shadowed={"alpha"},
+        )
+        assert bugs[0].total_exposed == 1
+
     def test_a_name_base_r_does_not_own_is_untouched(self):
         entries = [Entry("p", "1.0", None, "bug in vcovHC was incorrect", 0)]
         bugs, _ = build_bugs(

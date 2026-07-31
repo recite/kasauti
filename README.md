@@ -106,10 +106,29 @@ already being downloaded for `NEWS`, so both come out of one read. Checked again
 the installed namespaces it replaces, the parse loses **2 names across 28 packages**,
 both traceable to a version difference rather than to the parser.
 
-**A name base R also exports counts only when qualified.** `Matrix` exports `diag`,
-`head`, `crossprod`, and `rowMeans`. Counting every bare `diag()` in the corpus put
-`Matrix` at the top of the queue on 3,562 scripts that meant base R's, burying `lfe`
-at 245. This generalizes the rule that already existed for tidyverse-masked names.
+**A name someone else owns counts only when qualified.** Two rounds of this, both
+found by checking a suspiciously large number rather than by reasoning:
+
+- `Matrix` exports `diag`, `head`, `crossprod`, and `rowMeans`. Counting every bare
+  `diag()` put `Matrix` at the top of the queue on **3,562 scripts** that meant base
+  R's, burying `lfe` at 245.
+- `alpha` is Cronbach's alpha in `psych` and colour transparency in `scales`. In
+  this corpus it is written `scales::alpha` **eight** times against `psych::alpha`
+  **six** — so seven `psych` entries reached the shortlist at 43 scripts on the
+  strength of ggplot2 code. Corrected, they sit at 6.
+
+So the shadow set is base R **plus the non-inferential packages**, computed from
+their NAMESPACEs rather than listed. Nothing is lost by shadowing the second group:
+they are precisely the packages already excluded for not computing anything, so a
+name they own has no business being credited to a package that does. `car`'s
+`recode` entry, which is `dplyr`'s `recode` in the corpus, fell from 46 to 2 the
+same way.
+
+One collision this does not catch, recorded because it is still live: `psych`'s ICC
+entry reads "confidence intervals were incorrectly based upon alpha/2", and the
+`alpha` there is a significance level, not `psych::alpha`. `ICC` itself is called by
+**zero** corpus scripts, so that entry's real exposure is nil. Matching identifiers
+cannot tell a function name from a statistical symbol spelled the same way.
 
 ## The bug pipeline
 

@@ -1,6 +1,6 @@
 # Classification of exposed changelog entries
 
-409 entries from 131 R packages survive the
+407 entries from 131 R packages survive the
 funnel with corpus exposure. Of those, **228** have been read and judged.
 
 R only. The Python funnel has no export restriction, so its candidates are
@@ -12,8 +12,8 @@ rate meaningless.
 Entries are queued in descending corpus exposure, so the 228 judged
 are the most-exposed ones. What is left unread is the tail:
 
-* judged: **228** of 409 (56%)
-* unjudged: **181**, none exposed to more than **25** corpus scripts
+* judged: **228** of 407 (56%)
+* unjudged: **179**, none exposed to more than **25** corpus scripts
 
 Every finding below is drawn from the judged set only. A bug sitting in
 the unjudged tail has not been ruled out; it has not been looked at.
@@ -125,9 +125,9 @@ reason.
 | `plm` | 578 | 11 |
 | `emmeans` | 549 | 9 |
 | `sf` | 557 | 8 |
-| `zoo` | 302 | 8 |
 | `Hmisc` | 637 | 7 |
 | `lme4` | 352 | 7 |
+| `zoo` | 302 | 7 |
 | `MatchIt` | 191 | 6 |
 | `brms` | 850 | 6 |
 | `randomForest` | 134 | 6 |
@@ -168,7 +168,6 @@ reason.
 | `rstan` | 206 | 1 |
 | `rstanarm` | 115 | 1 |
 | `sjlabelled` | 79 | 1 |
-| `srvyr` | 83 | 1 |
 | `strucchange` | 46 | 1 |
 | `BayesTree` | 0 | 0 |
 | `CBPS` | 1 | 0 |
@@ -236,6 +235,7 @@ reason.
 | `sp` | 57 | 0 |
 | `spatstat` | 3630 | 0 |
 | `spdep` | 109 | 0 |
+| `srvyr` | 83 | 0 |
 | `statnet` | 0 | 0 |
 | `survminer` | 201 | 0 |
 | `systemfit` | 29 | 0 |
@@ -243,5 +243,5 @@ reason.
 | `tseries` | 306 | 0 |
 | `weights` | 13 | 0 |
 
-**72** of 131 packages yielded no exposed candidate at all.
+**73** of 131 packages yielded no exposed candidate at all.
 

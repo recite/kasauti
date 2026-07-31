@@ -353,15 +353,41 @@ SHADOWING_BASE = [
 ]
 
 
-def base_shadow() -> set[str]:
-    """Names base R exports, which a CRAN package may claim only when qualified.
+def base_shadow(cache_root: Path | None = None) -> set[str]:
+    """Names a computing package may claim only where the call is qualified.
+
+    Two sources, and the second one was learned from a wrong answer. Base R is
+    obvious: `Matrix` exports `diag` and `crossprod`, and a bare `diag()` means
+    base R's. The non-inferential packages are the same problem one layer out.
+    `alpha` is Cronbach's alpha in `psych` and colour transparency in `scales`,
+    and in this corpus it is written `scales::alpha` eight times against
+    `psych::alpha` six -- so counting bare `alpha()` put seven `psych` entries
+    near the top of the shortlist on the strength of ggplot2 code.
+
+    Nothing is lost by shadowing them: these are exactly the packages already
+    excluded from the frame for not computing anything, so a name they own has
+    no business being attributed to a package that does.
+
+    Args:
+        cache_root: Harvest cache root. Omit to shadow against base R only,
+            which is all a unit test needs.
 
     Returns:
-        Every name exported by a package shipped with R.
+        Every shadowed name.
     """
     from kasauti.archaeology.frame import base_exports
+    from kasauti.archaeology.harvest import harvest
+    from kasauti.archaeology.taskviews import NON_INFERENTIAL, load_usage
 
-    return set().union(*base_exports(SHADOWING_BASE).values())
+    shadow = set().union(*base_exports(SHADOWING_BASE).values())
+    if cache_root is None:
+        return shadow
+
+    usage = load_usage(ROOT / "data/frame/package_usage.csv")
+    for package in sorted(NON_INFERENTIAL):
+        if usage.get(package, 0) > 0:
+            shadow |= set(harvest(package, "cran", cache_root).exports)
+    return shadow
 
 
 def classify_packages() -> list[str]:
@@ -561,7 +587,7 @@ def _exposed_entries(
     index, qualified = load_call_index(call_sites, language=language)
     if language == "R":
         exports = load_exports(packages + BASE_IN_FRAME, cache_root)
-        shadowed, excluded = base_shadow(), None
+        shadowed, excluded = base_shadow(cache_root), None
     else:
         # Python's equivalent of NAMESPACE is the imported module itself, so
         # exports come from the harvest rather than from a second source. There
