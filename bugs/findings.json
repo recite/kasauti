@@ -41,6 +41,26 @@
       "window_censored": true
     },
     {
+      "bug_id": "r/mgcv/1.9-0-multinom-variance",
+      "category": "RESULT_CHANGING",
+      "condition_probe": "(?=.*multinom)(?=.*gam)",
+      "conditions": "Stated as the multinom family with K>=3. Attempts to reproduce it against mgcv 1.8-42 found no K-dependent difference: parametric coefficients and standard errors are identical to ten digits at K=2, 3 and 4, and with smooth terms the only differences are of order 5e-6 in edf and posterior variance -- which appear equally at K=2, where the entry says the bug does not apply. A K-specific defect should not show at K=2, so those differences are read as optimizer convergence drift across a year of releases rather than as this fix.",
+      "fixed_in": "1.9-0",
+      "fixed_on": "2023-07-11",
+      "functions": "gam",
+      "language": "r",
+      "magnitude": "Not reproduced. The entry is almost certainly accurate -- \"a counter was initialized in the wrong place\" is too specific to be invented -- but the probe did not find the configuration that triggers it. Most likely candidates not yet tried: a different link or model structure, more than two linear predictors sharing a smooth, or a quantity other than vcov() and edf. Recorded so the next session starts from here rather than re-deriving it.",
+      "package": "mgcv",
+      "papers_in_window": null,
+      "papers_linked": null,
+      "scripts_calling_function": null,
+      "scripts_meeting_probe": null,
+      "severity": "HIGH",
+      "silent": true,
+      "status": "NOT_REPRODUCED",
+      "window_censored": true
+    },
+    {
       "bug_id": "r/sandwich/3.0-2-vcovcl-hc2-glm",
       "category": "RESULT_CHANGING",
       "condition_probe": "(?=.*HC2)(?=.*(?:glm\\s*\\(|weights\\s*=))",

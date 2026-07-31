@@ -596,5 +596,129 @@ def classify_report(cache_file, cache_root, call_sites, out) -> None:
     )
 
 
+@main.command("dashboard")
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=ROOT / "docs/index.html"
+)
+@click.option("--bugs-dir", type=click.Path(path_type=Path), default=ROOT / "bugs")
+@click.option(
+    "--cache",
+    "cache_file",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/classify/cache.json",
+)
+@click.option(
+    "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
+)
+@click.option(
+    "--call-sites",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/call_sites.csv",
+)
+def dashboard(out, bugs_dir, cache_file, cache_root, call_sites) -> None:
+    """Render the record as a self-contained page for GitHub Pages.
+
+    Args:
+        out: Destination HTML file.
+        bugs_dir: Directory holding bug records.
+        cache_file: Classification cache.
+        cache_root: Harvest cache directory.
+        call_sites: Extracted call sites CSV.
+    """
+    from collections import Counter
+
+    from concord.archaeology.bugs import discover_bugs
+    from concord.archaeology.classify import ClassificationCache, agreement
+    from concord.archaeology.harvest import harvest
+    from concord.archaeology.parse import parse_news
+    from concord.dashboard import Dashboard
+    from concord.dashboard import write as write_page
+
+    python_packages = ["statsmodels", "scikit-learn", "scipy", "numpy"]
+    r_entries = sum(
+        len(parse_news(harvest(p, "cran", cache_root)).entries)
+        for p in CLASSIFY_PACKAGES
+    )
+    py_entries = sum(
+        len(parse_news(harvest(p, "pypi", cache_root)).entries) for p in python_packages
+    )
+
+    entries, exposure = _exposed_entries(cache_root, call_sites)
+    store = ClassificationCache(cache_file)
+    stats = agreement(entries, store)
+    counts = Counter(stats["categories"])
+
+    funnel = [
+        {"label": "changelog entries (R)", "n": r_entries},
+        {"label": "claim a wrong result", "n": 464},
+        {"label": "name a computing function", "n": 230},
+        {"label": "called in the corpus", "n": len(entries)},
+        {"label": "read as result-changing", "n": counts.get("RESULT_CHANGING", 0)},
+    ]
+
+    records = discover_bugs(bugs_dir)
+    bug_rows = [
+        {
+            "id": b.id,
+            "language": b.language,
+            "severity": b.severity,
+            "status": b.status,
+            "calls": b.exposure.scripts_calling_function,
+            "probe": b.exposure.scripts_meeting_probe,
+            "papers": b.exposure.papers_in_window,
+            "conditions": " ".join(b.conditions.split())[:150],
+        }
+        for b in records
+    ]
+
+    verified_entry_ids = {b.entry_id for b in records if b.entry_id}
+    shortlist = []
+    for entry in entries:
+        found = store.get(entry.entry_id)
+        if (
+            found
+            and found.category == "RESULT_CHANGING"
+            and found.silent
+            and found.severity == "HIGH"
+            and entry.entry_id not in verified_entry_ids
+        ):
+            shortlist.append(
+                {
+                    "entry_id": entry.entry_id,
+                    "exposure": exposure.get(entry.entry_id, 0),
+                    "functions": ", ".join(found.functions),
+                    "conditions": " ".join(found.conditions.split())[:130],
+                }
+            )
+    shortlist.sort(key=lambda s: -s["exposure"])
+
+    payload = Dashboard(
+        corpus={
+            "entries": r_entries + py_entries,
+            "packages": len(CLASSIFY_PACKAGES) + len(python_packages),
+            "note": (
+                f"{r_entries:,} entries from {len(CLASSIFY_PACKAGES)} R packages and "
+                f"{py_entries:,} from {len(python_packages)} Python projects. Only the "
+                "R side is classified: the Python funnel has no export restriction, so "
+                "mixing the two would make the rate meaningless."
+            ),
+        },
+        funnel=funnel,
+        classification={
+            "confusion": [
+                {"rules": k.split("->")[0], "read": k.split("->")[1], "n": v}
+                for k, v in stats["confusion"].items()
+            ],
+            "moves_published": stats["moves_published_numbers"],
+        },
+        bugs=bug_rows,
+        shortlist=shortlist[:20],
+    )
+    written = write_page(payload, out)
+    click.echo(
+        f"wrote {written} ({len(bug_rows)} records, {len(shortlist)} shortlisted)"
+    )
+
+
 if __name__ == "__main__":
     main()

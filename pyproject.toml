@@ -38,6 +38,9 @@ convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S105", "S106", "S108", "RUF012", "D"]
+# The page is one HTML/CSS/JS template string. Wrapping its lines to 88 would
+# mangle markup for no reader's benefit.
+"src/concord/dashboard.py" = ["E501"]
 # Case backend scripts are standalone programs run by subprocess: printing is the
 # interface, and they are not importable modules.
 "cases/**" = ["T20", "S", "D", "N", "INP"]
