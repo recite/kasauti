@@ -2328,7 +2328,8 @@
     "conditions": "matchit(method='nearest') with ratio > 1 and reuse.max specified; a control could be matched repeatedly to the same treated unit, so the requested ratio was not delivered and every downstream estimate used the wrong matched set",
     "severity": "HIGH",
     "evidence_quote": "thereby essentially ignoring the `ratio` argument",
-    "confidence": "HIGH"
+    "confidence": "HIGH",
+    "introduced_version": "4.3.1"
   },
   {
     "entry_id": "MatchIt@4.4.0#8",

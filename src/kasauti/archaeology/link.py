@@ -151,7 +151,10 @@ def is_result_changing(text: str) -> bool:
 
 
 def affected_functions(
-    text: str, exports: set[str], excluded: set[str] | None = None
+    text: str,
+    exports: set[str],
+    excluded: set[str] | None = None,
+    package: str | None = None,
 ) -> list[str]:
     """Extract the functions an entry is about.
 
@@ -170,12 +173,28 @@ def affected_functions(
         exports: Names the package exports.
         excluded: Non-computing names to drop. Defaults to R's `NON_COMPUTING`;
             Python needs its own, longer list.
+        package: The owning package. Twenty-nine packages in this frame export a
+            function with their own name -- `Matrix`, `plm`, `zoo`, `raster` --
+            and their changelogs say that name constantly as prose: "before
+            Matrix 1.2-0", "plm now supports". Counted naively, every entry in
+            such a package inherits the constructor's whole corpus exposure.
+            Matrix 1.5-0's `crossprod` entry scored 58 scripts entirely on the
+            phrase "before Matrix 1.2-0", while the two functions it is actually
+            about contributed zero. So the package's own name survives only when
+            the text writes it as a call.
 
     Returns:
         Sorted affected function names.
     """
     named = {m.group(1) for m in IDENTIFIER.finditer(text)}
-    return sorted((named & exports) - (NON_COMPUTING if excluded is None else excluded))
+    found = (named & exports) - (NON_COMPUTING if excluded is None else excluded)
+    if (
+        package
+        and package in found
+        and not re.search(rf"\b{re.escape(package)}\s*\(", text)
+    ):
+        found.discard(package)
+    return sorted(found)
 
 
 def build_bugs(
@@ -214,7 +233,7 @@ def build_bugs(
         funnel.result_changing += 1
 
         exports = package_exports.get(entry.package, set())
-        functions = affected_functions(entry.text, exports, excluded)
+        functions = affected_functions(entry.text, exports, excluded, entry.package)
         if not functions:
             continue
         funnel.with_named_function += 1

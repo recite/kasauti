@@ -155,7 +155,7 @@
     "functions": [
       "matchit"
     ],
-    "introduced_version": null,
+    "introduced_version": "4.3.1",
     "severity": "HIGH",
     "silent": true,
     "source": "agent"

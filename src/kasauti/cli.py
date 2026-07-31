@@ -251,6 +251,88 @@ def bug_probe(bug_id: str, bugs_dir: Path, call_sites: Path) -> None:
         click.echo(f"  {len(result.unreadable)} script(s) could not be read")
 
 
+@bug.command("rank")
+@click.option("--bugs-dir", type=click.Path(path_type=Path), default=ROOT / "bugs")
+@click.option(
+    "--cache",
+    "cache_file",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/classify/cache.json",
+)
+@click.option(
+    "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
+)
+@click.option(
+    "--call-sites",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/call_sites.csv",
+)
+@click.option(
+    "--datasets-dir",
+    type=click.Path(path_type=Path),
+    default=Path.home() / "Documents/GitHub/softverse/data/datasets",
+)
+@click.option("--limit", type=int, default=15, show_default=True)
+def bug_rank(bugs_dir, cache_file, cache_root, call_sites, datasets_dir, limit) -> None:
+    """Order unverified candidates by how many papers they could have moved."""
+    from kasauti.archaeology.bugs import discover_bugs
+    from kasauti.archaeology.classify import ClassificationCache
+    from kasauti.archaeology.harvest import harvest
+    from kasauti.archaeology.papers import load_dataverse_index
+    from kasauti.archaeology.rank import rank
+
+    entries, exposure, _, _ = _exposed_entries(cache_root, call_sites)
+    store = ClassificationCache(cache_file)
+    already = {b.entry_id for b in discover_bugs(bugs_dir) if b.entry_id}
+
+    candidates, packages = [], set()
+    for entry in entries:
+        found = store.get(entry.entry_id)
+        if not found or entry.entry_id in already:
+            continue
+        if not found.moves_published_numbers or found.severity != "HIGH":
+            continue
+        packages.add(entry.package)
+        candidates.append(
+            (
+                entry.entry_id,
+                entry.package,
+                found.functions,
+                exposure.get(entry.entry_id, 0),
+                entry.text,
+                entry.released,
+                found.introduced_version,
+            )
+        )
+
+    releases = {
+        p: [(r.version, r.released) for r in harvest(p, "cran", cache_root).releases]
+        for p in sorted(packages)
+    }
+    index = load_dataverse_index(datasets_dir)
+    dates = sorted(p.published for p in index.values() if p.published)
+
+    ranked = rank(candidates, releases, dates)
+    click.echo(
+        f"{len(ranked)} unverified candidates against {len(dates)} dated archives\n"
+    )
+    click.echo(
+        f"{'reach':>6} {'scripts':>7} {'in-window':>9}  {'entry':24s} "
+        f"{'fixed':10s} window"
+    )
+    for c in ranked[:limit]:
+        mark = "~" if c.censored else " "
+        fixed = c.fixed_on.isoformat() if c.fixed_on else "--"
+        click.echo(
+            f"{c.expected:6.1f} {c.scripts:7d} {c.archives_in_window:9d}{mark} "
+            f"{c.entry_id:24s} {fixed:10s} {c.window_basis}"
+        )
+    click.echo(
+        "\n~ marks a left-censored window: no known start, so the count is an "
+        "upper bound on\n  how much of the corpus the bug could have reached."
+    )
+
+
 @bug.command("papers")
 @click.argument("bug_id")
 @click.option("--bugs-dir", type=click.Path(path_type=Path), default=ROOT / "bugs")

@@ -1,7 +1,7 @@
 # Classification of exposed changelog entries
 
-407 entries from 131 R packages survive the
-funnel with corpus exposure. Of those, **228** have been read and judged.
+386 entries from 131 R packages survive the
+funnel with corpus exposure. Of those, **211** have been read and judged.
 
 R only. The Python funnel has no export restriction, so its candidates are
 noisier; mixing two different-quality samples into one rate would make the
@@ -9,19 +9,19 @@ rate meaningless.
 
 ## Coverage
 
-Entries are queued in descending corpus exposure, so the 228 judged
+Entries are queued in descending corpus exposure, so the 211 judged
 are the most-exposed ones. What is left unread is the tail:
 
-* judged: **228** of 407 (56%)
-* unjudged: **179**, none exposed to more than **25** corpus scripts
+* judged: **211** of 386 (55%)
+* unjudged: **175**, none exposed to more than **25** corpus scripts
 
 Every finding below is drawn from the judged set only. A bug sitting in
 the unjudged tail has not been ruled out; it has not been looked at.
 
 ## What the reading changed
 
-The regular-expression layer agreed with the reading on **121**
-of 228 entries and disagreed on **107** (47%).
+The regular-expression layer agreed with the reading on **112**
+of 211 entries and disagreed on **99** (47%).
 
 This is the validation a hand-coded gold set was going to provide. The rules
 are the baseline, the reading is the reference, and the disagreement rate is
@@ -29,27 +29,27 @@ how much the reading was worth.
 
 | rules said | reading said | n |
 |---|---|---|
-| RESULT_CHANGING | RESULT_CHANGING | 121 |
-| RESULT_CHANGING | ERROR_TO_WORKING ** | 33 |
-| RESULT_CHANGING | DOC ** | 32 |
-| RESULT_CHANGING | UNCLEAR ** | 31 |
-| RESULT_CHANGING | BEHAVIOR_CHANGE ** | 9 |
-| RESULT_CHANGING | FEATURE ** | 2 |
+| RESULT_CHANGING | RESULT_CHANGING | 112 |
+| RESULT_CHANGING | ERROR_TO_WORKING ** | 31 |
+| RESULT_CHANGING | DOC ** | 31 |
+| RESULT_CHANGING | UNCLEAR ** | 29 |
+| RESULT_CHANGING | BEHAVIOR_CHANGE ** | 7 |
+| RESULT_CHANGING | FEATURE ** | 1 |
 
 ## Distribution
 
 | category | n |
 |---|---|
-| RESULT_CHANGING | 121 |
-| ERROR_TO_WORKING | 33 |
-| DOC | 32 |
-| UNCLEAR | 31 |
-| BEHAVIOR_CHANGE | 9 |
-| FEATURE | 2 |
+| RESULT_CHANGING | 112 |
+| ERROR_TO_WORKING | 31 |
+| DOC | 31 |
+| UNCLEAR | 29 |
+| BEHAVIOR_CHANGE | 7 |
+| FEATURE | 1 |
 
-Silent (quietly wrong, no error or warning): **121**; loud: 107.
+Silent (quietly wrong, no error or warning): **111**; loud: 100.
 
-**123** entries could have moved a number in a published table -- silent result-changing bugs, plus behaviour
+**112** entries could have moved a number in a published table -- silent result-changing bugs, plus behaviour
 changes, which move results whether or not anyone calls them defects.
 
 ## Shortlist: silent, result-changing, high severity
@@ -63,7 +63,6 @@ could plausibly hit, with nothing to signal it had happened.
 | `AER@1.2-6#3` | `tobit`, `summary` | survival 2.42-7 or later installed |
 | `MASS@unknown#112` | `glm.nb`, `theta.ml` | weights supplied that do not sum to n |
 | `MatchIt@4.4.0#7` | `matchit` | matchit(method='nearest') with ratio > 1 and reuse.max specified; a control could be matched repeatedly to the same treated unit, so the requested ratio was not delivered and every downstream estimate used the wrong matched set |
-| `Matrix@1.5-0#25` | `crossprod`, `tcrossprod` | crossprod/tcrossprod mixing Rsparse and Tsparse representations |
 | `car@1.0-18#1` | `recode` | values mixing letters and numbers |
 | `estimatr@0.12.0#7` | `difference_in_means` | condition1/condition2 subsetting a treatment with more than two conditions |
 | `estimatr@0.6.0#11` | `difference_in_means` | both weights and blocks supplied |
@@ -118,41 +117,41 @@ reason.
 | `fixest` | 769 | 27 |
 | `igraph` | 1014 | 17 |
 | `caret` | 750 | 15 |
-| `xts` | 249 | 15 |
-| `Matrix` | 648 | 12 |
 | `car` | 422 | 11 |
 | `forecast` | 567 | 11 |
 | `plm` | 578 | 11 |
-| `emmeans` | 549 | 9 |
+| `xts` | 249 | 10 |
 | `sf` | 557 | 8 |
 | `Hmisc` | 637 | 7 |
+| `emmeans` | 549 | 7 |
 | `lme4` | 352 | 7 |
-| `zoo` | 302 | 7 |
 | `MatchIt` | 191 | 6 |
 | `brms` | 850 | 6 |
-| `randomForest` | 134 | 6 |
 | `rms` | 699 | 6 |
+| `Matrix` | 648 | 5 |
+| `randomForest` | 134 | 5 |
 | `sjmisc` | 170 | 5 |
+| `zoo` | 302 | 5 |
 | `VGAM` | 982 | 4 |
-| `mice` | 516 | 4 |
 | `ordinal` | 120 | 4 |
 | `sandwich` | 100 | 4 |
-| `stringdist` | 121 | 4 |
 | `AER` | 73 | 3 |
 | `MASS` | 148 | 3 |
 | `clubSandwich` | 85 | 3 |
 | `effects` | 164 | 3 |
 | `estimatr` | 73 | 3 |
 | `geosphere` | 15 | 3 |
+| `mice` | 516 | 3 |
 | `miceadds` | 166 | 3 |
-| `nlme` | 585 | 3 |
 | `sampleSelection` | 40 | 3 |
+| `stringdist` | 121 | 3 |
 | `tmap` | 238 | 3 |
 | `e1071` | 154 | 2 |
 | `factoextra` | 178 | 2 |
 | `lfe` | 60 | 2 |
 | `lmtest` | 57 | 2 |
 | `margins` | 129 | 2 |
+| `nlme` | 585 | 2 |
 | `survey` | 15 | 2 |
 | `Amelia` | 67 | 1 |
 | `MuMIn` | 395 | 1 |
@@ -160,7 +159,6 @@ reason.
 | `coin` | 319 | 1 |
 | `did` | 119 | 1 |
 | `ggeffects` | 274 | 1 |
-| `glmnet` | 98 | 1 |
 | `marginaleffects` | 545 | 1 |
 | `network` | 252 | 1 |
 | `optmatch` | 147 | 1 |
@@ -196,6 +194,7 @@ reason.
 | `ergm` | 755 | 0 |
 | `fields` | 0 | 0 |
 | `ggmap` | 21 | 0 |
+| `glmnet` | 98 | 0 |
 | `grf` | 0 | 0 |
 | `gsynth` | 11 | 0 |
 | `interflex` | 29 | 0 |
@@ -243,5 +242,5 @@ reason.
 | `tseries` | 306 | 0 |
 | `weights` | 13 | 0 |
 
-**73** of 131 packages yielded no exposed candidate at all.
+**74** of 131 packages yielded no exposed candidate at all.
 

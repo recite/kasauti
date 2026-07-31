@@ -233,6 +233,30 @@ class TestAffectedFunctions:
         assert affected_functions(text, {"etable", "summary", "feols"}) == []
 
 
+class TestSelfNamedPackage:
+    def test_the_package_name_as_prose_is_not_a_function_call(self):
+        # Matrix 1.5-0's crossprod entry scored 58 corpus scripts entirely on
+        # the phrase "before Matrix 1.2-0". The two functions it is about
+        # contribute zero, because base R owns both names.
+        text = "Ditto for tcrossprod(), where the old result was even wrong "
+        text += "when it had worked, before Matrix 1.2-0."
+        assert affected_functions(text, {"Matrix", "tcrossprod"}, package="Matrix") == [
+            "tcrossprod"
+        ]
+
+    def test_the_package_name_written_as_a_call_still_counts(self):
+        # plm's changelog really does say "fixed a bug in plm()", and there the
+        # name is the estimator.
+        assert affected_functions(
+            "fixed a bug in plm() with unbalanced panels", {"plm"}, package="plm"
+        ) == ["plm"]
+
+    def test_other_packages_names_are_untouched_by_the_rule(self):
+        assert affected_functions(
+            "zoo objects were mishandled", {"zoo"}, package="xts"
+        ) == ["zoo"]
+
+
 class TestPythonExclusion:
     def test_array_plumbing_is_dropped_the_way_r_display_names_are(self):
         # numpy exports `where`, `all`, and `array`. They are ordinary words in a
