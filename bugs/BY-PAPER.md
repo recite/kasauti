@@ -1,6 +1,6 @@
 # Bug record, inverted by replication archive
 
-17 archive(s) contain a script matching some bug's conditions
+18 archive(s) contain a script matching some bug's conditions
 probe; 0 were published while a matching bug was live.
 
 Membership of a window is necessary, not sufficient. The archive also had
@@ -11,6 +11,7 @@ establish -- and an archive published shortly after a fix was very likely
 | archive | published | journal | bugs | in window |
 |---|---|---|---|---|
 | [dataverse/4NUQE3](https://doi.org/10.7910/DVN/4NUQE3)  | 2023-06-06 | JPE | `r/lfe/2.5-multiway-cluster-psdef` | 0 |
+| [dataverse/914AN0](https://doi.org/10.7910/DVN/914AN0)  | 2024-10-15 | IOJ | `r/fixest/0.10.4-fixef-three-way` | 0 |
 | [dataverse/AAY3TQ](https://doi.org/10.7910/DVN/AAY3TQ)  | 2023-03-02 | JPE | `r/plm/1.5-13-vcovhc-white-singleton` | 0 |
 | [dataverse/BZWANC](https://doi.org/10.7910/DVN/BZWANC)  | 2021-05-18 | JAERE | `r/lfe/2.5-multiway-cluster-psdef` | 0 |
 | [dataverse/CNQUN3](https://doi.org/10.7910/DVN/CNQUN3)  | 2019-08-02 | JAERE | `r/lfe/2.5-multiway-cluster-psdef` | 0 |
@@ -24,6 +25,6 @@ establish -- and an archive published shortly after a fix was very likely
 | [dataverse/TVMFQT](https://doi.org/10.7910/DVN/TVMFQT)  | 2021-02-19 | IOJ | `r/lfe/2.5-multiway-cluster-psdef` | 0 |
 | [dataverse/UJZY4C](https://doi.org/10.7910/DVN/UJZY4C)  | 2021-02-11 | IOJ | `r/lfe/2.5-multiway-cluster-psdef` | 0 |
 | [dataverse/VELJKG](https://doi.org/10.7910/DVN/VELJKG)  | 2019-08-06 | qje | `r/plm/1.5-13-vcovhc-white-singleton` | 0 |
-| [zenodo/10012820](https://doi.org/10.5281/zenodo.10012820)  |  |  | `r/lfe/2.5-multiway-cluster-psdef`, `r/sandwich/2.5-0-vcovhc-mlm-sign`, `r/sandwich/3.0-2-vcovcl-hc2-glm`, `r/plm/1.5-13-vcovhc-white-singleton` | 0 |
+| [zenodo/10012820](https://doi.org/10.5281/zenodo.10012820)  |  |  | `r/lfe/2.5-multiway-cluster-psdef`, `r/fixest/0.10.4-fixef-three-way`, `r/sandwich/2.5-0-vcovhc-mlm-sign`, `r/sandwich/3.0-2-vcovcl-hc2-glm`, `r/plm/1.5-13-vcovhc-white-singleton` | 0 |
 | [zenodo/10145562](https://doi.org/10.5281/zenodo.10145562)  |  |  | `r/lfe/2.5-multiway-cluster-psdef`, `r/sandwich/3.0-2-vcovcl-hc2-glm`, `r/plm/1.5-13-vcovhc-white-singleton` | 0 |
 | [zenodo/13765850](https://doi.org/10.5281/zenodo.13765850)  |  |  | `r/lfe/2.5-multiway-cluster-psdef` | 0 |

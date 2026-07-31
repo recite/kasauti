@@ -1,0 +1,27 @@
+{
+  "case_id": "fixest_fixef_multiway",
+  "backend": "buggy",
+  "env": {
+    "language": "R",
+    "version": "4.6.0",
+    "packages": {
+      "fixest": "0.10.4"
+    }
+  },
+  "status": "ok",
+  "quantities": {
+    "coef@x": 1.00655338100221,
+    "reconstruction_error@fixef": 4.57937823927779e-06,
+    "fe@id_1": -1.45858702152611,
+    "fe@yr_1": -0.872215861238273,
+    "fe@ind_1": -0.365792979693174,
+    "fe@reg_1": 3.97538701962156
+  },
+  "diagnostics": {
+    "fixest_version": "0.10.4",
+    "n": 48,
+    "dimensions": 4,
+    "levels": "7,6,4,3"
+  },
+  "error": null
+}

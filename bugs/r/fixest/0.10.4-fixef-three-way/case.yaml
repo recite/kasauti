@@ -1,0 +1,70 @@
+id: fixest_fixef_multiway
+title: "fixest 0.10.4: fixef() returned fixed effects that do not reconstruct the fit"
+family: version_regression
+
+# fixest 0.10.4 (2022-03-31):
+#   "fix major bug related to the extraction of fixed-effects (function `fixef`)
+#    when there are 3+ fixed-effects. This bug led to, in some specific
+#    circumstances, wrong values for the fixed-effects coefficients."
+#
+# Compares ADJACENT versions on purpose. 0.10.3 against current 0.14.2 also
+# diverges, but for a second reason -- fixest began dropping singleton fixed
+# effect groups -- and a comparison spanning four minor versions measures every
+# change at once. 0.10.3 against 0.10.4 isolates this one.
+#
+#   Rscript -e 'install.packages(
+#     "https://cran.r-project.org/src/contrib/Archive/fixest/fixest_0.10.3.tar.gz",
+#     repos = NULL, type = "source", lib = "/tmp/rlibs/fixest_0.10.3")'
+#   Rscript -e 'install.packages(
+#     "https://cran.r-project.org/src/contrib/Archive/fixest/fixest_0.10.4.tar.gz",
+#     repos = NULL, type = "source", lib = "/tmp/rlibs/fixest_0.10.4")'
+
+backends:
+  - name: buggy
+    cmd: ["Rscript", "--vanilla", "run_r.R", "/tmp/rlibs/fixest_0.10.3"]
+    label: "fixest 0.10.3 (before the fix)"
+    optional: true
+  - name: fixed
+    cmd: ["Rscript", "--vanilla", "run_r.R", "/tmp/rlibs/fixest_0.10.4"]
+    label: "fixest 0.10.4 (the fix)"
+    optional: true
+
+agree_tol: 1.0e-8
+numeric_tol: 1.0e-5
+
+quantities:
+  reconstruction_error@fixef:
+    expect: DIVERGE
+    reason: >
+      The finding, and it is self-adjudicating. Extracted fixed effects are
+      defined by what they reconstruct: added back to Xb they must return the
+      fitted values. 0.10.3 misses by **3.366910**; 0.10.4 misses by 4.58e-06,
+      the fixed-effect solver's own tolerance. No third implementation is needed
+      to say which is right, because 0.10.3 contradicts the definition of the
+      quantity it is reporting.
+  fe@id_1:
+    expect: DIVERGE
+    reason: >
+      The values themselves, not just their sum. The first `id` effect is
+      1.278791359 before the fix and -1.458587022 after -- a different sign and
+      a different magnitude, on a coefficient an applied paper would report as
+      a firm or region effect.
+  fe@reg_1:
+    expect: DIVERGE
+    reason: >
+      0.000000000 against 3.975387020. The buggy version pinned this dimension's
+      first level to zero as though it were the reference, which is what makes
+      the error easy to miss: a column of fixed effects starting at exactly zero
+      looks like a correctly normalised one.
+  fe@yr_1:
+    expect: DIVERGE
+    reason: Same defect on the third dimension.
+  fe@ind_1:
+    expect: DIVERGE
+    reason: Same defect on the fourth dimension.
+
+# coef@x defaults to AGREE and is the control that localises this. The bug is in
+# extraction, after the fixed effects have been swept out, so the regression
+# coefficient must be untouched -- it is identical at 1.006553381002. A paper
+# reporting only the coefficient on x was never affected; a paper reporting or
+# plotting the fixed effects themselves was.
