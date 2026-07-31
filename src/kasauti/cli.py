@@ -515,8 +515,19 @@ def frame_build(call_sites, extraction, cache_root, out_csv, out_md) -> None:
         click.echo(f"  no exports resolved: {', '.join(built.no_exports)}")
 
 
+#: PyPI projects mined alongside the CRAN frame. Four, and that is not an
+#: oversight in the selection: of 6,233 parsed Python scripts in the corpus, the
+#: inferential imports are numpy (2,914), scipy (881), sklearn (254), and
+#: statsmodels (46), and the next econometrics library, linearmodels, appears in
+#: four. Adding Python packages would add changelog text and no exposure.
+PYTHON_PACKAGES = ["statsmodels", "scikit-learn", "scipy", "numpy"]
+
+
 def _exposed_entries(
-    cache_root: Path, call_sites: Path, packages: list[str] | None = None
+    cache_root: Path,
+    call_sites: Path,
+    packages: list[str] | None = None,
+    language: str = "R",
 ):
     """Load the entries that have corpus exposure, with their exposure counts.
 
@@ -524,6 +535,9 @@ def _exposed_entries(
         cache_root: Harvest cache directory.
         call_sites: Extracted call sites CSV.
         packages: Packages to mine. Defaults to the selected frame.
+        language: `R` or `Python`. The two are mined separately because their
+            call indexes are separate: matching a Python callee named `index`
+            against R's export list attributes a pandas method to `plm`.
 
     Returns:
         An `(entries, exposure, per_package, funnel)` tuple. `exposure` maps
@@ -531,24 +545,33 @@ def _exposed_entries(
         `per_package` maps package to `(entries_parsed, entries_exposed)`, so a
         package that contributes nothing is visible rather than assumed clean.
     """
+    from kasauti.archaeology.frame import NON_COMPUTING_PYTHON
     from kasauti.archaeology.harvest import harvest
     from kasauti.archaeology.link import build_bugs, load_call_index, load_exports
     from kasauti.archaeology.parse import parse_news
 
-    packages = packages or classify_packages()
+    ecosystem = "cran" if language == "R" else "pypi"
+    packages = packages or (classify_packages() if language == "R" else PYTHON_PACKAGES)
     entries, parsed = [], {}
     for package in packages:
-        found = parse_news(harvest(package, "cran", cache_root)).entries
+        found = parse_news(harvest(package, ecosystem, cache_root)).entries
         parsed[package] = len(found)
         entries += found
 
-    index, qualified = load_call_index(call_sites)
+    index, qualified = load_call_index(call_sites, language=language)
+    if language == "R":
+        exports = load_exports(packages + BASE_IN_FRAME, cache_root)
+        shadowed, excluded = base_shadow(), None
+    else:
+        # Python's equivalent of NAMESPACE is the imported module itself, so
+        # exports come from the harvest rather than from a second source. There
+        # is no base-language export list to shadow against: a script calling a
+        # builtin does not import it, so it never reaches the call index.
+        exports = {p: set(harvest(p, "pypi", cache_root).exports) for p in packages}
+        shadowed, excluded = set(), NON_COMPUTING_PYTHON
+
     bugs, funnel = build_bugs(
-        entries,
-        load_exports(packages + BASE_IN_FRAME, cache_root),
-        index,
-        qualified,
-        shadowed=base_shadow(),
+        entries, exports, index, qualified, shadowed=shadowed, excluded=excluded
     )
     exposure = {b.entry.entry_id: b.total_exposed for b in bugs}
     exposed = [b.entry for b in bugs]
@@ -586,7 +609,13 @@ def classify() -> None:
     type=click.Path(path_type=Path),
     default=ROOT / "data/frame/call_sites.csv",
 )
-def classify_pending(limit, out, cache_file, cache_root, call_sites) -> None:
+@click.option(
+    "--language",
+    type=click.Choice(["R", "Python"]),
+    default="R",
+    help="Which funnel to queue from.",
+)
+def classify_pending(limit, out, cache_file, cache_root, call_sites, language) -> None:
     """Write the queue of entries still needing judgment.
 
     Args:
@@ -595,12 +624,15 @@ def classify_pending(limit, out, cache_file, cache_root, call_sites) -> None:
         cache_file: Classification cache.
         cache_root: Harvest cache directory.
         call_sites: Extracted call sites CSV.
+        language: Which funnel to queue from.
     """
     import json as _json
 
     from kasauti.archaeology.classify import ClassificationCache, pending_payload
 
-    entries, exposure, _, _ = _exposed_entries(cache_root, call_sites)
+    entries, exposure, _, _ = _exposed_entries(
+        cache_root, call_sites, language=language
+    )
     store = ClassificationCache(cache_file)
     payload = pending_payload(entries, store, exposure, limit)
 

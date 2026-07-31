@@ -4,6 +4,7 @@ from datetime import date
 
 import pytest
 
+from kasauti.archaeology.frame import NON_COMPUTING_PYTHON
 from kasauti.archaeology.harvest import (
     Harvest,
     Release,
@@ -230,6 +231,28 @@ class TestAffectedFunctions:
         # A fix to a table formatter changes rendering, not coefficients.
         text = "fix display bug in etable() and in summary()"
         assert affected_functions(text, {"etable", "summary", "feols"}) == []
+
+
+class TestPythonExclusion:
+    def test_array_plumbing_is_dropped_the_way_r_display_names_are(self):
+        # numpy exports `where`, `all`, and `array`. They are ordinary words in a
+        # release note and calls in nearly every script; `where` alone drove 179
+        # candidate entries before this list existed.
+        text = "Fixed a bug where all values in the array were incorrect"
+        exports = {"where", "all", "array", "values", "polyfit"}
+        assert affected_functions(text, exports, NON_COMPUTING_PYTHON) == []
+
+    def test_statistics_survive_the_exclusion(self):
+        # `mean` and `quantile` compute numbers that reach a table, exactly as
+        # `sd` and `quantile` do on the R side.
+        for name in ("mean", "median", "std", "var", "quantile", "corrcoef"):
+            assert name not in NON_COMPUTING_PYTHON
+
+    def test_a_named_estimator_still_matches(self):
+        text = "Fix a bug in Normalizer with norm='max', which was incorrect"
+        assert affected_functions(
+            text, {"Normalizer", "max"}, NON_COMPUTING_PYTHON
+        ) == ["Normalizer"]
 
 
 class TestBuildBugs:

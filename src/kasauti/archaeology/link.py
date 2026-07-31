@@ -150,7 +150,9 @@ def is_result_changing(text: str) -> bool:
     return bool(RESULT_CHANGING.search(text)) and not INERT.search(text)
 
 
-def affected_functions(text: str, exports: set[str]) -> list[str]:
+def affected_functions(
+    text: str, exports: set[str], excluded: set[str] | None = None
+) -> list[str]:
     """Extract the functions an entry is about.
 
     Two restrictions, each of which changes the ranking completely:
@@ -166,12 +168,14 @@ def affected_functions(text: str, exports: set[str]) -> list[str]:
     Args:
         text: The entry's prose.
         exports: Names the package exports.
+        excluded: Non-computing names to drop. Defaults to R's `NON_COMPUTING`;
+            Python needs its own, longer list.
 
     Returns:
         Sorted affected function names.
     """
     named = {m.group(1) for m in IDENTIFIER.finditer(text)}
-    return sorted((named & exports) - NON_COMPUTING)
+    return sorted((named & exports) - (NON_COMPUTING if excluded is None else excluded))
 
 
 def build_bugs(
@@ -180,6 +184,7 @@ def build_bugs(
     call_index: dict[str, set[str]],
     qualified: dict[tuple[str, str], set[str]] | None = None,
     shadowed: set[str] | None = None,
+    excluded: set[str] | None = None,
 ) -> tuple[list[Bug], Funnel]:
     """Turn parsed entries into ranked bugs with corpus exposure.
 
@@ -194,6 +199,7 @@ def build_bugs(
             Without this, `Matrix` tops the ranking on the strength of `diag`,
             `head`, `crossprod`, and `rowMeans` -- names every script uses and
             almost none of them means Matrix's.
+        excluded: Non-computing names to drop, defaulting to R's.
 
     Returns:
         A `(bugs, funnel)` pair, bugs sorted by exposure descending.
@@ -208,7 +214,7 @@ def build_bugs(
         funnel.result_changing += 1
 
         exports = package_exports.get(entry.package, set())
-        functions = affected_functions(entry.text, exports)
+        functions = affected_functions(entry.text, exports, excluded)
         if not functions:
             continue
         funnel.with_named_function += 1

@@ -252,5 +252,18 @@ Python scripts, the inferential imports are `numpy` (2,914), `scipy` (881), `skl
 in 4. Adding Python packages would add changelog text and no exposure. R's `lm` alone
 appears in 643 scripts — an order of magnitude more than all of statsmodels.
 
+**Python exposure counts are far weaker evidence than R's, and the reason is
+structural.** The funnel now applies the same export restriction R gets — module-level
+names introspected from a throwaway `uv` environment, minus array plumbing and every
+Python builtin — which cut exposed candidates from 587 to 271 and put real estimator
+bugs at the top (`Normalizer` with `norm='max'` not taking absolute values, an
+`AdaBoostClassifier` SAMME decision function, `NMF` initialization). But R's packages
+export *procedures*: nothing but `sandwich` means `vcovHC`, so "76 scripts call it" is
+informative. numpy exports *primitives*, and "1,182 scripts call something numpy
+exports" says only that they are Python scripts. For `numpy` and `scipy` the calling
+count is a technically-true upper bound carrying almost no information, which is why
+the classified rate stays R-only. `kasauti classify pending --language Python` queues
+the Python candidates; none are judged yet.
+
 Publication date is a weak proxy for when an analysis was run, in both directions.
 One archive here went up six weeks *after* the fix that would have affected it.

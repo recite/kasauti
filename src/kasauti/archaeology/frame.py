@@ -15,10 +15,10 @@ rather than by general popularity.
 
 from __future__ import annotations
 
+import builtins
 import csv
 import json
 import subprocess
-import tempfile
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -161,6 +161,156 @@ NON_COMPUTING = {
     "expand.grid",
     "toupper",
 }
+
+#: The Python twin of `NON_COMPUTING`: array and frame plumbing, not statistics.
+#:
+#: It has to be longer than R's, and for a reason worth stating. R's inferential
+#: packages export distinctive names -- nothing but `sandwich` means `vcovHC` --
+#: so intersecting a changelog with a package's exports admits almost no English
+#: prose. numpy exports `where`, `all`, `any`, `array`, `empty`, and `fix`, which
+#: are ordinary words in a release note *and* calls in nearly every script. Left
+#: in, `where` alone drove 179 candidate entries.
+#:
+#: Statistics stay in. `mean`, `median`, `std`, `var`, `quantile`, and `corrcoef`
+#: compute numbers that reach a table, exactly as `sd` and `quantile` do on the R
+#: side, and a bug in one of them is the kind of thing this study exists to find.
+NON_COMPUTING_PYTHON = {
+    # construction and shape
+    "array",
+    "asarray",
+    "asanyarray",
+    "empty",
+    "empty_like",
+    "zeros",
+    "zeros_like",
+    "ones",
+    "ones_like",
+    "full",
+    "arange",
+    "linspace",
+    "eye",
+    "identity",
+    "reshape",
+    "ravel",
+    "flatten",
+    "squeeze",
+    "expand_dims",
+    "transpose",
+    "atleast_1d",
+    "atleast_2d",
+    "swapaxes",
+    "moveaxis",
+    "broadcast_to",
+    "shape",
+    "size",
+    "ndim",
+    # joining and splitting
+    "concatenate",
+    "stack",
+    "hstack",
+    "vstack",
+    "dstack",
+    "column_stack",
+    "split",
+    "array_split",
+    "hsplit",
+    "vsplit",
+    "tile",
+    "repeat",
+    "append",
+    "insert",
+    "delete",
+    "resize",
+    # selection and ordering
+    "where",
+    "take",
+    "put",
+    "compress",
+    "extract",
+    "select",
+    "choose",
+    "index",
+    "indices",
+    "ix_",
+    "nonzero",
+    "flatnonzero",
+    "argmax",
+    "argmin",
+    "argsort",
+    "argwhere",
+    "searchsorted",
+    "sort",
+    "unique",
+    "flip",
+    "roll",
+    # predicates and type handling
+    "all",
+    "any",
+    "isnan",
+    "isinf",
+    "isfinite",
+    "isclose",
+    "allclose",
+    "astype",
+    "dtype",
+    "cast",
+    "can_cast",
+    "result_type",
+    "copy",
+    "copyto",
+    "view",
+    "fix",
+    "at",
+    "get",
+    "set",
+    "values",
+    "keys",
+    "items",
+    "count",
+    "matrix",
+    "asmatrix",
+    # input, output, and display
+    "load",
+    "save",
+    "savez",
+    "loadtxt",
+    "savetxt",
+    "genfromtxt",
+    "fromfile",
+    "tofile",
+    "read_csv",
+    "to_csv",
+    "printoptions",
+    "set_printoptions",
+    "array2string",
+    "array_repr",
+    "array_str",
+    "plot",
+    "show",
+    "figure",
+    "subplot",
+    "subplots",
+    "savefig",
+    # estimator scaffolding
+    "fit",
+    "transform",
+    "fit_transform",
+    "predict",
+    "predict_proba",
+    "score",
+    "get_params",
+    "set_params",
+    "summary",
+    "clone",
+} | set(dir(builtins))
+"""Plus every Python builtin, computed rather than listed.
+
+numpy re-exports `max`, `min`, `sum`, `abs`, and `round`; a script calling any of
+them almost always means the builtin, and a changelog sentence containing the word
+"max" is not thereby about `numpy.max`. This is the same rule the R side applies to
+names base R exports, arrived at the same way -- ask the language, do not guess.
+Nothing statistical is lost: no builtin computes a mean, a variance, or a quantile.
+"""
 
 #: Names exported by base R's `stats` or `MASS` that the tidyverse re-exports and
 #: routinely masks. A bare `filter()` in a script that loads dplyr is dplyr's
@@ -310,97 +460,6 @@ def base_exports(packages: list[str]) -> dict[str, set[str]]:
     if proc.returncode != 0:
         raise RuntimeError(f"failed to query R namespaces:\n{proc.stderr[-1500:]}")
     return {p: set(names) for p, names in json.loads(proc.stdout).items()}
-
-
-#: Introspects a Python distribution's public API. R declares its exports in a
-#: file; Python has no such file, so the names have to come from the objects
-#: themselves. Methods are collected alongside module-level names because
-#: release notes name them that way -- statsmodels writes "fit_regularized was
-#: wrong", and `fit_regularized` exists only as a method on a model class.
-PYTHON_EXPORTS = """
-import importlib, inspect, json, pkgutil, sys, warnings
-warnings.simplefilter("ignore")
-# statsmodels ships sandbox and example modules that print, and in some cases
-# fit models, at import time. Importing them pollutes stdout and wastes minutes,
-# which is why the result is written to a file rather than printed.
-SKIP = ("test", "tests", "sandbox", "examples", "example", "benchmarks", "setup",
-        "conftest", "_build_utils", "datasets", "docs")
-root = importlib.import_module(sys.argv[1])
-names, modules = set(), [root]
-if hasattr(root, "__path__"):
-    for info in pkgutil.walk_packages(root.__path__, root.__name__ + "."):
-        parts = info.name.split(".")
-        if any(p.startswith("_") or p in SKIP for p in parts):
-            continue
-        try:
-            modules.append(importlib.import_module(info.name))
-        except BaseException:
-            continue
-for module in modules:
-    for attr in dir(module):
-        if attr.startswith("_"):
-            continue
-        try:
-            obj = getattr(module, attr)
-        except BaseException:
-            continue
-        if inspect.isroutine(obj):
-            names.add(attr)
-        elif inspect.isclass(obj):
-            names.add(attr)
-            for method, _ in inspect.getmembers(obj, inspect.isroutine):
-                if not method.startswith("_"):
-                    names.add(method)
-open(sys.argv[2], "w").write(json.dumps(sorted(names)))
-"""
-
-#: Distribution name to the module it installs, where they differ.
-PYTHON_MODULES = {"scikit-learn": "sklearn"}
-
-
-def python_exports(package: str, timeout: int = 900) -> set[str]:
-    """Introspect a Python package's public names in a throwaway environment.
-
-    The Python funnel had no export restriction, which is why its candidates
-    were noisier than R's and were left out of the classified rate: without one,
-    every English word in a release note that happens to match a call in the
-    corpus becomes a candidate. `uv` makes the fix cheap -- the package is
-    installed into a temporary environment and imported, so nothing has to be
-    present on this machine beforehand.
-
-    Args:
-        package: PyPI distribution name.
-        timeout: Seconds before giving up.
-
-    Returns:
-        Public functions, classes, and methods. Empty if the package cannot be
-        installed or imported, which shows up as zero yield downstream.
-    """
-    module = PYTHON_MODULES.get(package, package.replace("-", "_"))
-    with tempfile.TemporaryDirectory() as tmp:
-        out = Path(tmp) / "exports.json"
-        proc = subprocess.run(  # noqa: S603
-            [  # noqa: S607
-                "uv",
-                "run",
-                "--quiet",
-                "--no-project",
-                "--with",
-                package,
-                "python",
-                "-c",
-                PYTHON_EXPORTS,
-                module,
-                str(out),
-            ],
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=timeout,
-        )
-        if proc.returncode != 0 or not out.exists():
-            return set()
-        return set(json.loads(out.read_text()))
 
 
 def package_exports(packages: list[str], cache_root: Path) -> dict[str, set[str]]:

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import tarfile
 import tempfile
 from dataclasses import asdict, dataclass, field
@@ -115,8 +116,9 @@ class Harvest:
         releases: Dated release history, oldest first.
         news_text: Raw changelog text.
         news_source: Where the text came from, for the audit trail.
-        exports: Names the package exports, from NAMESPACE. Empty for PyPI
-            packages, whose exports are resolved by import rather than by file.
+        exports: Names the package exports -- declared in NAMESPACE for CRAN,
+            introspected from the imported modules for PyPI, which has no
+            equivalent file.
         errors: Non-fatal problems encountered.
     """
 
@@ -569,6 +571,97 @@ def github_notes(package: str, timeout: int = 60) -> tuple[str, str, list[str]]:
     )
 
 
+#: Introspects a Python distribution's public API. R declares its exports in a
+#: file; Python has no such file, so the names have to come from the objects
+#: themselves.
+#:
+#: Module-level names only. Collecting methods too is tempting -- release notes
+#: name them, and `fit_regularized` exists only as a method -- but it was tried
+#: and measured: methods added `values`, `get`, `set`, `fit`, `transform`,
+#: `score`, `shape`, and `size` to the export set, and those alone drove 150 of
+#: the candidate entries, none of them about a statistical procedure. What is
+#: kept is the analogue of what R's NAMESPACE declares.
+PYTHON_EXPORTS = """
+import importlib, inspect, json, pkgutil, sys, warnings
+warnings.simplefilter("ignore")
+# statsmodels ships sandbox and example modules that print, and in some cases
+# fit models, at import time. Importing them pollutes stdout and wastes minutes,
+# which is why the result is written to a file rather than printed.
+SKIP = ("test", "tests", "sandbox", "examples", "example", "benchmarks", "setup",
+        "conftest", "_build_utils", "datasets", "docs")
+root = importlib.import_module(sys.argv[1])
+names, modules = set(), [root]
+if hasattr(root, "__path__"):
+    for info in pkgutil.walk_packages(root.__path__, root.__name__ + "."):
+        parts = info.name.split(".")
+        if any(p.startswith("_") or p in SKIP for p in parts):
+            continue
+        try:
+            modules.append(importlib.import_module(info.name))
+        except BaseException:
+            continue
+for module in modules:
+    for attr in dir(module):
+        if attr.startswith("_"):
+            continue
+        try:
+            obj = getattr(module, attr)
+        except BaseException:
+            continue
+        if inspect.isroutine(obj) or inspect.isclass(obj):
+            names.add(attr)
+open(sys.argv[2], "w").write(json.dumps(sorted(names)))
+"""
+
+#: Distribution name to the module it installs, where they differ.
+PYTHON_MODULES = {"scikit-learn": "sklearn"}
+
+
+def python_exports(package: str, timeout: int = 900) -> set[str]:
+    """Introspect a Python package's public names in a throwaway environment.
+
+    The Python funnel had no export restriction, which is why its candidates
+    were noisier than R's and were left out of the classified rate: without one,
+    every English word in a release note that happens to match a call in the
+    corpus becomes a candidate. `uv` makes the fix cheap -- the package is
+    installed into a temporary environment and imported, so nothing has to be
+    present on this machine beforehand.
+
+    Args:
+        package: PyPI distribution name.
+        timeout: Seconds before giving up.
+
+    Returns:
+        Public functions, classes, and methods. Empty if the package cannot be
+        installed or imported, which shows up as zero yield downstream.
+    """
+    module = PYTHON_MODULES.get(package, package.replace("-", "_"))
+    with tempfile.TemporaryDirectory() as tmp:
+        out = Path(tmp) / "exports.json"
+        proc = subprocess.run(  # noqa: S603
+            [  # noqa: S607
+                "uv",
+                "run",
+                "--quiet",
+                "--no-project",
+                "--with",
+                package,
+                "python",
+                "-c",
+                PYTHON_EXPORTS,
+                module,
+                str(out),
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=timeout,
+        )
+        if proc.returncode != 0 or not out.exists():
+            return set()
+        return set(json.loads(out.read_text()))
+
+
 def harvest_pypi(package: str) -> Harvest:
     """Collect releases and release notes for one PyPI package.
 
@@ -584,12 +677,16 @@ def harvest_pypi(package: str) -> Harvest:
     """
     releases, errors = pypi_releases(package)
     text, source, note_errors = github_notes(package)
+    exports = sorted(python_exports(package))
+    if not exports:
+        errors.append(f"could not introspect {package}")
     return Harvest(
         package=package,
         ecosystem="pypi",
         releases=releases,
         news_text=text,
         news_source=source,
+        exports=exports,
         errors=errors + note_errors,
     )
 
@@ -630,7 +727,7 @@ def harvest(
     # A cache written before exports were collected is stale, not merely partial:
     # serving it would leave the package with no attributable functions and so no
     # candidates, which is indistinguishable from a package with nothing wrong.
-    stale = payload is not None and ecosystem == "cran" and "exports" not in payload
+    stale = payload is not None and "exports" not in payload
     if payload is not None and not refresh and not stale:
         return Harvest(
             package=payload["package"],
