@@ -1,0 +1,71 @@
+id: lfe_multiway_psdef
+title: "lfe 2.5: multiway clustered SEs from a covariance matrix that is not PSD"
+family: version_regression
+
+# lfe 2.5:
+#   "Multiway clustered standard errors now incorporate the negative Eigenvalue
+#    adjustment of Cameron, Gelbach, Miller. I.e. they are forced to zero. Can be
+#    switched off by felm(...,psdef=FALSE)."
+#
+# No side library. The entry names the flag that restores the old behaviour, so
+# both backends run against current lfe:
+#   Rscript -e 'install.packages("lfe")'
+
+backends:
+  - name: unadjusted
+    cmd: ["Rscript", "--vanilla", "run_r.R", "unadjusted"]
+    label: "psdef=FALSE (the pre-2.5 computation)"
+  - name: adjusted
+    cmd: ["Rscript", "--vanilla", "run_r.R"]
+    label: "psdef=TRUE (the default since 2.5)"
+
+agree_tol: 1.0e-8
+numeric_tol: 1.0e-5
+
+quantities:
+  se@x1:
+    expect: DIVERGE
+    reason: >
+      The finding. 0.012410243463 before the adjustment against 0.071774488067
+      after: the corrected standard error is 5.78 times the unadjusted one.
+      This is the largest single-quantity gap anywhere in the suite, and it runs
+      in the dangerous direction -- the computation that was replaced is the one
+      claiming the tighter interval.
+  t@x1:
+    expect: DIVERGE
+    reason: >
+      The same defect stated the way a results table states it: t = 83.03
+      against t = 14.36. Both clear any conventional threshold here, which is
+      why the case reports the t rather than a p-value -- the point is not that
+      significance flipped, it is that precision was overstated nearly sixfold
+      and nothing in the output said so.
+  min_eigenvalue@clustervcv:
+    expect: DIVERGE
+    reason: >
+      The mechanism, and the reason to trust the two quantities above. The
+      Cameron-Gelbach-Miller estimator is a difference of covariance matrices,
+      so nothing forces it to be positive semi-definite. Here its smallest
+      eigenvalue is -5.256398e-03 unadjusted and -1.9e-18 -- numerically zero --
+      once the adjustment applies. A variance matrix with a negative eigenvalue
+      is not a variance matrix.
+  se@x2:
+    expect: DIVERGE
+    reason: >
+      Measured, against an earlier guess that it would sit inside numeric_tol:
+      0.08004115856 against 0.08020933127, a relative difference of 2.10e-03.
+      Zeroing an eigenvalue perturbs the whole matrix, so every standard error
+      moves -- but this one moves by 0.2 percent where x1 moves by 83, and that
+      four-order-of-magnitude contrast is the substantive point. The damage
+      concentrates in whichever direction the negative eigenvalue lay along, and
+      an analyst reading the other two coefficients would see nothing wrong.
+  t@x2:
+    expect: DIVERGE
+    reason: >
+      The same 2.10e-03 move, -12.96454474 against -12.93736233. Reported for
+      the same reason as se@x2: it bounds the collateral effect.
+
+# coef@x1 and coef@x2 default to AGREE, and that default is the control the case
+# rests on. The adjustment touches the covariance and never the point estimates,
+# so both must be identical -- they are, at relative difference exactly 0. A
+# moving coefficient would mean this case measures something other than what it
+# claims.

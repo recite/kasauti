@@ -1,0 +1,29 @@
+{
+  "case_id": "lfe_multiway_psdef",
+  "backend": "unadjusted",
+  "env": {
+    "language": "R",
+    "version": "4.6.0",
+    "packages": {
+      "lfe": "3.1.1"
+    }
+  },
+  "status": "ok",
+  "quantities": {
+    "coef@x1": 1.03043587067652,
+    "se@x1": 0.0124102434627035,
+    "t@x1": 83.0310762051761,
+    "coef@x2": -1.03769718083751,
+    "se@x2": 0.0800411585617557,
+    "t@x2": -12.9645447352798,
+    "min_eigenvalue@clustervcv": -0.00525639764146979
+  },
+  "diagnostics": {
+    "lfe_version": "3.1.1",
+    "psdef": false,
+    "n": 60,
+    "firms": 3,
+    "years": 4
+  },
+  "error": null
+}

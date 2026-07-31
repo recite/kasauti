@@ -1,0 +1,35 @@
+id: r/lfe/2.5-multiway-cluster-psdef
+package: lfe
+ecosystem: cran
+entry_id: lfe@2.5#2
+fixed_in: 2.5-1968
+fixed_on: '2016-04-11'
+introduced_in: null
+introduced_on: null
+functions:
+- felm
+conditions: 'Two or more clustering dimensions in the fourth part of the felm formula, and
+  a Cameron-Gelbach-Miller covariance whose smallest eigenvalue comes out negative. The second
+  condition is not rare in the regime applied panel work lives in -- few clusters in both
+  dimensions -- because CGM is a difference of covariance matrices and nothing constrains
+  the result to be positive semi-definite. One clustering dimension is unaffected: with a
+  single dimension there is no subtraction and no eigenvalue to go negative.'
+condition_probe: felm\s*\((?:(?!felm)[^|;]){0,300}\|(?:(?!felm)[^|;]){0,150}\|(?:(?!felm)[^|;]){0,150}\|(?:(?!felm)[^|;)~]){0,150}\+
+category: BEHAVIOR_CHANGE
+silent: true
+severity: HIGH
+status: VERIFIED
+exposure:
+  scripts_calling_function: 244
+  scripts_meeting_probe: 22
+  papers_in_window: 0
+  papers_censored: 0
+magnitude: 'Verified with lfe 3.1.1 against its own psdef=FALSE, which is the pre-2.5 computation
+  the changelog says the flag restores. On a deterministic panel of 60 rows, 3 firms and 4
+  years, the smallest eigenvalue of the clustered covariance is -5.256398e-03 unadjusted and
+  numerically zero adjusted. The standard error on x1 goes 0.012410243463 to 0.071774488067
+  -- the corrected value is 5.78 times the old one -- and its t-statistic goes 83.03 to 14.36.
+  Coefficients are identical at relative difference exactly 0, and the other coefficient''s
+  standard error moves by 2.1e-03, so a 5.78-fold error sits in one direction of three while
+  the rest of the table looks untouched. The direction matters as much as the size: the superseded
+  computation is the one reporting the tighter interval.'

@@ -27,6 +27,7 @@ Every number below was measured by running the thing, not predicted.
 | `sklearn.LogisticRegression()` silently applies L2 at `C=1.0` | its "unpenalized" coefficient is a function of `tol`, not of the data |
 | GLM residual df is **30 or 3** for the same fit | statsmodels `freq_weights` vs R `glm(weights=)`; coefficients and SEs agree exactly |
 | Normal equations keep **7.1** correct digits where R's QR keeps **13.0** | NIST Longley; every backend agrees to 7 digits, so comparison alone calls it unanimous |
+| `lfe` before 2.5 understated a clustered standard error **5.78×** | two-way clustering with a non-PSD CGM covariance; t goes 83.0 → 14.4, coefficients identical |
 | `sandwich` 2.5-0 flipped the sign of cross-equation covariances | verified against 2.4-0; within-equation blocks bit-identical |
 | `scikit-learn` 1.0.2 returns **1.25** from a metric bounded on [0, 1] | `normalized_mutual_info_score`, `average_method` of `min` or `geometric` |
 
@@ -173,6 +174,21 @@ which is exactly backwards: that is the library testing itself.
 archives, 63% predate a 2022 fix and 28% predate a 2018 one. At a narrowed exposure
 of one to six archives, zero is what chance produces. The consequence is a selection
 rule: chase bugs whose triggering conditions are *common*.
+
+**And sometimes zero is simply true.** `lfe` is the mirror image: 244 scripts call
+`felm`, 22 use two-way clustering, and those resolve to 12 archives — of which
+**none** predates the 2016 fix. The correction is old and the corpus is recent, so
+every affected analysis ran against a version that already had it. The finding
+stands on its own terms; in this corpus it corrupted nothing. Reporting the 244
+alone would have overstated the consequence by orders of magnitude, which is what
+the funnel exists to prevent.
+
+**A plausible narrowing is worth nothing until its matches are read.** The `lfe`
+probe took four attempts, each of which looked correct: `[^;]` admitted newlines and
+borrowed pipes from a later call (58 matches); anchoring to newlines lost the 115
+scripts with multi-line `felm` calls (14); a lookahead fixed both but landed on the
+instrument field of IV specifications (26); excluding `~` from the cluster field,
+which never contains one, gave the right answer (**22**).
 
 ## The result contract
 

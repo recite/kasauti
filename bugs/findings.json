@@ -1,6 +1,26 @@
 {
   "bugs": [
     {
+      "bug_id": "r/lfe/2.5-multiway-cluster-psdef",
+      "category": "BEHAVIOR_CHANGE",
+      "condition_probe": "felm\\s*\\((?:(?!felm)[^|;]){0,300}\\|(?:(?!felm)[^|;]){0,150}\\|(?:(?!felm)[^|;]){0,150}\\|(?:(?!felm)[^|;)~]){0,150}\\+",
+      "conditions": "Two or more clustering dimensions in the fourth part of the felm formula, and a Cameron-Gelbach-Miller covariance whose smallest eigenvalue comes out negative. The second condition is not rare in the regime applied panel work lives in -- few clusters in both dimensions -- because CGM is a difference of covariance matrices and nothing constrains the result to be positive semi-definite. One clustering dimension is unaffected: with a single dimension there is no subtraction and no eigenvalue to go negative.",
+      "fixed_in": "2.5-1968",
+      "fixed_on": "2016-04-11",
+      "functions": "felm",
+      "language": "r",
+      "magnitude": "Verified with lfe 3.1.1 against its own psdef=FALSE, which is the pre-2.5 computation the changelog says the flag restores. On a deterministic panel of 60 rows, 3 firms and 4 years, the smallest eigenvalue of the clustered covariance is -5.256398e-03 unadjusted and numerically zero adjusted. The standard error on x1 goes 0.012410243463 to 0.071774488067 -- the corrected value is 5.78 times the old one -- and its t-statistic goes 83.03 to 14.36. Coefficients are identical at relative difference exactly 0, and the other coefficient's standard error moves by 2.1e-03, so a 5.78-fold error sits in one direction of three while the rest of the table looks untouched. The direction matters as much as the size: the superseded computation is the one reporting the tighter interval.",
+      "package": "lfe",
+      "papers_in_window": 0,
+      "papers_linked": 12,
+      "scripts_calling_function": 244,
+      "scripts_meeting_probe": 22,
+      "severity": "HIGH",
+      "silent": true,
+      "status": "VERIFIED",
+      "window_censored": true
+    },
+    {
       "bug_id": "r/sandwich/2.5-0-vcovhc-mlm-sign",
       "category": "RESULT_CHANGING",
       "condition_probe": "lm\\s*\\(\\s*cbind\\s*\\(",
@@ -102,6 +122,116 @@
     }
   ],
   "papers": {
+    "r/lfe/2.5-multiway-cluster-psdef": [
+      {
+        "doi": "https://doi.org/10.7910/DVN/4NUQE3",
+        "in_window": "False",
+        "journal": "JPE",
+        "published": "2023-06-06",
+        "repo_id": "4NUQE3",
+        "source": "dataverse",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.7910/DVN/BZWANC",
+        "in_window": "False",
+        "journal": "JAERE",
+        "published": "2021-05-18",
+        "repo_id": "BZWANC",
+        "source": "dataverse",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.7910/DVN/CNQUN3",
+        "in_window": "False",
+        "journal": "JAERE",
+        "published": "2019-08-02",
+        "repo_id": "CNQUN3",
+        "source": "dataverse",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.7910/DVN/HWVUER",
+        "in_window": "False",
+        "journal": "IOJ",
+        "published": "2022-07-28",
+        "repo_id": "HWVUER",
+        "source": "dataverse",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.7910/DVN/IP6B94",
+        "in_window": "False",
+        "journal": "JAERE",
+        "published": "2023-05-02",
+        "repo_id": "IP6B94",
+        "source": "dataverse",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.7910/DVN/QLG842",
+        "in_window": "False",
+        "journal": "IOJ",
+        "published": "2020-12-14",
+        "repo_id": "QLG842",
+        "source": "dataverse",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.7910/DVN/R6XKG1",
+        "in_window": "False",
+        "journal": "JAERE",
+        "published": "2024-05-20",
+        "repo_id": "R6XKG1",
+        "source": "dataverse",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.7910/DVN/TVMFQT",
+        "in_window": "False",
+        "journal": "IOJ",
+        "published": "2021-02-19",
+        "repo_id": "TVMFQT",
+        "source": "dataverse",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.7910/DVN/UJZY4C",
+        "in_window": "False",
+        "journal": "IOJ",
+        "published": "2021-02-11",
+        "repo_id": "UJZY4C",
+        "source": "dataverse",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.5281/zenodo.10012820",
+        "in_window": "False",
+        "journal": "",
+        "published": "",
+        "repo_id": "10012820",
+        "source": "zenodo",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.5281/zenodo.10145562",
+        "in_window": "False",
+        "journal": "",
+        "published": "",
+        "repo_id": "10145562",
+        "source": "zenodo",
+        "title": ""
+      },
+      {
+        "doi": "https://doi.org/10.5281/zenodo.13765850",
+        "in_window": "False",
+        "journal": "",
+        "published": "",
+        "repo_id": "13765850",
+        "source": "zenodo",
+        "title": ""
+      }
+    ],
     "r/plm/1.5-13-vcovhc-white-singleton": [
       {
         "doi": "https://doi.org/10.7910/DVN/AAY3TQ",

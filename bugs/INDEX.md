@@ -1,6 +1,6 @@
 # Bug record
 
-5 records: 4 verified, 1 refuted or not reproduced, 0 still open.
+6 records: 5 verified, 1 refuted or not reproduced, 0 still open.
 
 Exposure is reported as a pair. `calls` counts scripts calling an
 affected function and is an upper bound; `probe` counts those also
@@ -10,6 +10,7 @@ condition, never that it did. Neither number means much alone.
 
 | bug | severity | silent | calls | probe | papers | status |
 |---|---|---|---|---|---|---|
+| [`r/lfe/2.5-multiway-cluster-psdef`](r/lfe/2.5-multiway-cluster-psdef/) | HIGH | yes | 244 | 22 | 0* | VERIFIED |
 | [`r/sandwich/2.5-0-vcovhc-mlm-sign`](r/sandwich/2.5-0-vcovhc-mlm-sign/) | HIGH | yes | 76 | 1 | 0* | VERIFIED |
 | [`python/scikit-learn/1.1.0-nmi-unbounded`](python/scikit-learn/1.1.0-nmi-unbounded/) | HIGH | yes | 0 | 0 | 0* | VERIFIED |
 | [`r/mgcv/1.9-0-multinom-variance`](r/mgcv/1.9-0-multinom-variance/) | HIGH | yes | -- | -- | -- | NOT_REPRODUCED |

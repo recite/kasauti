@@ -1108,7 +1108,7 @@
   },
   "lfe@2.5#2": {
     "category": "BEHAVIOR_CHANGE",
-    "conditions": "multiway (two or more) clustering; negative eigenvalues now forced to zero, revertible with psdef=FALSE",
+    "conditions": "two or more clustering dimensions and a CGM covariance whose smallest eigenvalue is negative; verified, the corrected SE is 5.78x the old one and the pre-fix version gave no warning (the fixed one does)",
     "confidence": "HIGH",
     "evidence_quote": "Multiway clustered standard errors now incorporate the negative Eigenvalue adjustment of Cameron, Gelbach, Miller",
     "functions": [
