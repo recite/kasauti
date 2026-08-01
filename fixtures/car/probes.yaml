@@ -1,0 +1,20 @@
+# A battery: functions chosen by corpus call volume (`kasauti frame battery`),
+# not by a changelog entry, so none declares a `fixed_in` and none is screened.
+
+package: car
+
+probes:
+  - entry: car/linearHypothesis
+    script: linear_hypothesis.R
+    functions: [linearHypothesis]
+    conditions: >
+      Battery probe, 30 corpus scripts. A single restriction and a
+      cross-coefficient one, which take different paths through the hypothesis
+      matrix.
+
+  - entry: car/deltaMethod
+    script: delta_method.R
+    functions: [deltaMethod]
+    conditions: >
+      Battery probe, 15 corpus scripts. Propagating a covariance through a
+      nonlinear function, where an implementation must differentiate something.

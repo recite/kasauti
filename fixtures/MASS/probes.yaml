@@ -1,0 +1,26 @@
+# A battery: functions chosen by corpus call volume (`kasauti frame battery`),
+# not by a changelog entry, so none declares a `fixed_in` and none is screened.
+
+package: MASS
+
+probes:
+  - entry: MASS/mvrnorm
+    script: mvrnorm.R
+    functions: [mvrnorm]
+    conditions: >
+      Battery probe, 54 corpus scripts. The one probe that draws from the RNG,
+      so the seed and the generator kind are both pinned.
+
+  - entry: MASS/ginv
+    script: ginv.R
+    functions: [ginv]
+    conditions: >
+      Battery probe, 31 corpus scripts. A rank-deficient matrix, which is the
+      only case where the generalised inverse is not the ordinary one.
+
+  - entry: MASS/glm.nb
+    script: glm_nb.R
+    functions: [glm.nb]
+    conditions: >
+      Battery probe, 29 corpus scripts. Overdispersed counts, so the dispersion
+      parameter is genuinely estimated.

@@ -2,6 +2,15 @@ package,version,outcome,r_version,platform,detail
 AER,1.2-5,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 AER,1.2-6,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 MASS,7.3-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,MASS.c:33:23: error: unknown type name 'Sint'; did you mean 'int'?
+MASS,7.3-11,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,MASS.c:33:23: error: unknown type name 'Sint'; did you mean 'int'?
+MASS,7.3-12,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,MASS.c:33:23: error: unknown type name 'Sint'; did you mean 'int'?
+MASS,7.3-3,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,MASS.c:33:23: error: unknown type name 'Sint'; did you mean 'int'?
+MASS,7.3-4,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,MASS.c:33:23: error: unknown type name 'Sint'; did you mean 'int'?
+MASS,7.3-5,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,MASS.c:33:23: error: unknown type name 'Sint'; did you mean 'int'?
+MASS,7.3-6,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,MASS.c:33:23: error: unknown type name 'Sint'; did you mean 'int'?
+MASS,7.3-7,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,MASS.c:33:23: error: unknown type name 'Sint'; did you mean 'int'?
+MASS,7.3-8,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,MASS.c:33:23: error: unknown type name 'Sint'; did you mean 'int'?
+MASS,7.3-9,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,MASS.c:33:23: error: unknown type name 'Sint'; did you mean 'int'?
 MatchIt,4.3.4,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 MatchIt,4.4.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 car,1.0-17,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
@@ -51,13 +60,13 @@ lfe,1.4-723,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,lfe.c:513:12: error
 lfe,1.4-726,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,lfe.c:519:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
 lfe,1.4-729,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,lfe.c:570:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
 lfe,1.4-731,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,lfe.c:569:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-lfe,1.4-771,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘Rcgmin’ is not available for package ‘lfe’
-lfe,1.4-941,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘Rcgmin’ is not available for package ‘lfe’
-lfe,1.4-963,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘Rcgmin’ is not available for package ‘lfe’
-lfe,1.5-1026,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘Rcgmin’ is not available for package ‘lfe’
-lfe,1.5-1045,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘Rcgmin’ is not available for package ‘lfe’
-lfe,1.5-1107,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘Rcgmin’ is not available for package ‘lfe’
-lfe,1.5-1118,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘Rcgmin’ is not available for package ‘lfe’
+lfe,1.4-771,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"Error in download.file(p, destfile, method, mode = ""wb"", ...) :"
+lfe,1.4-941,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,lfe.c:688:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+lfe,1.4-963,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,lfe.c:688:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+lfe,1.5-1026,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,lfe.c:768:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+lfe,1.5-1045,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,lfe.c:614:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+lfe,1.5-1107,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,lfe.c:608:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+lfe,1.5-1118,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,lfe.c:608:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
 lfe,1.6-1161,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,lfe.c:624:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
 lfe,1.6-1163,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,lfe.c:631:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
 lfe,1.6-1180,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,lfe.c:631:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
@@ -144,23 +153,23 @@ mice,3.16.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 mice,3.17.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 plm,0.1-1,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 plm,0.1-2,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
-plm,0.2-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
-plm,0.2-2,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
-plm,0.3-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
-plm,0.3-2,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
-plm,1.0-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
-plm,1.0-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
-plm,1.1-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
-plm,1.1-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
-plm,1.1-2,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
-plm,1.1-4,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
-plm,1.2-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
-plm,1.2-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
+plm,0.2-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"blocked by kinship 1.1.3: Error in download.file(p, destfile, method, mode = ""wb"", ...) :"
+plm,0.2-2,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,blocked by kinship 1.1.3: ./coxmeS.h:15:10: fatal error: 'S.h' file not found
+plm,0.3-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,blocked by kinship 1.1.3: ./coxmeS.h:15:10: fatal error: 'S.h' file not found
+plm,0.3-2,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,blocked by kinship 1.1.3: ./coxmeS.h:15:10: fatal error: 'S.h' file not found
+plm,1.0-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,blocked by kinship 1.1.3: ./coxmeS.h:15:10: fatal error: 'S.h' file not found
+plm,1.0-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,blocked by kinship 1.1.3: ./coxmeS.h:15:10: fatal error: 'S.h' file not found
+plm,1.1-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,blocked by kinship 1.1.3: ./coxmeS.h:15:10: fatal error: 'S.h' file not found
+plm,1.1-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,blocked by kinship 1.1.3: ./coxmeS.h:15:10: fatal error: 'S.h' file not found
+plm,1.1-2,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,blocked by kinship 1.1.3: ./coxmeS.h:15:10: fatal error: 'S.h' file not found
+plm,1.1-4,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,blocked by kinship 1.1.3: ./coxmeS.h:15:10: fatal error: 'S.h' file not found
+plm,1.2-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,blocked by kinship 1.1.3: ./coxmeS.h:15:10: fatal error: 'S.h' file not found
+plm,1.2-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"Error in download.file(p, destfile, method, mode = ""wb"", ...) :"
 plm,1.2-10,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
-plm,1.2-3,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
-plm,1.2-4,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
-plm,1.2-5,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
-plm,1.2-6,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
+plm,1.2-3,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,blocked by kinship 1.1.3: ./coxmeS.h:15:10: fatal error: 'S.h' file not found
+plm,1.2-4,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,blocked by kinship 1.1.3: ./coxmeS.h:15:10: fatal error: 'S.h' file not found
+plm,1.2-5,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,blocked by kinship 1.1.3: ./coxmeS.h:15:10: fatal error: 'S.h' file not found
+plm,1.2-6,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,blocked by kinship 1.1.3: ./coxmeS.h:15:10: fatal error: 'S.h' file not found
 plm,1.2-7,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 plm,1.2-8,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 plm,1.3-1,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
