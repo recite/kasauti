@@ -1,0 +1,36 @@
+{
+  "after": "0.9-35",
+  "after_on": "2017-02-11",
+  "before": "0.9-34",
+  "before_on": "2015-06-06",
+  "control": "lm() aliased 1 coefficient(s), so bptest() saw a rank-deficient fit",
+  "detail": "2 of 6 quantities moved",
+  "entry_id": "lmtest@0.9-35#2",
+  "exact": true,
+  "max_reldiff": 0.3333333333333333,
+  "moved": [
+    "aliased.p.value",
+    "aliased.parameter"
+  ],
+  "package": "lmtest",
+  "quantities": {
+    "after": {
+      "aliased.p.value": 0.823889361273471,
+      "aliased.parameter": 2,
+      "aliased.statistic": 0.38743805677383,
+      "clean.p.value": 0.823889361273471,
+      "clean.parameter": 2,
+      "clean.statistic": 0.38743805677383
+    },
+    "before": {
+      "aliased.p.value": 0.942825097390031,
+      "aliased.parameter": 3,
+      "aliased.statistic": 0.38743805677383,
+      "clean.p.value": 0.823889361273471,
+      "clean.parameter": 2,
+      "clean.statistic": 0.38743805677383
+    }
+  },
+  "script": "bptest_aliased.R",
+  "verdict": "MOVED"
+}

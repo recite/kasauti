@@ -1,0 +1,47 @@
+{
+  "after": "1.2-8",
+  "after_on": "2011-12-24",
+  "before": "1.2-7",
+  "before_on": "2011-02-06",
+  "control": "vcovBK() on a one-regressor fit, where R drops the dimension, beside a two-regressor fit",
+  "detail": "all 13 quantities agree; the fixture did not reach the defect",
+  "entry_id": "plm@1.2-8#2",
+  "exact": true,
+  "max_reldiff": 0.0,
+  "moved": [],
+  "package": "plm",
+  "quantities": {
+    "after": {
+      "narrow.(Intercept).(Intercept)": 0.0444038834374529,
+      "narrow.(Intercept).x1": 0.000437060759113157,
+      "narrow.x1.(Intercept)": 0.000437060759113157,
+      "narrow.x1.x1": 0.021240503439589,
+      "wide.(Intercept).(Intercept)": 0.011252116813076,
+      "wide.(Intercept).x1": -0.000183303796674722,
+      "wide.(Intercept).x2": 0.000406867630705017,
+      "wide.x1.(Intercept)": -0.000183303796674722,
+      "wide.x1.x1": 0.0106783062811714,
+      "wide.x1.x2": -0.000964915275764053,
+      "wide.x2.(Intercept)": 0.000406867630705017,
+      "wide.x2.x1": -0.000964915275764053,
+      "wide.x2.x2": 0.0194524377795868
+    },
+    "before": {
+      "narrow.(Intercept).(Intercept)": 0.0444038834374529,
+      "narrow.(Intercept).x1": 0.000437060759113157,
+      "narrow.x1.(Intercept)": 0.000437060759113157,
+      "narrow.x1.x1": 0.021240503439589,
+      "wide.(Intercept).(Intercept)": 0.011252116813076,
+      "wide.(Intercept).x1": -0.000183303796674722,
+      "wide.(Intercept).x2": 0.000406867630705017,
+      "wide.x1.(Intercept)": -0.000183303796674722,
+      "wide.x1.x1": 0.0106783062811714,
+      "wide.x1.x2": -0.000964915275764053,
+      "wide.x2.(Intercept)": 0.000406867630705017,
+      "wide.x2.x1": -0.000964915275764053,
+      "wide.x2.x2": 0.0194524377795868
+    }
+  },
+  "script": "vcovbk_degenerate.R",
+  "verdict": "NOT_TRIGGERED"
+}

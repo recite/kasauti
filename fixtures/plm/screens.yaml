@@ -1,0 +1,37 @@
+package: plm
+
+screens:
+  - entry: plm@1.2-6#0
+    fixed_in: 1.2-6
+    script: pgmm_mtest_twoways.R
+    functions: [mtest, pgmm]
+    conditions: >
+      effect='individual' with transformation='ld', and the Wald test for time
+      dummies under effect='twoways'.
+
+  - entry: plm@1.2-6#1
+    fixed_in: 1.2-6
+    script: pgmm_instrument_lags.R
+    functions: [pgmm]
+    conditions: different lags for GMM instruments.
+
+  - entry: plm@1.2-6#4
+    fixed_in: 1.2-6
+    script: plmtest_two_tailed.R
+    functions: [plmtest]
+    conditions: >
+      Two-tailed tests; p-values were divided by 2 instead of multiplied.
+
+  - entry: plm@1.2-8#2
+    fixed_in: 1.2-8
+    script: vcovbk_degenerate.R
+    functions: [vcovBK]
+    conditions: matrices degenerating into vectors.
+
+  - entry: plm@1.5-9#3
+    fixed_in: 1.5-9
+    script: phtest_between.R
+    functions: [phtest]
+    conditions: >
+      method='aux' with NA values, or the between model (wrong degrees of
+      freedom).

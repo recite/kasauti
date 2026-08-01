@@ -1,0 +1,19 @@
+{
+  "after": "1.6.4",
+  "after_on": "2016-05-12",
+  "before": "1.5.8",
+  "before_on": "2015-08-30",
+  "control": "",
+  "detail": "before: errored -- the condition has length > 1",
+  "entry_id": "psych@1.6.4#22",
+  "exact": true,
+  "max_reldiff": 0.0,
+  "moved": [],
+  "package": "psych",
+  "quantities": {
+    "after": {},
+    "before": {}
+  },
+  "script": "alpha_se.R",
+  "verdict": "UNEVALUABLE"
+}

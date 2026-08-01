@@ -12,9 +12,10 @@ from kasauti.archaeology.screen import (
     UNEVALUABLE,
     Request,
     Screen,
+    bracket,
     judge,
-    predecessor,
     relative_difference,
+    version_key,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,17 +36,37 @@ def ok(quantities: dict, control: bool = True, says: str = "the condition held")
     }
 
 
-class TestPredecessor:
+class TestBracket:
     def test_the_release_immediately_before_the_fix(self):
-        assert predecessor(RELEASES, "2.5-0") == ("2.4-0", date(2017, 8, 1))
+        before, after, exact = bracket(RELEASES, "2.5-0")
+        assert before == ("2.4-0", date(2017, 8, 1))
+        assert after == ("2.5-0", date(2018, 8, 17))
+        assert exact
 
-    def test_the_first_release_has_none(self):
-        # Nothing to compare against, which is a reason the claim cannot be
-        # screened rather than a reason to reach for the current version.
-        assert predecessor(RELEASES, "2.3-4") is None
+    def test_a_fix_version_cran_never_shipped_is_straddled(self):
+        # `survival`'s NEWS is organised under headings like 2.35 that are not
+        # releases, and six of nine fix versions on its shortlist have no archive
+        # tarball. Discarding those claims would drop the package with the most
+        # candidates; straddling them keeps the claim testable and says so.
+        before, after, exact = bracket(RELEASES, "2.4-5")
+        assert before == ("2.4-0", date(2017, 8, 1))
+        assert after == ("2.5-0", date(2018, 8, 17))
+        assert not exact
 
-    def test_a_version_missing_from_the_history_has_none(self):
-        assert predecessor(RELEASES, "9.9-9") is None
+    def test_the_first_release_has_nothing_before_it(self):
+        assert bracket(RELEASES, "2.3-4")[0] is None
+
+    def test_a_version_after_every_release_has_nothing_after_it(self):
+        assert bracket(RELEASES, "9.9-9")[1] is None
+
+
+class TestVersionKey:
+    def test_hyphenated_components_order_numerically(self):
+        # `1.5-13` sorts before `1.5-9` as a string, and after it as a version.
+        assert version_key("1.5-13") > version_key("1.5-9")
+
+    def test_a_four_component_version_orders(self):
+        assert version_key("2.4.6.26") > version_key("2.4.3")
 
 
 class TestJudge:

@@ -1,0 +1,30 @@
+package: psych
+
+screens:
+  - entry: psych@1.6.4#22
+    fixed_in: 1.6.4
+    script: alpha_se.R
+    functions: [alpha]
+    conditions: any alpha() call reporting a standard error.
+
+  - entry: psych@1.9.12#26
+    fixed_in: 1.9.12
+    script: icc_ci.R
+    functions: [ICC]
+    conditions: >
+      Any ICC() call reporting confidence intervals; the interval was built at
+      alpha/2 rather than alpha, so coverage was wrong.
+
+  - entry: psych@2.4.4#3
+    fixed_in: 2.4.4
+    script: alpha_missing.R
+    functions: [alpha]
+    conditions: >
+      alpha() on data with missing values, where average R was formed from the
+      covariance rather than the correlation.
+
+  - entry: psych@2.4.4#42
+    fixed_in: 2.4.4
+    script: alpha_from_covariance.R
+    functions: [alpha]
+    conditions: alpha() deriving the correlation matrix indirectly through cov2cor.

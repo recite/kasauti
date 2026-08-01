@@ -1,0 +1,33 @@
+{
+  "after": "2.4.6.26",
+  "after_on": "2024-06-27",
+  "before": "2.4.3",
+  "before_on": "2024-03-18",
+  "control": "alpha() was given a covariance matrix, not a correlation matrix",
+  "detail": "all 6 quantities agree; the fixture did not reach the defect",
+  "entry_id": "psych@2.4.4#42",
+  "exact": false,
+  "max_reldiff": 0.0,
+  "moved": [],
+  "package": "psych",
+  "quantities": {
+    "after": {
+      "total.G6(smc)": 0.997365694846159,
+      "total.S/N": 18.7276927487666,
+      "total.average_r": 0.700684975871358,
+      "total.median_r": 0.667621460165371,
+      "total.raw_alpha": 0.946555366638019,
+      "total.std.alpha": 0.949309835025562
+    },
+    "before": {
+      "total.G6(smc)": 0.997365694846159,
+      "total.S/N": 18.7276927487666,
+      "total.average_r": 0.700684975871358,
+      "total.median_r": 0.667621460165371,
+      "total.raw_alpha": 0.946555366638019,
+      "total.std.alpha": 0.949309835025562
+    }
+  },
+  "script": "alpha_from_covariance.R",
+  "verdict": "NOT_TRIGGERED"
+}

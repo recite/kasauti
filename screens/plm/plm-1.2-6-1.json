@@ -1,0 +1,16 @@
+{
+  "after": "1.2-6",
+  "after_on": "2010-11-22",
+  "before": "1.2-5",
+  "before_on": "2010-07-24",
+  "control": "",
+  "detail": "before: 1.2-5 would not build -- ERROR: dependency \u2018kinship\u2019 is not available for package \u2018plm\u2019",
+  "entry_id": "plm@1.2-6#1",
+  "exact": true,
+  "max_reldiff": 0.0,
+  "moved": [],
+  "package": "plm",
+  "quantities": {},
+  "script": "pgmm_instrument_lags.R",
+  "verdict": "UNEVALUABLE"
+}

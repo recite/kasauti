@@ -1,0 +1,35 @@
+{
+  "after": "0.6.0",
+  "after_on": "2018-03-28",
+  "before": "0.4.0",
+  "before_on": "2018-02-15",
+  "control": "difference_in_means() had 4 blocks and unequal weights at once",
+  "detail": "1 of 2 quantities moved; 2 appeared or vanished",
+  "entry_id": "estimatr@0.6.0#11",
+  "exact": true,
+  "max_reldiff": 1.2382675278838626e-05,
+  "moved": [
+    "estimate",
+    "+p.value",
+    "+std.error"
+  ],
+  "package": "estimatr",
+  "quantities": {
+    "after": {
+      "df": 72,
+      "estimate": 0.795358056553765,
+      "p.value": 1.12601873473736e-14,
+      "statistic": null,
+      "std.error": 0.082129494504745
+    },
+    "before": {
+      "df": 72,
+      "estimate": 0.795367905336264,
+      "p.value": null,
+      "statistic": null,
+      "std.error": null
+    }
+  },
+  "script": "dim_weights_and_blocks.R",
+  "verdict": "MOVED"
+}

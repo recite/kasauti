@@ -100,6 +100,9 @@ class Screen:
         after: Release that carried the fix.
         before_on: Release date of `before`.
         after_on: Release date of `after`.
+        exact: Whether the changelog's fix version is itself a CRAN release. When
+            it is not, `before` and `after` straddle it and a movement is
+            attributable to that span rather than to one release.
         verdict: `MOVED`, `NOT_TRIGGERED`, or `UNEVALUABLE`.
         detail: Why, in one line.
         script: Fixture script that produced it.
@@ -115,6 +118,7 @@ class Screen:
     after: str = ""
     before_on: date | None = None
     after_on: date | None = None
+    exact: bool = True
     verdict: str = UNEVALUABLE
     detail: str = ""
     script: str = ""
@@ -161,24 +165,51 @@ class Screen:
         return cls(**payload)
 
 
-def predecessor(
+def version_key(version: str) -> tuple[int, ...]:
+    """Order a CRAN version string.
+
+    Args:
+        version: A version like `2.35-8`, `1.9-0`, or `2.4.6.26`.
+
+    Returns:
+        Its numeric components, comparable with `<`.
+    """
+    return tuple(int(part) for part in re.findall(r"\d+", version))
+
+
+def bracket(
     releases: list[tuple[str, date | None]], version: str
-) -> tuple[str, date | None] | None:
-    """The release immediately before a given one.
+) -> tuple[tuple[str, date | None] | None, tuple[str, date | None] | None, bool]:
+    """The releases on either side of a changelog's stated fix version.
+
+    Usually the fix version *is* a release and the pair is it and its immediate
+    predecessor. Often enough it is not. `survival`'s NEWS is organised under
+    headings like "2.35" that CRAN never shipped, and six of the nine fix
+    versions on this study's `survival` shortlist have no archive tarball at all
+    -- Terry Therneau releases through his own channel and only some versions
+    reach CRAN.
+
+    Rather than discard those claims, the pair widens to the releases that
+    straddle the stated version, and `exact` records that it did. The screen is
+    still valid; it is just attributing a movement to a span of releases instead
+    of to one, and a reader must be told which they are looking at.
 
     Args:
         releases: `(version, released)` pairs, oldest first.
-        version: The release to look back from.
+        version: The version the changelog says carried the fix.
 
     Returns:
-        The preceding `(version, released)` pair, or None if this is the first
-        release or the version is not in the history.
+        A `(before, after, exact)` triple. Either side is None when the history
+        does not reach that far.
     """
-    versions = [v for v, _ in releases]
-    if version not in versions:
-        return None
-    index = versions.index(version)
-    return releases[index - 1] if index > 0 else None
+    target = version_key(version)
+    before = [r for r in releases if version_key(r[0]) < target]
+    after = [r for r in releases if version_key(r[0]) >= target]
+    return (
+        before[-1] if before else None,
+        after[0] if after else None,
+        bool(after) and after[0][0] == version,
+    )
 
 
 def relative_difference(a: float, b: float) -> float:
@@ -364,10 +395,23 @@ def render_report(screens: list[Screen], declared: int, fixtures: list[str]) -> 
         total = len(screen.quantities.get("after") or {})
         moved = f"{len(screen.moved)}/{total}" if total else "--"
         largest = f"{screen.max_reldiff:.2e}" if screen.max_reldiff else "--"
+        span = f"{screen.before} → {screen.after}" + ("" if screen.exact else " ~")
         lines.append(
-            f"| `{screen.entry_id}` | {screen.before} → {screen.after} | "
+            f"| `{screen.entry_id}` | {span} | "
             f"`{screen.verdict}` | {moved} | {largest} | {screen.control or '--'} |"
         )
+
+    inexact = [s for s in screens if not s.exact]
+    if inexact:
+        lines += [
+            "",
+            f"`~` marks the {len(inexact)} claim(s) whose stated fix version CRAN "
+            "never shipped, so the pair straddles it rather than pinning it. "
+            "`survival`'s NEWS is organised under headings like `2.35` that are not "
+            "releases, and several versions it names went out through the author's "
+            "own channel. A movement there is attributable to the span, not to one "
+            "release, and the bisect is what narrows it.",
+        ]
 
     lines += [
         "",
@@ -407,19 +451,20 @@ def run(
     screen = Screen(
         entry_id=request.entry_id,
         package=request.package,
-        after=request.fixed_in,
         script=request.script,
     )
-    screen.after_on = next((d for v, d in releases if v == request.fixed_in), None)
 
-    earlier = predecessor(releases, request.fixed_in)
-    if earlier is None:
+    earlier, later, exact = bracket(releases, request.fixed_in)
+    screen.exact = exact
+    if earlier is None or later is None:
+        missing = "predecessor" if earlier is None else "release at or after it"
         screen.detail = (
-            f"{request.fixed_in} has no predecessor in the release history, so "
-            "there is nothing to compare it against"
+            f"{request.fixed_in} has no {missing} on CRAN, so there is nothing to "
+            "compare against"
         )
         return screen
     screen.before, screen.before_on = earlier
+    screen.after, screen.after_on = later
 
     cmd = ["Rscript", "--vanilla", request.script, f"${{{library.ROOT_VARIABLE}}}"]
     runs: dict[str, dict | None] = {}

@@ -119,6 +119,54 @@ class TestEnsure:
         assert recorded.r_version == "4.6.0"
 
 
+class TestFailureDetail:
+    def test_the_compiler_line_is_kept_over_the_wrapper_message(self):
+        # Every failed install ends with "had non-zero exit status", which is
+        # true of all of them and explains none. `unknown type name 'Sint'` is
+        # what puts every survival before 3.4-0 out of reach; keeping the tail
+        # of the log loses exactly that.
+        log = (
+            "* installing *source* package\n"
+            "./survproto.h:35:30: error: unknown type name 'Sint'\n"
+            "make: *** [agexact.o] Error 1\n"
+            "ERROR: compilation failed for package 'survival'\n"
+            "In install.packages(...) : had non-zero exit status\n"
+        )
+        assert library._tidy(log) == (
+            "./survproto.h:35:30: error: unknown type name 'Sint'"
+        )
+
+    def test_a_log_with_no_error_line_falls_back_to_its_tail(self):
+        assert library._tidy("something went wrong quietly") != ""
+
+
+class TestMissingDependencies:
+    def test_one_named_dependency(self):
+        # R quotes package names with U+2018/U+2019, written as escapes here so
+        # the test says which characters it means.
+        log = (
+            "ERROR: dependency \u2018mnormt\u2019 is not available "
+            "for package \u2018psych\u2019"
+        )
+        assert library.missing_dependencies(log) == ["mnormt"]
+
+    def test_several_named_dependencies(self):
+        # The package's own name follows "for package" and must not be mistaken
+        # for one of its dependencies, or the retry would try to fetch a current
+        # version of the very package under test.
+        log = (
+            "ERROR: dependencies \u2018classInt\u2019, \u2018s2\u2019, "
+            "\u2018units\u2019 are not available for package \u2018sf\u2019"
+        )
+        assert library.missing_dependencies(log) == ["classInt", "s2", "units"]
+
+    def test_a_toolchain_failure_names_nothing(self):
+        # The distinction the retry rests on: a missing import is an accident of
+        # this machine, an undeclared C function is a wall.
+        log = "classTree.c:302:36: error: call to undeclared function 'Calloc'"
+        assert library.missing_dependencies(log) == []
+
+
 class TestAdopt:
     def test_versions_already_on_disk_are_recorded(self, tmp_path, ledger, monkeypatch):
         monkeypatch.setattr(library, "r_version", lambda: "4.6.0")

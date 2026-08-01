@@ -1,0 +1,8 @@
+package: lmtest
+
+screens:
+  - entry: lmtest@0.9-35#2
+    fixed_in: 0.9-35
+    script: bptest_aliased.R
+    functions: [bptest]
+    conditions: aliased or collinear regressors.

@@ -32,6 +32,7 @@ from __future__ import annotations
 import csv
 import os
 import platform
+import re
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -52,6 +53,19 @@ DEFAULT_ROOT = Path.home() / ".cache" / "kasauti" / "rlibs"
 ROOT_VARIABLE = "KASAUTI_RLIBS"
 
 CRAN_ARCHIVE = "https://cran.r-project.org/src/contrib/Archive"
+
+#: Where a missing dependency is fetched from. Current versions, deliberately:
+#: the archived package under test is the measurement, and pinning its whole
+#: dependency tree to the same era is a much larger project than this one.
+CRAN_MIRROR = "https://cloud.r-project.org"
+
+#: R's complaint when `repos = NULL` left it unable to resolve an import.
+MISSING_DEPENDENCY = re.compile(
+    r"dependenc(?:y|ies)\s+(.+?)\s+(?:is|are) not available", re.IGNORECASE
+)
+
+#: The curly-quoted package names inside that complaint.
+QUOTED = re.compile("[\u2018']([A-Za-z][\\w.]*)[\u2019']")
 
 LEDGER_COLUMNS = ["package", "version", "outcome", "r_version", "platform", "detail"]
 
@@ -265,17 +279,71 @@ class Ledger:
                 )
 
 
+#: Lines worth keeping out of a failed build log. `install.packages` ends with a
+#: wrapper message naming the tarball and saying it had non-zero exit status,
+#: which is true of every failure and explains none of them. The compiler's own
+#: first complaint is the reason -- `unknown type name 'Sint'` is what puts every
+#: `survival` before 3.4-0 out of reach, and keeping the tail loses it.
+BUILD_ERROR = re.compile(r"^.*\b(?:error|Error|ERROR)\b.*$", re.MULTILINE)
+
+#: Wrapper noise that matches BUILD_ERROR but says nothing.
+BUILD_NOISE = ("had non-zero exit status", "unable to install packages")
+
+
 def _tidy(log: str, limit: int = 240) -> str:
-    """Reduce a build log to one line that fits in a CSV cell.
+    """Reduce a build log to the line that explains the failure.
 
     Args:
         log: Captured output.
         limit: Characters to keep.
 
     Returns:
-        The tail of the log, whitespace collapsed.
+        The most informative error line, or the tail of the log if none stands
+        out.
     """
+    for line in BUILD_ERROR.findall(log):
+        text = " ".join(line.split())
+        if text and not any(noise in text for noise in BUILD_NOISE):
+            return text[:limit]
     return " ".join(log.split())[-limit:]
+
+
+def _rscript(script: str, timeout: int) -> tuple[str, bool]:
+    """Run an R expression and return its combined output.
+
+    Args:
+        script: R source.
+        timeout: Seconds before giving up.
+
+    Returns:
+        An `(output, timed_out)` pair.
+    """
+    try:
+        proc = subprocess.run(  # noqa: S603
+            ["Rscript", "--vanilla", "-e", script],  # noqa: S607
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired:
+        return "", True
+    return (proc.stderr or "") + (proc.stdout or ""), False
+
+
+def missing_dependencies(log: str) -> list[str]:
+    """Packages a build could not find, read off its own complaint.
+
+    Args:
+        log: A failed build log.
+
+    Returns:
+        The dependency names R named, in the order it named them.
+    """
+    found: list[str] = []
+    for clause in MISSING_DEPENDENCY.findall(log):
+        found.extend(QUOTED.findall(clause))
+    return found
 
 
 def install(
@@ -286,6 +354,15 @@ def install(
     The uncached primitive. Callers should use `ensure`, which consults the
     ledger first.
 
+    Installing from a URL means `repos = NULL`, which switches off dependency
+    resolution entirely -- so a package whose `Imports` are not already on the
+    machine fails for a reason that has nothing to do with whether its source
+    still compiles. `psych` failed on all six of its shortlisted versions purely
+    for want of `mnormt`. That is not a toolchain wall and must not be recorded
+    as one, so a missing dependency is fetched from CRAN and the build retried
+    once. Dependencies land in the version's own library rather than the system
+    one, which keeps decade-old sources out of the environment the tool runs in.
+
     Args:
         package: CRAN package name.
         version: Version to install.
@@ -294,26 +371,34 @@ def install(
 
     Returns:
         A `(library_path, detail)` pair, the path being None when the build
-        failed and `detail` carrying the tail of the log.
+        failed and `detail` carrying the line of the log that explains it.
     """
     lib = path_for(package, version, root)
     lib.mkdir(parents=True, exist_ok=True)
 
     url = f"{CRAN_ARCHIVE}/{package}/{package}_{version}.tar.gz"
-    script = f'install.packages("{url}", repos = NULL, type = "source", lib = "{lib}")'
-    try:
-        proc = subprocess.run(  # noqa: S603
-            ["Rscript", "--vanilla", "-e", script],  # noqa: S607
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=timeout,
-        )
-    except subprocess.TimeoutExpired:
+    build = f'install.packages("{url}", repos = NULL, type = "source", lib = "{lib}")'
+
+    log, expired = _rscript(build, timeout)
+    if expired:
         return None, f"timed out after {timeout}s"
     if (lib / package).exists():
         return lib, ""
-    return None, _tidy(proc.stderr or proc.stdout)
+
+    wanted = missing_dependencies(log)
+    if wanted:
+        names = ", ".join(f'"{name}"' for name in wanted)
+        _rscript(
+            f'install.packages(c({names}), lib = "{lib}", repos = "{CRAN_MIRROR}")',
+            timeout,
+        )
+        log, expired = _rscript(build, timeout)
+        if expired:
+            return None, f"timed out after {timeout}s"
+        if (lib / package).exists():
+            return lib, ""
+
+    return None, _tidy(log)
 
 
 def ensure(
@@ -410,6 +495,60 @@ def adopt(ledger: Ledger, root: Path | None = None) -> int:
     if added:
         ledger.write()
     return added
+
+
+#: How a failure reads, reduced to the thing it is an instance of. Grouping the
+#: ledger this way turns a list of broken builds into a short list of walls, which
+#: is the publishable form: an archived version is out of reach for one of a
+#: handful of reasons, and every reason is a fact about the present toolchain
+#: rather than about the package.
+WALLS = (
+    ("Sint", "the C sources use `Sint`, an S-PLUS typedef R no longer defines"),
+    ("Calloc", "the C sources call `Calloc`, renamed `R_Calloc` in R 4.2"),
+    ("NAMED", "the C sources call `NAMED`, which R's API no longer exposes"),
+    ("DOUBLE_EPS", "the C++ sources use `DOUBLE_EPS`, a constant R has withdrawn"),
+    ("NAMESPACE", "no `NAMESPACE` file, which R has required since 2008"),
+    ("libintl.h", "the C sources need gettext headers this machine does not have"),
+    ("not available for package", "a dependency that is no longer on CRAN"),
+    ("GDAL", "a geospatial system library this machine does not have"),
+    ("too few arguments", "a C call whose R-internal signature has since changed"),
+    ("timed out", "the build did not finish inside the timeout"),
+)
+
+
+def wall(detail: str) -> str:
+    """Name the class of failure a build log describes.
+
+    Args:
+        detail: A recorded failure reason.
+
+    Returns:
+        A one-line description of the wall, or the detail itself if it does not
+        match a known one.
+    """
+    for marker, description in WALLS:
+        if marker in detail:
+            return description
+    return detail
+
+
+def walls(ledger: Ledger) -> dict[str, list[tuple[str, str]]]:
+    """Group every recorded failure by the wall it hit.
+
+    Args:
+        ledger: Ledger of build attempts.
+
+    Returns:
+        Wall description to the `(package, version)` pairs it stopped.
+    """
+    grouped: dict[str, list[tuple[str, str]]] = {}
+    for build in ledger.builds.values():
+        if build.outcome != FAILED:
+            continue
+        grouped.setdefault(wall(build.detail), []).append(
+            (build.package, build.version)
+        )
+    return {key: sorted(value) for key, value in sorted(grouped.items())}
 
 
 def floor(package: str, versions: list[str], ledger: Ledger) -> str | None:

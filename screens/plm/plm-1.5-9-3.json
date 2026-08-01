@@ -1,0 +1,36 @@
+{
+  "after": "1.5-12",
+  "after_on": "2015-12-15",
+  "before": "1.4-0",
+  "before_on": "2013-12-28",
+  "control": "phtest() ran against a between fit and via method = 'aux', both reporting degrees of freedom",
+  "detail": "2 of 6 quantities moved",
+  "entry_id": "plm@1.5-9#3",
+  "exact": false,
+  "max_reldiff": 0.04646866553527996,
+  "moved": [
+    "aux.p.value",
+    "aux.statistic"
+  ],
+  "package": "plm",
+  "quantities": {
+    "after": {
+      "aux.p.value": 0.0944001176953847,
+      "aux.parameter": 2,
+      "aux.statistic": 4.72042591811663,
+      "between.p.value": 0.0178000682922627,
+      "between.parameter": 2,
+      "between.statistic": 8.05710597009497
+    },
+    "before": {
+      "aux.p.value": 0.0900134701997068,
+      "aux.parameter": 2,
+      "aux.statistic": 4.81559190193102,
+      "between.p.value": 0.0178000682922627,
+      "between.parameter": 2,
+      "between.statistic": 8.05710597009497
+    }
+  },
+  "script": "phtest_between.R",
+  "verdict": "MOVED"
+}

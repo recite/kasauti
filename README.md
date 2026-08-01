@@ -163,6 +163,81 @@ deliberately *not* written into `introduced_on`. Closing the window at a date th
 bug may predate would narrow it, and a window that is too narrow hides papers
 rather than over-counting them.
 
+## Screening: testing a claim without committing to publishing it
+
+Seven records stood against a shortlist of **41** entries the pipeline had already
+flagged as silent, result-changing, and high severity. The gap was never selection.
+A record demands a fixture, a backend, per-quantity expectation prose, and an
+exposure probe before a single number is measured — so a claim got *tested* only
+after someone had committed an afternoon to *publishing* it.
+
+A **screen** is the cheap half: one fixture, run against the release that carried
+the fix and the release immediately before it, asking whether any number moved. No
+prose, no expectations, no probe. Only a screen that moves something is promoted.
+
+That also buys the thing a hand-curated base cannot report — a **denominator**.
+Every finding published here so far is a success, because failures were never cheap
+enough to attempt. Of **13 claims screened**: 5 moved a number, 4 did not, 4 could
+not be evaluated. `docs/screening.md` carries the table.
+
+**Quantities are not chosen.** `cc_flatten` dumps every number the call returned,
+because deciding which ten matter requires already understanding the bug — which is
+exactly what a screen has not done. Two of the five confirmations adjudicate
+themselves out of that dump:
+
+- `lmtest` 0.9-35: on a rank-deficient fit, `bptest`'s **degrees of freedom go 3 →
+  2** and the p-value with them, while the statistic is untouched and a
+  well-conditioned fit is identical on all three. "Aliased regressors were counted"
+  is visible in the numbers, not inferred from the prose.
+- `psych` 1.9.12: **all twelve** `ICC` confidence bounds move; every point estimate,
+  F, and degrees-of-freedom stays put. The claim is about the interval, and only the
+  interval moved.
+- `estimatr` 0.6.0: with weights and blocks together, 0.4.0 returned **no standard
+  error and no p-value at all**. They do not differ across versions — they *appear*.
+
+**`NOT_TRIGGERED` is not a refutation.** It says a particular fixture did not move a
+number, which is a falsifiable statement about the fixture, not a verdict on a
+maintainer. That is the same distinction `ABSENT` taught the bisect, and it is
+enforced rather than hoped for: every fixture declares a **positive control** saying
+what it checked to know the condition was met — `nlevels(z) > 2`, `anyNA(d)`,
+`anyNA(coef(fit))` — and a run without one is `UNEVALUABLE`, because "nothing moved"
+and "nothing ran" are otherwise indistinguishable.
+
+**Fixtures are per-package, not per-bug.** The 41 entries span 16 packages, so one
+dataset with a superset of columns serves many claims and what varies is the call.
+
+**Where the fix version is not a release.** `survival`'s NEWS is organised under
+headings like `2.35` that CRAN never shipped, and several versions it names went out
+through the author's own channel; four of the thirteen screens straddle their stated
+version rather than pinning it. The report marks them, because a movement across a
+span is attributable to the span.
+
+## How far back any of this reaches
+
+Screening is bounded by what will still compile, and that boundary is sharper than
+expected. `docs/reach.md` groups every recorded failure by its cause; the largest
+class is a single typedef.
+
+**`survival` — the package with the most candidates — is the least reachable.**
+Eighteen of its archived versions fail on `unknown type name 'Sint'`, an S-PLUS-era
+typedef R no longer defines, so its floor is **3.4-0 (2022-08-09)** and eleven of its
+twelve shortlisted claims sit below it. Others fail on `Calloc` (renamed `R_Calloc`
+in R 4.2), `NAMED`, `DOUBLE_EPS`, or missing gettext headers.
+
+Two failure classes are *not* walls and are treated differently:
+
+- **A missing dependency is an accident of this machine.** Installing from a URL
+  means `repos = NULL`, which switches off dependency resolution entirely — `psych`
+  failed on all six of its versions purely for want of `mnormt`. The missing package
+  is fetched and the build retried once, which recovered every one of them.
+- **A dependency that no longer exists is a wall again.** `plm` 1.2-5 and 1.2-6 need
+  `kinship`, removed from CRAN in 2012, and with them go three claims.
+
+**Building is not the only wall, and it is the one that announces itself.** `psych`
+1.5.8 installs cleanly and then refuses to run: its own code says `if (class(x) ==
+"try-error")`, an error since R 4.2 when the condition is longer than one. A package
+can be buildable and unusable, so a floor is a lower bound on reach, never a promise.
+
 ## The bug pipeline
 
 Five stages, each leaving a durable artifact, so a session picks up where the last

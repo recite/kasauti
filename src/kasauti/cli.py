@@ -876,13 +876,22 @@ def build() -> None:
 @click.option(
     "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
 )
-def build_audit(packages: tuple[str, ...], ledger: Path, cache_root: Path) -> None:
-    """Report how far back each package can be built.
+@click.option(
+    "--out",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Also write the report as Markdown.",
+)
+def build_audit(
+    packages: tuple[str, ...], ledger: Path, cache_root: Path, out: Path | None
+) -> None:
+    """Report how far back each package can be built, and what stops it.
 
     Args:
         packages: Packages to report on. Defaults to every package in the ledger.
         ledger: Build ledger.
         cache_root: Harvest cache, for the release history.
+        out: Optional Markdown file to write.
     """
     from kasauti.archaeology.harvest import harvest
 
@@ -896,6 +905,7 @@ def build_audit(packages: tuple[str, ...], ledger: Path, cache_root: Path) -> No
         click.echo("nothing built yet", err=True)
         sys.exit(1)
 
+    rows = []
     click.echo(
         f"{'package':16} {'releases':>8} {'tried':>6} {'built':>6} {'failed':>7} "
         f"{'floor':12} reaches back to"
@@ -906,6 +916,7 @@ def build_audit(packages: tuple[str, ...], ledger: Path, cache_root: Path) -> No
         counts = library.reach(name, versions, book)
         oldest = library.floor(name, versions, book)
         dated = next((r.released for r in releases if r.version == oldest), None)
+        rows.append((name, len(versions), counts, oldest, dated))
         click.echo(
             f"{name:16} {len(versions):8d} {counts['tried']:6d} {counts['built']:6d} "
             f"{counts['failed']:7d} {oldest or '--':12} {dated or '--'}"
@@ -915,6 +926,77 @@ def build_audit(packages: tuple[str, ...], ledger: Path, cache_root: Path) -> No
         "the oldest\nthat exists. Everything before it is out of reach, and a bug "
         "living there can be\nbounded but not dated."
     )
+
+    grouped = library.walls(book)
+    if grouped:
+        click.echo("\nWhat stopped the failures:")
+        for description, pairs in grouped.items():
+            click.echo(f"  {len(pairs):3d}  {description}")
+
+    if out:
+        Path(out).parent.mkdir(parents=True, exist_ok=True)
+        Path(out).write_text(_render_reach(rows, grouped))
+        click.echo(f"\nwrote {out}")
+
+
+def _render_reach(rows: list, grouped: dict[str, list[tuple[str, str]]]) -> str:
+    """Render the buildability report.
+
+    Args:
+        rows: One `(package, releases, counts, floor, floor_date)` per package.
+        grouped: Failures grouped by the wall they hit.
+
+    Returns:
+        Markdown.
+    """
+    tried = sum(r[2]["tried"] for r in rows)
+    built = sum(r[2]["built"] for r in rows)
+    lines = [
+        "# How far back this reaches",
+        "",
+        f"{tried} archived version(s) have been built against R "
+        f"{library.r_version()}; **{built}** succeeded.",
+        "",
+        "Every backward-reaching measurement here -- screening a claim against the "
+        "release before its fix, bisecting an introduction, sweeping a version "
+        "history -- first has to install a decade-old source package against a "
+        "current toolchain. Where that fails, the study stops, and the boundary is "
+        "a property of today's compilers rather than of the package.",
+        "",
+        "## Floors",
+        "",
+        "| package | releases | tried | built | floor | reaches back to |",
+        "|---|---|---|---|---|---|",
+    ]
+    for name, releases, counts, oldest, dated in rows:
+        lines.append(
+            f"| `{name}` | {releases} | {counts['tried']} | {counts['built']} | "
+            f"{oldest or '--'} | {dated or '--'} |"
+        )
+
+    lines += [
+        "",
+        "Only versions this study actually asked for have been tried, so `tried` is "
+        "not a sample of the history -- it is the set of releases some claim needed.",
+        "",
+        "## Walls",
+        "",
+        "| n | what stopped it |",
+        "|---|---|",
+        *(
+            f"| {len(pairs)} | {description} |"
+            for description, pairs in grouped.items()
+        ),
+        "",
+        "**Building is not the only wall, and it is the one that announces itself.** "
+        "`psych` 1.5.8 installs cleanly and then refuses to run: its own code says "
+        '`if (class(x) == "try-error")`, which R has treated as an error since 4.2 '
+        "when the condition has length greater than one. A package can therefore be "
+        "buildable and unusable, so the floor above is a lower bound on how far back "
+        "the archaeology reaches, never a promise.",
+        "",
+    ]
+    return "\n".join(lines)
 
 
 @main.group()

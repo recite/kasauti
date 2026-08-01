@@ -68,6 +68,48 @@ def test_the_judged_count_is_bounded_by_the_cache():
     )
 
 
+def test_the_screening_counts_agree_between_the_readme_and_the_report():
+    """The screened verdicts are a denominator, so they must not drift apart.
+
+    The whole argument for a screening tier is that failures become cheap enough
+    to attempt and therefore cheap enough to count. A README quoting one set of
+    counts while the generated report holds another destroys exactly that.
+    """
+    # Collapsed first, because the README wraps at 88 columns and the sentence
+    # carrying these four numbers does not fit on one line.
+    prose = " ".join(read("README.md").split())
+    readme = re.search(
+        r"\*\*(\d+) claims screened\*\*: (\d+) moved a number, (\d+) did not, "
+        r"(\d+) could not be evaluated",
+        prose,
+    )
+    assert readme, "README no longer states the screening counts"
+
+    report = read("docs/screening.md")
+    declared = re.search(r"\*\*(\d+)\*\* screened", report)
+    verdicts = {
+        name: int(found.group(1))
+        for name in ("MOVED", "NOT_TRIGGERED", "UNEVALUABLE")
+        if (found := re.search(rf"\| `{name}` \| (\d+) \|", report))
+    }
+    assert declared, "docs/screening.md no longer states how many were screened"
+    assert len(verdicts) == 3, "docs/screening.md no longer states every verdict"
+
+    assert int(readme.group(1)) == int(declared.group(1))
+    assert (
+        int(readme.group(2)),
+        int(readme.group(3)),
+        int(readme.group(4)),
+    ) == (
+        verdicts["MOVED"],
+        verdicts["NOT_TRIGGERED"],
+        verdicts["UNEVALUABLE"],
+    ), (
+        "README and docs/screening.md disagree about the screening verdicts. "
+        "Regenerate with `kasauti screen report` and update the README."
+    )
+
+
 def test_the_package_count_agrees_across_the_frame_and_the_readme():
     """`stats` is in the frame for attribution but is not a selected package.
 

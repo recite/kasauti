@@ -1,0 +1,16 @@
+package: estimatr
+
+screens:
+  - entry: estimatr@0.6.0#11
+    fixed_in: 0.6.0
+    script: dim_weights_and_blocks.R
+    functions: [difference_in_means]
+    conditions: both weights and blocks supplied.
+
+  - entry: estimatr@0.12.0#7
+    fixed_in: 0.12.0
+    script: dim_three_conditions.R
+    functions: [difference_in_means]
+    conditions: >
+      condition1/condition2 subsetting a treatment with more than two
+      conditions.

@@ -1,9 +1,47 @@
 package,version,outcome,r_version,platform,detail
+AER,1.2-5,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+AER,1.2-6,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+MASS,7.3-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,MASS.c:33:23: error: unknown type name 'Sint'; did you mean 'int'?
+MatchIt,4.3.4,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+MatchIt,4.4.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+car,1.0-17,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+car,1.0-18,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+estimatr,0.12,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.14,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.4.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.6.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 fixest,0.10.3,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 fixest,0.10.4,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+fixest,0.8.4,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'
 fixest,0.9.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lfe,2.4-1788,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+lfe,2.5-1968,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,demean.c:634:10: error: call to undeclared function 'NAMED'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+lmtest,0.9-34,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-35,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+mgcv,0.5-3,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+mgcv,0.6-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+mgcv,1.8-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./general.h:4:10: fatal error: 'libintl.h' file not found
+mgcv,1.8-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./general.h:4:10: fatal error: 'libintl.h' file not found
+mgcv,1.8-10,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"discrete.c:84:66: error: too few arguments to function call, expected 12, have 11"
 mgcv,1.8-42,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+mgcv,1.8-9,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"discrete.c:84:66: error: too few arguments to function call, expected 12, have 11"
+mgcv,1.9-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./general.h:4:10: fatal error: 'libintl.h' file not found
+mice,3.16.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+mice,3.17.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+plm,1.2-5,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
+plm,1.2-6,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
+plm,1.2-7,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+plm,1.2-8,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+plm,1.4-0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 plm,1.5-12,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.5.8,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.6.4,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.8.12,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.9.12,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,2.4.3,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,2.4.6.26,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+randomForest,4.5-32,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,classTree.c:302:36: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+randomForest,4.5-33,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,classTree.c:302:36: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
 sandwich,2.2-1,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 sandwich,2.2-10,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 sandwich,2.2-2,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
@@ -22,3 +60,30 @@ sandwich,2.3-4,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 sandwich,2.4-0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 sandwich,2.5-0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 sandwich,3.0-1,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+sf,0.5-2,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,configure: error: pcs.csv not found in GDAL data directory.
+sf,0.5-3,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,configure: error: pcs.csv not found in GDAL data directory.
+sf,1.0-0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+sf,1.0-1,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+survival,2.34-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,agfit5.c:137:9: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+survival,2.35-2,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:8:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,2.35-8,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:8:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,2.36-14,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:8:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,2.37-2,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:8:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,2.37-4,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:5:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,2.37-7,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:11:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,2.38-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:11:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,2.38-3,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:12:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,2.40-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:12:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,2.41-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:12:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,2.41-2,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:12:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,2.44-1.1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:12:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,3.1-6,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:13:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,3.1-8,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:13:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,3.2-11,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:13:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,3.2-12,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:13:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,3.3-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./survproto.h:13:14: error: unknown type name 'Sint'; did you mean 'int'?
+survival,3.4-0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+survival,3.5-8,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+survival,3.6-4,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+survival,3.7-0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+survival,3.8-3,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,

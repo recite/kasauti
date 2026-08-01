@@ -1,0 +1,35 @@
+{
+  "after": "0.14",
+  "after_on": "2018-11-06",
+  "before": "0.12",
+  "before_on": "2018-09-15",
+  "control": "the treatment has 3 conditions, so condition1/condition2 genuinely subset it",
+  "detail": "all 7 quantities agree; the fixture did not reach the defect",
+  "entry_id": "estimatr@0.12.0#7",
+  "exact": false,
+  "max_reldiff": 0.0,
+  "moved": [],
+  "package": "estimatr",
+  "quantities": {
+    "after": {
+      "conf.high": -0.25651109784422,
+      "conf.low": -0.759392477207065,
+      "df": 77.9986257468204,
+      "estimate": -0.507951787525642,
+      "p.value": 0.000132457584141955,
+      "statistic": -4.02184152936541,
+      "std.error": 0.126298309820723
+    },
+    "before": {
+      "conf.high": -0.25651109784422,
+      "conf.low": -0.759392477207065,
+      "df": 77.9986257468204,
+      "estimate": -0.507951787525642,
+      "p.value": 0.000132457584141955,
+      "statistic": -4.02184152936541,
+      "std.error": 0.126298309820723
+    }
+  },
+  "script": "dim_three_conditions.R",
+  "verdict": "NOT_TRIGGERED"
+}
