@@ -1,6 +1,6 @@
 package: plm
 
-screens:
+probes:
   - entry: plm@1.2-6#0
     fixed_in: 1.2-6
     script: pgmm_mtest_twoways.R

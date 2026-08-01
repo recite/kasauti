@@ -1,0 +1,525 @@
+{
+  "changes": [],
+  "gaps": 62,
+  "observations": [
+    {
+      "detail": "build: lfe.c:196:11: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-03-10",
+      "state": "GAP",
+      "version": "1.0-418"
+    },
+    {
+      "detail": "build: Error in download.file(p, destfile, method, mode = \"wb\", ...) :",
+      "quantities": {},
+      "released": "2011-03-11",
+      "state": "GAP",
+      "version": "1.1-427"
+    },
+    {
+      "detail": "build: lfe.c:202:11: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-03-16",
+      "state": "GAP",
+      "version": "1.1-434"
+    },
+    {
+      "detail": "build: lfe.c:175:11: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-03-27",
+      "state": "GAP",
+      "version": "1.2-444"
+    },
+    {
+      "detail": "build: lfe.c:196:11: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-03-30",
+      "state": "GAP",
+      "version": "1.2-452"
+    },
+    {
+      "detail": "build: lfe.c:373:11: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-04-08",
+      "state": "GAP",
+      "version": "1.3-512"
+    },
+    {
+      "detail": "build: lfe.c:512:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-04-24",
+      "state": "GAP",
+      "version": "1.3-572"
+    },
+    {
+      "detail": "build: lfe.c:511:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-08-30",
+      "state": "GAP",
+      "version": "1.4-641"
+    },
+    {
+      "detail": "build: lfe.c:511:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-09-01",
+      "state": "GAP",
+      "version": "1.4-653"
+    },
+    {
+      "detail": "build: lfe.c:395:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-09-11",
+      "state": "GAP",
+      "version": "1.4-670"
+    },
+    {
+      "detail": "build: lfe.c:369:27: error: call to undeclared function 'sem_timedwait'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declarati",
+      "quantities": {},
+      "released": "2011-09-22",
+      "state": "GAP",
+      "version": "1.4-681"
+    },
+    {
+      "detail": "build: lfe.c:405:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-09-24",
+      "state": "GAP",
+      "version": "1.4-695"
+    },
+    {
+      "detail": "build: lfe.c:405:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-09-27",
+      "state": "GAP",
+      "version": "1.4-702"
+    },
+    {
+      "detail": "build: lfe.c:430:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-09-28",
+      "state": "GAP",
+      "version": "1.4-708"
+    },
+    {
+      "detail": "build: lfe.c:439:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-10-11",
+      "state": "GAP",
+      "version": "1.4-709"
+    },
+    {
+      "detail": "build: lfe.c:513:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-11-21",
+      "state": "GAP",
+      "version": "1.4-723"
+    },
+    {
+      "detail": "build: lfe.c:519:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-11-23",
+      "state": "GAP",
+      "version": "1.4-726"
+    },
+    {
+      "detail": "build: lfe.c:570:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-11-29",
+      "state": "GAP",
+      "version": "1.4-729"
+    },
+    {
+      "detail": "build: lfe.c:569:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2011-12-07",
+      "state": "GAP",
+      "version": "1.4-731"
+    },
+    {
+      "detail": "build: ERROR: dependency \u2018Rcgmin\u2019 is not available for package \u2018lfe\u2019",
+      "quantities": {},
+      "released": "2013-01-16",
+      "state": "GAP",
+      "version": "1.4-771"
+    },
+    {
+      "detail": "build: ERROR: dependency \u2018Rcgmin\u2019 is not available for package \u2018lfe\u2019",
+      "quantities": {},
+      "released": "2013-04-03",
+      "state": "GAP",
+      "version": "1.4-941"
+    },
+    {
+      "detail": "build: ERROR: dependency \u2018Rcgmin\u2019 is not available for package \u2018lfe\u2019",
+      "quantities": {},
+      "released": "2013-05-07",
+      "state": "GAP",
+      "version": "1.4-963"
+    },
+    {
+      "detail": "build: ERROR: dependency \u2018Rcgmin\u2019 is not available for package \u2018lfe\u2019",
+      "quantities": {},
+      "released": "2013-06-12",
+      "state": "GAP",
+      "version": "1.5-1026"
+    },
+    {
+      "detail": "build: ERROR: dependency \u2018Rcgmin\u2019 is not available for package \u2018lfe\u2019",
+      "quantities": {},
+      "released": "2013-08-05",
+      "state": "GAP",
+      "version": "1.5-1045"
+    },
+    {
+      "detail": "build: ERROR: dependency \u2018Rcgmin\u2019 is not available for package \u2018lfe\u2019",
+      "quantities": {},
+      "released": "2013-10-28",
+      "state": "GAP",
+      "version": "1.5-1107"
+    },
+    {
+      "detail": "build: ERROR: dependency \u2018Rcgmin\u2019 is not available for package \u2018lfe\u2019",
+      "quantities": {},
+      "released": "2013-11-12",
+      "state": "GAP",
+      "version": "1.5-1118"
+    },
+    {
+      "detail": "build: lfe.c:624:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2013-12-03",
+      "state": "GAP",
+      "version": "1.6-1161"
+    },
+    {
+      "detail": "build: lfe.c:631:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2013-12-06",
+      "state": "GAP",
+      "version": "1.6-1163"
+    },
+    {
+      "detail": "build: lfe.c:631:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2014-01-04",
+      "state": "GAP",
+      "version": "1.6-1180"
+    },
+    {
+      "detail": "build: lfe.c:631:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2014-01-23",
+      "state": "GAP",
+      "version": "1.6-1188"
+    },
+    {
+      "detail": "build: lfe.c:633:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2014-03-07",
+      "state": "GAP",
+      "version": "1.7-1282"
+    },
+    {
+      "detail": "build: lfe.c:633:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2014-03-09",
+      "state": "GAP",
+      "version": "1.7-1286"
+    },
+    {
+      "detail": "build: lfe.c:633:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2014-03-13",
+      "state": "GAP",
+      "version": "1.7-1289"
+    },
+    {
+      "detail": "build: lfe.c:666:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2014-10-09",
+      "state": "GAP",
+      "version": "1.7-1401"
+    },
+    {
+      "detail": "build: lfe.c:664:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2014-10-10",
+      "state": "GAP",
+      "version": "1.7-1404"
+    },
+    {
+      "detail": "build: lfe.c:664:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2014-12-15",
+      "state": "GAP",
+      "version": "1.7-1416"
+    },
+    {
+      "detail": "build: lfe.c:668:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2014-12-25",
+      "state": "GAP",
+      "version": "1.8-1441"
+    },
+    {
+      "detail": "build: factor.c:23:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2015-02-10",
+      "state": "GAP",
+      "version": "2.0-1570"
+    },
+    {
+      "detail": "build: factor.c:23:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2015-03-03",
+      "state": "GAP",
+      "version": "2.1-1620"
+    },
+    {
+      "detail": "build: factor.c:23:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2015-03-05",
+      "state": "GAP",
+      "version": "2.1-1629"
+    },
+    {
+      "detail": "build: factor.c:23:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2015-03-11",
+      "state": "GAP",
+      "version": "2.1-1640"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2015-04-13",
+      "state": "GAP",
+      "version": "2.2-1699"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2015-05-26",
+      "state": "GAP",
+      "version": "2.3-1709"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2015-10-21",
+      "state": "GAP",
+      "version": "2.4-1786"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2015-10-26",
+      "state": "GAP",
+      "version": "2.4-1788"
+    },
+    {
+      "detail": "build: demean.c:634:10: error: call to undeclared function 'NAMED'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2016-04-11",
+      "state": "GAP",
+      "version": "2.5-1968"
+    },
+    {
+      "detail": "build: demean.c:616:10: error: call to undeclared function 'NAMED'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2016-04-19",
+      "state": "GAP",
+      "version": "2.5-1998"
+    },
+    {
+      "detail": "build: demean.c:616:10: error: call to undeclared function 'NAMED'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2018-02-16",
+      "state": "GAP",
+      "version": "2.6-2291"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2018-06-18",
+      "state": "GAP",
+      "version": "2.7-2383"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2018-06-28",
+      "state": "GAP",
+      "version": "2.8"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2018-08-22",
+      "state": "GAP",
+      "version": "2.8-2"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2019-03-26",
+      "state": "GAP",
+      "version": "2.8-2.1"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2019-03-27",
+      "state": "GAP",
+      "version": "2.8-3"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2019-12-11",
+      "state": "GAP",
+      "version": "2.8-4"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2019-12-17",
+      "state": "GAP",
+      "version": "2.8-5"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2020-07-08",
+      "state": "GAP",
+      "version": "2.8-5.1"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2021-01-11",
+      "state": "GAP",
+      "version": "2.8-6"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2021-07-31",
+      "state": "GAP",
+      "version": "2.8-7"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2021-11-07",
+      "state": "GAP",
+      "version": "2.8-7.1"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2022-05-04",
+      "state": "GAP",
+      "version": "2.8-8"
+    },
+    {
+      "detail": "build: factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2023-02-13",
+      "state": "GAP",
+      "version": "2.9-0"
+    },
+    {
+      "detail": "build: factor.c:23:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+      "quantities": {},
+      "released": "2024-02-29",
+      "state": "GAP",
+      "version": "3.0-0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "fe.1": 1.07991469306321,
+        "fe.10": 1.71735609096253,
+        "fe.11": 1.77073887857891,
+        "fe.12": 1.81919156894618,
+        "fe.13": 1.86240422630881,
+        "fe.14": 1.90010044238462,
+        "fe.15": 1.93203908429813,
+        "fe.16": 1.95801586020458,
+        "fe.17": 1.9778646013992,
+        "fe.18": 1.99145834824846,
+        "fe.19": 1.9987101432078,
+        "fe.2": 1.15931820857612,
+        "fe.20": 1.99957360343392,
+        "fe.2000": 0.0,
+        "fe.2001": 0.209560292648708,
+        "fe.2002": -0.345779279589371,
+        "fe.2003": -1.01876327749928,
+        "fe.2004": -1.14223881182909,
+        "fe.2005": -1.24136740371541,
+        "fe.2006": -1.84295045751076,
+        "fe.2007": -2.28998955916713,
+        "fe.21": 1.99404320232417,
+        "fe.22": 1.98215431588251,
+        "fe.23": 1.96398299531574,
+        "fe.24": 1.93964547399768,
+        "fe.25": 1.90929742696639,
+        "fe.3": 1.23770262695295,
+        "fe.4": 1.31456656099544,
+        "fe.5": 1.38941834196468,
+        "fe.6": 1.46177917554148,
+        "fe.7": 1.53118619595963,
+        "fe.8": 1.59719543929694,
+        "fe.9": 1.659384671557
+      },
+      "released": "2024-11-06",
+      "state": "OBSERVED",
+      "version": "3.1.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "fe.1": 1.07991469434032,
+        "fe.10": 1.71735609091478,
+        "fe.11": 1.77073887938662,
+        "fe.12": 1.81919156840534,
+        "fe.13": 1.86240422762463,
+        "fe.14": 1.90010044262139,
+        "fe.15": 1.93203908659857,
+        "fe.16": 1.95801586062317,
+        "fe.17": 1.97786460244536,
+        "fe.18": 1.99145834836185,
+        "fe.19": 1.99871014432268,
+        "fe.2": 1.15931820605893,
+        "fe.20": 1.99957360329203,
+        "fe.2000": 0.0,
+        "fe.2001": 0.209560292269495,
+        "fe.2002": -0.345779280491497,
+        "fe.2003": -1.0187632783257,
+        "fe.2004": -1.14223881301289,
+        "fe.2005": -1.24136740390916,
+        "fe.2006": -1.8429504578189,
+        "fe.2007": -2.2899895585757,
+        "fe.21": 1.99404320244626,
+        "fe.22": 1.98215431766504,
+        "fe.23": 1.96398299621752,
+        "fe.24": 1.9396454736788,
+        "fe.25": 1.90929742695429,
+        "fe.3": 1.23770262678288,
+        "fe.4": 1.31456656069088,
+        "fe.5": 1.38941834183777,
+        "fe.6": 1.46177917586177,
+        "fe.7": 1.53118619778961,
+        "fe.8": 1.59719544168727,
+        "fe.9": 1.65938467190584
+      },
+      "released": "2025-02-11",
+      "state": "OBSERVED",
+      "version": "3.1.1"
+    }
+  ],
+  "observed": 2,
+  "package": "lfe",
+  "probe": "getfe.R"
+}

@@ -7,7 +7,7 @@
 
 package: sandwich
 
-screens:
+probes:
   - entry: sandwich@2.5-0#7
     fixed_in: 2.5-0
     script: vcovhc_mlm.R

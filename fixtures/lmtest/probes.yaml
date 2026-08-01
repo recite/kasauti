@@ -1,0 +1,17 @@
+package: lmtest
+
+probes:
+  # A battery probe: chosen by corpus call volume, not by a changelog entry, so
+  # it declares no `fixed_in` and is swept rather than screened.
+  - entry: lmtest/coeftest
+    script: coeftest.R
+    functions: [coeftest]
+    conditions: >
+      Battery probe. 120 corpus scripts call coeftest -- the function that sits
+      between an estimate and the table that gets printed.
+
+  - entry: lmtest@0.9-35#2
+    fixed_in: 0.9-35
+    script: bptest_aliased.R
+    functions: [bptest]
+    conditions: aliased or collinear regressors.

@@ -1,6 +1,6 @@
 package: psych
 
-screens:
+probes:
   - entry: psych@1.6.4#22
     fixed_in: 1.6.4
     script: alpha_se.R

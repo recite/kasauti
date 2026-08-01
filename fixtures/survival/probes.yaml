@@ -6,7 +6,7 @@
 
 package: survival
 
-screens:
+probes:
   - entry: survival@3.6-1#8
     fixed_in: 3.6-1
     script: survfit_cluster_weights.R

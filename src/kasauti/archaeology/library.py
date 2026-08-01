@@ -389,6 +389,69 @@ def header_include(log: str) -> Path | None:
     return None
 
 
+def _last_archived(package: str) -> str | None:
+    """The newest version of a package CRAN has archived.
+
+    Args:
+        package: Package name.
+
+    Returns:
+        Its last archived version, or None if the archive has no listing for it.
+    """
+    from kasauti.archaeology.harvest import cran_releases
+
+    try:
+        releases, _ = cran_releases(package)
+    except Exception:
+        return None
+    return releases[-1].version if releases else None
+
+
+#: How far to chase a chain of deleted dependencies. `Rcgmin` needs `optextras`,
+#: and one more link is plausible; beyond that the right conclusion is that the
+#: release is out of reach rather than that more effort is owed.
+SUPPLY_DEPTH = 3
+
+
+def _supply(name: str, lib: Path, timeout: int, depth: int = SUPPLY_DEPTH) -> bool:
+    """Make one dependency available in a library, from CRAN or from the archive.
+
+    Args:
+        name: Package to supply.
+        lib: Library to install it into.
+        timeout: Seconds per install.
+        depth: How many further links of a deleted-dependency chain to follow.
+
+    Returns:
+        Whether the package is present afterwards.
+    """
+    if (lib / name).exists():
+        return True
+
+    log, _ = _rscript(
+        f'install.packages("{name}", lib = "{lib}", repos = "{CRAN_MIRROR}")', timeout
+    )
+    if (lib / name).exists():
+        return True
+    if depth <= 0:
+        return False
+
+    newest = _last_archived(name)
+    if not newest:
+        return False
+
+    url = f"{CRAN_ARCHIVE}/{name}/{name}_{newest}.tar.gz"
+    build = f'install.packages("{url}", repos = NULL, type = "source", lib = "{lib}")'
+    log, _ = _rscript(build, timeout)
+    if (lib / name).exists():
+        return True
+
+    for wanted in missing_dependencies(log):
+        _supply(wanted, lib, timeout, depth - 1)
+    _rscript(build, timeout)
+    return (lib / name).exists()
+
+
 def missing_dependencies(log: str) -> list[str]:
     """Packages a build could not find, read off its own complaint.
 
@@ -475,6 +538,18 @@ def install(
             f'install.packages(c({names}), lib = "{lib}", repos = "{CRAN_MIRROR}")',
             timeout,
         )
+        # A dependency CRAN has *deleted* is not on the mirror at all. `plm`
+        # 1.2-x needs `kinship`, removed in 2012, and `lfe` needs `Rcgmin`,
+        # folded into `optimx`; between them they were closing 23 releases of
+        # two heavily used packages, one of which owns the highest-reach
+        # function in the whole corpus.
+        #
+        # A deleted package's own dependencies are often deleted too -- `Rcgmin`
+        # wants `optextras` -- so the supply recurses, bounded. The alternative
+        # is writing off the releases or writing a package manager.
+        for name in wanted:
+            _supply(name, lib, timeout)
+
         log, expired = _rscript(build, timeout)
         if expired:
             return None, f"timed out after {timeout}s"
@@ -603,6 +678,11 @@ WALLS = (
     ("NAMED", "the C sources call `NAMED`, which R's API no longer exposes"),
     ("DOUBLE_EPS", "the C++ sources use `DOUBLE_EPS`, a constant R has withdrawn"),
     ("NAMESPACE", "no `NAMESPACE` file, which R has required since 2008"),
+    ("parse_Rd", "documentation in an Rd syntax R no longer parses"),
+    (
+        "implicit function declarations",
+        "a C function declared implicitly, which current compilers reject",
+    ),
     ("libintl.h", "the C sources need gettext headers this machine does not have"),
     ("not available for package", "a dependency that is no longer on CRAN"),
     ("GDAL", "a geospatial system library this machine does not have"),

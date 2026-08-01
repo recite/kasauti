@@ -1,0 +1,24 @@
+# A battery, not a shortlist. These functions were chosen by corpus call volume
+# (`kasauti frame battery`), not because a changelog entry named them: `felm` is
+# called by 245 corpus scripts, the highest-reach function in the whole frame.
+#
+# `screens` is the wrong noun for a sweep probe and the right one for the file
+# the sweep already reads, so the entries carry no `fixed_in` -- there is no
+# claim being tested, only a history being run.
+
+package: lfe
+
+probes:
+  - entry: lfe/felm
+    script: felm.R
+    functions: [felm]
+    conditions: >
+      Battery probe. Two-way fixed effects with one-way clustering, the shape
+      the corpus uses felm for.
+
+  - entry: lfe/getfe
+    script: getfe.R
+    functions: [getfe]
+    conditions: >
+      Battery probe. Recovering absorbed fixed effects, identified only up to a
+      normalisation.

@@ -696,7 +696,14 @@ def classify_packages() -> list[str]:
 
 
 def screen_requests(fixtures: Path, packages: list[str] | None = None) -> list:
-    """Read every screen the fixture catalogues declare.
+    """Read every probe that makes a testable claim.
+
+    One catalogue serves both stages, because a probe is a probe: the sweep runs
+    every one of them across a package's history, and the screen runs the subset
+    that names a release where something was supposedly fixed. A battery probe
+    chosen by corpus call volume names no such release, so it declares no
+    `fixed_in` and is swept but never screened. A sentinel version would have
+    been screened against a release that does not exist.
 
     Args:
         fixtures: Directory holding one subdirectory per package.
@@ -710,12 +717,14 @@ def screen_requests(fixtures: Path, packages: list[str] | None = None) -> list:
     from kasauti.archaeology.screen import Request
 
     requests = []
-    for catalogue in sorted(Path(fixtures).glob("*/screens.yaml")):
+    for catalogue in sorted(Path(fixtures).glob("*/probes.yaml")):
         spec = _yaml.safe_load(catalogue.read_text())
         package = spec["package"]
         if packages and package not in packages:
             continue
-        for row in spec.get("screens", []):
+        for row in spec.get("probes", []):
+            if not row.get("fixed_in"):
+                continue
             requests.append(
                 Request(
                     entry_id=row["entry"],
@@ -910,7 +919,7 @@ def sweep_command(
 
     floor = date.fromisoformat(since) if since else None
     names = list(packages) or sorted(
-        p.parent.name for p in Path(fixtures).glob("*/screens.yaml")
+        p.parent.name for p in Path(fixtures).glob("*/probes.yaml")
     )
     if not names:
         click.echo(f"no fixtures under {fixtures}", err=True)
@@ -920,9 +929,9 @@ def sweep_command(
 
     for name in names:
         directory = Path(fixtures) / name
-        catalogue = _yaml.safe_load((directory / "screens.yaml").read_text())
+        catalogue = _yaml.safe_load((directory / "probes.yaml").read_text())
         scripts = list(probe) or sorted(
-            {row["script"] for row in catalogue.get("screens", [])}
+            {row["script"] for row in catalogue.get("probes", [])}
         )
         _subprocess.run(  # noqa: S603
             ["python3", str(directory / "data.py")],  # noqa: S607
@@ -1037,9 +1046,9 @@ def episodes_command(
     # Which functions a probe exercises comes from the catalogue that declares
     # it, so the NEWS join asks about the same names the probe calls.
     exercised: dict[tuple[str, str], list[str]] = {}
-    for catalogue in sorted(Path(fixtures).glob("*/screens.yaml")):
+    for catalogue in sorted(Path(fixtures).glob("*/probes.yaml")):
         spec = _yaml.safe_load(catalogue.read_text())
-        for row in spec.get("screens", []):
+        for row in spec.get("probes", []):
             key = (spec["package"], row["script"])
             exercised.setdefault(key, []).extend(row.get("functions") or [])
 
@@ -1185,6 +1194,7 @@ def build_audit(
         out: Optional Markdown file to write.
     """
     from kasauti.archaeology.harvest import harvest
+    from kasauti.archaeology.usage import read_usage
 
     book = library.Ledger.load(Path(ledger))
     adopted = library.adopt(book)
@@ -1196,9 +1206,16 @@ def build_audit(
         click.echo("nothing built yet", err=True)
         sys.exit(1)
 
+    usage_path = ROOT / "data/frame/cran_usage.csv"
+    compiled = (
+        {name: entry.compiled for name, entry in read_usage(usage_path).items()}
+        if usage_path.exists()
+        else {}
+    )
+
     rows = []
     click.echo(
-        f"{'package':16} {'releases':>8} {'tried':>6} {'built':>6} {'failed':>7} "
+        f"{'package':16} {'releases':>8} {'tried':>6} {'built':>6} {'C/C++':>6} "
         f"{'floor':12} reaches back to"
     )
     for name in names:
@@ -1207,10 +1224,11 @@ def build_audit(
         counts = library.reach(name, versions, book)
         oldest = library.floor(name, versions, book)
         dated = next((r.released for r in releases if r.version == oldest), None)
-        rows.append((name, len(versions), counts, oldest, dated))
+        rows.append((name, len(versions), counts, oldest, dated, compiled.get(name)))
         click.echo(
             f"{name:16} {len(versions):8d} {counts['tried']:6d} {counts['built']:6d} "
-            f"{counts['failed']:7d} {oldest or '--':12} {dated or '--'}"
+            f"{('yes' if compiled.get(name) else 'no'):>6} {oldest or '--':12} "
+            f"{dated or '--'}"
         )
     click.echo(
         "\nThe floor is the oldest version that builds against this toolchain, not "
@@ -1256,13 +1274,19 @@ def _render_reach(rows: list, grouped: dict[str, list[tuple[str, str]]]) -> str:
         "",
         "## Floors",
         "",
-        "| package | releases | tried | built | floor | reaches back to |",
-        "|---|---|---|---|---|---|",
+        "| package | releases | tried | built | buildable | C/C++ | floor "
+        "| reaches back to |",
+        "|---|---|---|---|---|---|---|---|",
     ]
-    for name, releases, counts, oldest, dated in rows:
+    share = []
+    for name, releases, counts, oldest, dated, compiled in rows:
+        buildable = counts["built"] / counts["tried"] if counts["tried"] else 0.0
+        if counts["tried"] >= 8:
+            share.append((buildable, compiled))
         lines.append(
             f"| `{name}` | {releases} | {counts['tried']} | {counts['built']} | "
-            f"{oldest or '--'} | {dated or '--'} |"
+            f"{buildable:.0%} | {'yes' if compiled else 'no'} | {oldest or '--'} | "
+            f"{dated or '--'} |"
         )
 
     lines += [
@@ -1270,23 +1294,48 @@ def _render_reach(rows: list, grouped: dict[str, list[tuple[str, str]]]) -> str:
         "Only versions this study actually asked for have been tried, so `tried` is "
         "not a sample of the history -- it is the set of releases some claim needed.",
         "",
-        "## Walls",
-        "",
-        "| n | what stopped it |",
-        "|---|---|",
-        *(
-            f"| {len(pairs)} | {description} |"
-            for description, pairs in grouped.items()
-        ),
-        "",
-        "**Building is not the only wall, and it is the one that announces itself.** "
-        "`psych` 1.5.8 installs cleanly and then refuses to run: its own code says "
-        '`if (class(x) == "try-error")`, which R has treated as an error since 4.2 '
-        "when the condition has length greater than one. A package can therefore be "
-        "buildable and unusable, so the floor above is a lower bound on how far back "
-        "the archaeology reaches, never a promise.",
-        "",
     ]
+
+    compiled_share = [b for b, c in share if c]
+    pure_share = [b for b, c in share if not c]
+    if compiled_share and pure_share:
+        lines += [
+            "## The censoring is informative",
+            "",
+            f"Across packages with at least 8 releases tried, **compiled packages "
+            f"build {sum(compiled_share) / len(compiled_share):.0%} of the time** "
+            f"against **{sum(pure_share) / len(pure_share):.0%} for pure R** "
+            f"({len(compiled_share)} against {len(pure_share)} packages).",
+            "",
+            "This is why the sweep sample stratifies on compiled code. The releases "
+            "that cannot be observed are not missing at random: they are "
+            "concentrated in exactly the packages whose C sources predate a change "
+            "to R's API, and those are disproportionately the old, widely used "
+            "ones. `lfe` is the sharpest case -- `felm` is the highest-reach "
+            "function in the entire corpus at 245 scripts, and 62 of its 64 "
+            "releases fail on `Calloc`, so the function that matters most has "
+            "almost no measurable history. Averaging over that without saying so "
+            "would report a bug rate for the packages that happen to compile and "
+            "call it a bug rate for statistical software.",
+            "",
+            "## Walls",
+            "",
+            "| n | what stopped it |",
+            "|---|---|",
+            *(
+                f"| {len(pairs)} | {description} |"
+                for description, pairs in grouped.items()
+            ),
+            "",
+            "**Building is not the only wall, and it is the one that "
+            "announces itself.** `psych` 1.5.8 installs cleanly and then refuses "
+            'to run: its own code says `if (class(x) == "try-error")`, which R '
+            "has treated as an error since 4.2 when the condition has length "
+            "greater than one. A package can therefore be buildable and "
+            "unusable, so the floor above is a lower bound on how far back the "
+            "archaeology reaches, never a promise.",
+            "",
+        ]
     return "\n".join(lines)
 
 
