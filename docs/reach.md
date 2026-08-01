@@ -1,6 +1,6 @@
 # How far back this reaches
 
-782 archived version(s) have been built against R 4.6.0; **316** succeeded.
+788 archived version(s) have been built against R 4.6.0; **322** succeeded.
 
 Every backward-reaching measurement here -- screening a claim against the release before its fix, bisecting an introduction, sweeping a version history -- first has to install a decade-old source package against a current toolchain. Where that fails, the study stops, and the boundary is a property of today's compilers rather than of the package.
 
@@ -9,7 +9,7 @@ Every backward-reaching measurement here -- screening a claim against the releas
 | package | releases | tried | built | buildable | C/C++ | floor | reaches back to |
 |---|---|---|---|---|---|---|---|
 | `AER` | 32 | 2 | 2 | 100% | no | 1.2-5 | 2017-01-07 |
-| `Hmisc` | 88 | 82 | 11 | 13% | yes | 4.6-0 | 2021-10-07 |
+| `Hmisc` | 88 | 88 | 17 | 19% | yes | 4.6-0 | 2021-10-07 |
 | `MASS` | 78 | 75 | 14 | 19% | yes | 7.3-58 | 2022-07-14 |
 | `MatchIt` | 54 | 2 | 2 | 100% | yes | 4.3.4 | 2022-03-08 |
 | `car` | 91 | 76 | 49 | 64% | no | 1.1-0 | 2006-02-06 |
@@ -31,7 +31,7 @@ Only versions this study actually asked for have been tried, so `tried` is not a
 
 ## The censoring is informative
 
-Across packages with at least 8 releases tried, **compiled packages build 30% of the time** against **74% for pure R** (8 against 4 packages).
+Across packages with at least 8 releases tried, **compiled packages build 31% of the time** against **74% for pure R** (8 against 4 packages).
 
 This is why the sweep sample stratifies on compiled code. The releases that cannot be observed are not missing at random: they are concentrated in exactly the packages whose C sources predate a change to R's API, and those are disproportionately the old, widely used ones. `lfe` is the sharpest case -- `felm` is the highest-reach function in the entire corpus at 245 scripts, and 62 of its 64 releases fail on `Calloc`, so the function that matters most has almost no measurable history. Averaging over that without saying so would report a bug rate for the packages that happen to compile and call it a bug rate for statistical software.
 

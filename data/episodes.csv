@@ -1,4 +1,5 @@
 package,probe,opened,opened_on,opened_after,opened_after_on,closed,closed_on,closed_after,closed_after_on,start,end,exact,releases,lower_days,upper_days,opened_documented,closed_documented
+Hmisc,wtd_stats.R,4.6-0,2021-10-07,,,,,5.2-6,2026-06-19,LEFT_CENSORED,RIGHT_CENSORED,0,17,1716,,0,0
 MASS,ginv.R,7.3-58,2022-07-14,,,,,7.3-66,2026-07-15,LEFT_CENSORED,RIGHT_CENSORED,0,14,1462,,0,0
 MASS,glm_nb.R,7.3-58,2022-07-14,,,,,7.3-66,2026-07-15,LEFT_CENSORED,RIGHT_CENSORED,0,14,1462,,0,0
 MASS,mvrnorm.R,7.3-58,2022-07-14,,,,,7.3-66,2026-07-15,LEFT_CENSORED,RIGHT_CENSORED,0,14,1462,,0,0

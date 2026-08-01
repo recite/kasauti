@@ -277,6 +277,7 @@ conditional on it.
 | `car` | 76 | 49 | 64% | no | 2006-02-06 |
 | `estimatr` | 22 | 22 | **100%** | yes | 2018-01-29 |
 | `MASS` | 75 | 14 | 19% | yes | **2022-07-14** |
+| `Hmisc` | 88 | 17 | 19% | yes | 2003-11-19 |
 | `survival` | 94 | 12 | 13% | yes | **2022-08-09** |
 | `lme4` | 123 | 15 | 12% | yes | 2005-06-10 |
 | `lfe` | 64 | 2 | **3%** | yes | **2024-11-06** |
@@ -301,7 +302,7 @@ can be reached; it says nothing about the density in between, so both travel.
 
 ## What the first sweep measured
 
-Ten packages, 17 probes, **1,556 release-runs**: 49 episodes, 25 of them closed.
+Eleven packages, 18 probes, **1,644 release-runs**: 50 episodes, 25 of them closed.
 `make analysis` reproduces every number; `docs/estimands.txt` is its output.
 
 **About two in five result-changing releases are not described in the changelog.**
@@ -315,9 +316,13 @@ is a lower bound.
 
 **Result changes are rare and long-lived.** Median episode length **2613 days** by
 the Turnbull estimate, longest observed span 5671 days, about **0.1 changes per
-probe-year**. Three probes on `MASS` across 14 observable releases and two on
-`lme4` across 11 found **no change at all**: on these functions, the most
-depended-on packages in the ecosystem simply do not move.
+probe-year**.
+
+**Four of the eight certainty-stratum packages produced no change at all** —
+`MASS` (3 probes, 14 observable releases), `lme4` (2 across 11), `Hmisc` (1 across
+17), and `lfe` (2 across 2). On these functions, the packages the ecosystem leans
+on hardest simply do not move. That is worth as much as a change would be, and it
+is only interpretable because the observable-release count travels with it.
 
 **Four changes are a quantity appearing or vanishing**, not moving — `estimatr`
 0.6.0 began returning a standard error where 0.4.0 returned nothing, and `car`

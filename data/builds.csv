@@ -87,6 +87,8 @@ Hmisc,5.2-1,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 Hmisc,5.2-2,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 Hmisc,5.2-3,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 Hmisc,5.2-4,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+Hmisc,5.2-5,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+Hmisc,5.2-6,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 MASS,7.3-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,MASS.c:33:23: error: unknown type name 'Sint'; did you mean 'int'?
 MASS,7.3-11,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,MASS.c:33:23: error: unknown type name 'Sint'; did you mean 'int'?
 MASS,7.3-12,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,MASS.c:33:23: error: unknown type name 'Sint'; did you mean 'int'?
