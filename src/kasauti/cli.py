@@ -1102,6 +1102,58 @@ def episodes_command(
     )
 
 
+#: The tables a reader is expected to reanalyse, in pipeline order. Hashed so a
+#: claim in a write-up traces to the bytes it came from, and so a table
+#: regenerated from a changed input cannot pass for the one that was analysed.
+RELEASED = [
+    "data/frame/packages.csv",
+    "data/frame/cran_usage.csv",
+    "data/frame/sampling_frame.csv",
+    "data/builds.csv",
+    "data/changes.csv",
+    "data/episodes.csv",
+]
+
+
+@main.command("manifest")
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=ROOT / "data/manifest.json"
+)
+def manifest(out: Path) -> None:
+    """Record the size and hash of every released table.
+
+    Args:
+        out: Manifest to write.
+    """
+    import hashlib
+    import json as _json
+
+    rows = {}
+    for name in RELEASED:
+        path = ROOT / name
+        if not path.exists():
+            rows[name] = {"present": False}
+            continue
+        raw = path.read_bytes()
+        rows[name] = {
+            "present": True,
+            "sha256": hashlib.sha256(raw).hexdigest(),
+            "bytes": len(raw),
+            # Rows rather than bytes is what a reader checks against a paper, so
+            # both travel: bytes catch a whitespace change, rows catch a dropped
+            # observation.
+            "rows": max(raw.count(b"\n") - 1, 0),
+        }
+
+    Path(out).parent.mkdir(parents=True, exist_ok=True)
+    Path(out).write_text(_json.dumps(rows, indent=2, sort_keys=True) + "\n")
+
+    missing = [name for name, row in rows.items() if not row["present"]]
+    click.echo(f"wrote {out} -- {len(rows) - len(missing)} of {len(rows)} table(s)")
+    for name in missing:
+        click.echo(f"  missing: {name}")
+
+
 @main.group()
 def build() -> None:
     """Inspect what installs, and how far back it does."""

@@ -1,4 +1,50 @@
-.PHONY: help install check fmt lint types test run report clean
+.PHONY: help install check fmt lint types test run report clean data analysis manifest
+
+# The data pipeline, expressed as file dependencies rather than as a script that
+# remembers the order. Make already is a DAG runner; a second one written here
+# would be a worse copy of it, and the ordering is the part a reader most needs
+# to be able to check.
+#
+# Sweeps are not a target. They take hours, they are the only stage that touches
+# the network and the compiler, and they are keyed by package -- so they are run
+# by hand (`kasauti sweep <package>`) and their timelines are tracked. Everything
+# downstream of `sweeps/` rebuilds in seconds from what they left behind.
+
+CORPUS ?= $(HOME)/Documents/GitHub/softverse
+
+data/frame/packages.csv:
+	uv run kasauti frame packages
+
+data/frame/cran_usage.csv: data/frame/packages.csv
+	uv run kasauti frame usage
+
+data/frame/call_sites.csv:
+	uv run kasauti frame extract --corpus $(CORPUS)
+
+data/frame/package_loads.csv:
+	uv run kasauti frame loads --corpus $(CORPUS)
+
+data/frame/sampling_frame.csv: data/frame/call_sites.csv data/frame/packages.csv
+	uv run kasauti frame build
+
+data/episodes.csv data/changes.csv: $(wildcard sweeps/*/*.json)
+	uv run kasauti episodes
+
+docs/reach.md: data/builds.csv
+	uv run kasauti build audit --out docs/reach.md
+
+docs/screening.md: $(wildcard screens/*/*.json)
+	uv run kasauti screen report
+
+data: data/frame/cran_usage.csv data/frame/sampling_frame.csv data/episodes.csv \
+      docs/reach.md docs/screening.md manifest  ## Rebuild every derived table
+
+analysis: data/episodes.csv  ## Compute the four estimands
+	Rscript --vanilla analysis/estimands.R
+
+manifest:  ## Record the hash of every released table
+	uv run kasauti manifest
+
 
 help:
 	@grep -E '^[a-z-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'

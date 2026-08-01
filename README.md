@@ -163,6 +163,69 @@ deliberately *not* written into `introduced_on`. Closing the window at a date th
 bug may predate would narrow it, and a window that is too narrow hides papers
 rather than over-counting them.
 
+## The sampling unit, and why it changed
+
+A changelog entry exists only if someone **noticed** a bug, **fixed** it, and
+**wrote it down**. Every duration computed from that frame is conditional on all
+three, and the conditioning is invisible in the answer. Worse, five separate
+gates — documentation, eventual fixing, buildability, probe reachability, and
+working in descending exposure — all push the same way, toward *shorter* measured
+lifetimes. A number produced that way is a lower bound wearing the clothes of an
+estimate.
+
+So the instrument changed. A **sweep** runs a probe against *every release* of a
+package and reports each point where a number moved. The unit becomes
+`(package, release, probe)` — packages and probes chosen here, releases a census
+within package — and the changelog drops to a **label layer**. "What fraction of
+result-changing releases does NEWS document?" stops being an assumption and
+becomes `closed_documented`.
+
+**The sweep recovers the bisect by an entirely different route.** Driven down a
+binary search, `sandwich`'s reproducer said: introduced 2.2-4, fixed 2.5-0,
+arrived with the feature. The sweep knows none of that — it runs a generic probe
+across all 39 releases. It finds **exactly one change point in the whole history**,
+at 2.5-0 immediately after 2.4-0, with no gap inside the interval; 2.2-4 is the
+oldest evaluable release; and 2.2-1 through 2.2-3 are gaps whose recorded reason
+is "no applicable method for `vcovHC`". The resulting episode is
+**[2788, 3175] days**, and 3175 is exactly the bisect's 8.7 years.
+
+Three rules make the encoding honest, and each is asserted by test:
+
+- **A gap is not a data point.** A release that will not build, or builds and
+  refuses to run, breaks the chain; each observed release is compared against the
+  last *observed* one. Treating a gap as "no change" manufactures stability out of
+  a build failure; treating it as a value puts a change point at every toolchain
+  wall.
+- **A duration is an interval.** `lower_days` is what certainly elapsed,
+  `upper_days` what may have. Where a build failure sits inside a bounding
+  interval the two differ, and the model is told rather than handed a midpoint
+  nobody observed.
+- **A birth is not a censoring.** When the releases before the first observation
+  failed because the *code did not exist*, the episode has a start date. Same
+  distinction `ABSENT` taught the bisect, third time it has paid.
+
+`data/dictionary.md` documents every column; `data/manifest.json` carries each
+table's hash. `analysis/estimands.R` computes the estimands in base R plus
+`survival` alone, so re-running the statistics needs no dependency resolver.
+Clustering by package is handled three ways on purpose — rates averaged over
+packages rather than pooled over episodes, a cluster bootstrap over packages for
+the documented share, and a package frailty term in the duration model, because a
+frailty leans on a parametric random effect a bootstrap does not.
+
+## Usage, measured three ways
+
+Corpus exposure answers *which published paper could this bug have reached*, and
+it is field-specific by construction. `kasauti frame usage` adds two measures that
+are not: CRAN reverse dependencies, and downloads over a fixed cached window.
+
+They disagree, which is the point. Spearman correlation between corpus rank and
+reverse-dependency rank is **0.32**; between the two CRAN-wide measures, **0.88**.
+So the ecosystem measures agree with each other about centrality and say almost
+nothing about use in one field. `lfe` is the case in point — seventh most used
+package in the corpus, **four** reverse dependencies on all of CRAN, invisible to
+any frame built on centrality. It is the same package this README already records
+as having been forgotten when the frame was built from memory.
+
 ## Screening: testing a claim without committing to publishing it
 
 Seven records stood against a shortlist of **41** entries the pipeline had already
@@ -356,6 +419,12 @@ kasauti frame harvest            # fetch changelogs, releases, exports
 kasauti frame build              # rank the procedures the corpus calls
 kasauti classify report          # judged-vs-unjudged coverage, yield by package
 kasauti build audit              # how far back each package still installs
+kasauti frame usage              # corpus, reverse dependencies, downloads
+kasauti sweep <package>          # run every probe against every release
+kasauti episodes                 # durations, with their censoring
+kasauti manifest                 # hash every released table
+make data                        # rebuild every derived table
+make analysis                    # the estimands, in R
 make check                       # lint, types, tests
 ```
 

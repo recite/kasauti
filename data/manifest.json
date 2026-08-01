@@ -1,0 +1,38 @@
+{
+  "data/builds.csv": {
+    "bytes": 17426,
+    "present": true,
+    "rows": 199,
+    "sha256": "bedcd659a900d6cdb75d6436ccc024a14e36044c19e20d98e4b3760426caa857"
+  },
+  "data/changes.csv": {
+    "bytes": 586,
+    "present": true,
+    "rows": 1,
+    "sha256": "5f86ec9842e195003d42dd75f1b8a19fa734fe605275cb7c6ffacd4914c211a9"
+  },
+  "data/episodes.csv": {
+    "bytes": 1426,
+    "present": true,
+    "rows": 10,
+    "sha256": "817129014cd4d85f37440531ac1ddaec0702ba2ede8a3a58175ee177d1dff709"
+  },
+  "data/frame/cran_usage.csv": {
+    "bytes": 3200,
+    "present": true,
+    "rows": 131,
+    "sha256": "d1b05c4055504dce25b3f4283304920daa1dc3ae7b0c55410360aca83d397f55"
+  },
+  "data/frame/packages.csv": {
+    "bytes": 5187,
+    "present": true,
+    "rows": 131,
+    "sha256": "82efe32326c3ca2c2b732babece22466148fa3947018ce037f6660da3976af32"
+  },
+  "data/frame/sampling_frame.csv": {
+    "bytes": 103428,
+    "present": true,
+    "rows": 2580,
+    "sha256": "dc99badc91382ec454db1f1b8d73f11b8f745f179a0eba6e4f93111a44d5cd8f"
+  }
+}
