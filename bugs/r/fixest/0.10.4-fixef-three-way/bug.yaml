@@ -23,6 +23,11 @@ exposure:
   scripts_meeting_probe: 4
   papers_in_window: 0
   papers_censored: 0
+  papers_by_lag:
+    0: 0
+    1: 0
+    2: 1
+    3: 2
 magnitude: 'Verified against fixest 0.10.3, the immediately preceding release. Adjacent versions
   on purpose: 0.10.3 against current 0.14.2 also diverges, but through a second change --
   fixest began dropping singleton fixed-effect groups, so it estimates on 70 rows where 0.10.3

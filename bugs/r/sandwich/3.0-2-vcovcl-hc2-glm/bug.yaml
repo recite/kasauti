@@ -22,6 +22,11 @@ exposure:
   scripts_meeting_probe: 6
   papers_in_window: 0
   papers_censored: 0
+  papers_by_lag:
+    0: 0
+    1: 1
+    2: 3
+    3: 3
 magnitude: 'Verified against sandwich 3.0-1. Exactly the two documented conditions move and
   nothing else: glm HC2 goes 3.257220214218 to 3.241862120725 (4.7e-3 relative) and weighted-lm
   HC2 goes 0.677590761111 to 0.687773564531 (1.5e-2). The other seven quantities -- HC0 and

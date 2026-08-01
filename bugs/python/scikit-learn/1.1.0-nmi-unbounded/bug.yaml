@@ -23,6 +23,11 @@ exposure:
   scripts_meeting_probe: 0
   papers_in_window: 0
   papers_censored: 0
+  papers_by_lag:
+    0: 0
+    1: 0
+    2: 0
+    3: 0
 magnitude: Verified against scikit-learn 1.0.2 on Python 3.10. min and geometric both return
   1.25 where 1.1.0 returns 0.0 -- a normalized mutual information above its own upper bound
   of 1, which cannot be interpreted at all. arithmetic and max return 8.2e-16 and 4.1e-16

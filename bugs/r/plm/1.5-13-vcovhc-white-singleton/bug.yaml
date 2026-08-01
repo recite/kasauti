@@ -22,6 +22,7 @@ exposure:
   scripts_meeting_probe: 11
   papers_in_window: null
   papers_censored: 0
+  papers_by_lag: null
 magnitude: 'Verified against plm 1.5-12. With a singleton group, white1 and white2 both raise
   "non-conformable arguments" and produce no value; the fixed version returns 0.1161825457
   and 0.1271608291. arellano is unaffected on both panels. Separately and not attributable

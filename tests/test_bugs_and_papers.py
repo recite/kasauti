@@ -19,6 +19,7 @@ from kasauti.archaeology.bugs import (
 from kasauti.archaeology.link import looks_vendored, probe_exposure
 from kasauti.archaeology.papers import (
     Paper,
+    PaperLinkage,
     link_scripts,
     load_dataverse_index,
     repo_id_from_path,
@@ -319,6 +320,53 @@ class TestWindow:
         # Counting them would inflate the numerator with archives that cannot
         # be placed on the timeline at all.
         assert not Paper("x", "zenodo").in_window(date(2018, 8, 17), None)
+
+
+class TestAnalysisLag:
+    def test_a_lag_moves_an_archive_into_the_window(self):
+        # The real sandwich 3.0-2 row. Published six weeks after the fix, so out
+        # of window on publication date -- but an analysis run any earlier than
+        # that was done while the bug was live.
+        paper = Paper("HWVUER", "dataverse", published=date(2022, 7, 28))
+        fixed = date(2022, 6, 15)
+        assert not paper.in_window(fixed, None)
+        assert paper.in_window(fixed, None, lag_years=1)
+
+    def test_the_left_edge_moves_too(self):
+        # A lag shifts the analysis backwards, so it can fall out of the window
+        # on the *early* side once the introducing version is known. Applying
+        # the lag to only one edge would manufacture exposure.
+        paper = Paper("x", "zenodo", published=date(2017, 6, 1))
+        assert paper.in_window(date(2018, 1, 1), date(2016, 1, 1))
+        assert not paper.in_window(date(2018, 1, 1), date(2016, 1, 1), lag_years=2)
+
+    def test_an_undated_archive_stays_out_at_every_lag(self):
+        paper = Paper("x", "zenodo")
+        assert all(not paper.in_window(date(2020, 1, 1), None, lag) for lag in range(4))
+
+    def test_a_leap_day_does_not_raise(self):
+        # 2020-02-29 has no counterpart in 2019; walking back a day is a
+        # rounding choice, losing the archive is a bug.
+        paper = Paper("x", "zenodo", published=date(2020, 2, 29))
+        assert paper.analysed_on(1) == date(2019, 2, 28)
+
+    def test_an_undated_fix_yields_no_curve_rather_than_zeros(self):
+        # Zero would read as "no papers affected"; the truth is "not
+        # determinable", which is the same conflation papers_in_window avoids.
+        linkage = PaperLinkage(
+            [Paper("x", "zenodo", published=date(2020, 1, 1))], [], {}
+        )
+        assert linkage.window_curve(None, None) is None
+
+    def test_the_curve_is_monotone_when_the_window_is_censored(self):
+        # With no left edge, a longer lag can only move archives in, never out.
+        papers = [
+            Paper(str(y), "zenodo", published=date(y, 6, 1)) for y in (2019, 2021, 2023)
+        ]
+        curve = PaperLinkage(papers, [], {}).window_curve(date(2022, 1, 1), None)
+        assert curve is not None
+        counts = [curve[lag] for lag in sorted(curve)]
+        assert counts == sorted(counts)
 
 
 def test_every_verified_record_still_runs_through_the_shared_harness():

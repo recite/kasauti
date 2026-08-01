@@ -76,12 +76,19 @@ class Exposure:
             matching script and which were published while the bug was live.
         papers_censored: Papers that match but whose window is left-censored
             because the bug's introducing version is unknown.
+        papers_by_lag: In-window counts under a range of assumptions about how
+            long before publication the analysis was run. `papers_in_window` is
+            the lag-0 entry and stays the headline, but publication trails the
+            work by one to four years in this literature, so lag 0 is a lower
+            bound rather than a neutral estimate. None when the fix is undated,
+            since then no archive can be placed at any lag.
     """
 
     scripts_calling_function: int | None = None
     scripts_meeting_probe: int | None = None
     papers_in_window: int | None = None
     papers_censored: int | None = None
+    papers_by_lag: dict[int, int] | None = None
 
     @property
     def narrowed(self) -> int | None:
@@ -106,6 +113,7 @@ class Exposure:
             "scripts_meeting_probe": self.scripts_meeting_probe,
             "papers_in_window": self.papers_in_window,
             "papers_censored": self.papers_censored,
+            "papers_by_lag": self.papers_by_lag,
         }
 
 
@@ -400,6 +408,13 @@ def load_bug(directory: Path, root: Path | None = None) -> Bug:
             scripts_meeting_probe=exposure_raw.get("scripts_meeting_probe"),
             papers_in_window=exposure_raw.get("papers_in_window"),
             papers_censored=exposure_raw.get("papers_censored"),
+            # YAML rounds numeric keys to ints already, but a hand-edited record
+            # may write them as strings; normalise so the curve is comparable.
+            papers_by_lag={
+                int(k): int(v)
+                for k, v in (exposure_raw.get("papers_by_lag") or {}).items()
+            }
+            or None,
         ),
         magnitude=raw.get("magnitude"),
         directory=directory,
@@ -494,8 +509,14 @@ def render_index(bugs: list[Bug]) -> str:
         "over source text -- it shows a script *could* have met the triggering",
         "condition, never that it did. Neither number means much alone.",
         "",
-        "| bug | severity | silent | calls | probe | papers | status |",
-        "|---|---|---|---|---|---|---|",
+        "The `papers` column assumes an analysis was run on the day its archive",
+        "was published. It was not: publication trails the work by one to four",
+        "years, so that column is a **lower bound**, not a neutral estimate. The",
+        "`by lag` column shows how the count moves under one, two, and three",
+        "years of that trailing. No single lag is adopted as the answer.",
+        "",
+        "| bug | severity | silent | calls | probe | papers | by lag 1/2/3 | status |",
+        "|---|---|---|---|---|---|---|---|",
     ]
     for bug in bugs:
         exposure = bug.exposure
@@ -505,12 +526,16 @@ def render_index(bugs: list[Bug]) -> str:
             cell = f"{cell}*"
         calls = exposure.scripts_calling_function
         probe = exposure.scripts_meeting_probe
+        curve = exposure.papers_by_lag
+        lag_cell = (
+            "/".join(str(curve.get(lag, 0)) for lag in (1, 2, 3)) if curve else "--"
+        )
         out.append(
             f"| [`{bug.id}`]({bug.id}/) | {bug.severity} | "
             f"{'yes' if bug.silent else 'no'} | "
             f"{'--' if calls is None else calls} | "
             f"{'--' if probe is None else probe} | "
-            f"{cell} | {bug.status} |"
+            f"{cell} | {lag_cell} | {bug.status} |"
         )
 
     if any(b.censored for b in bugs):
@@ -641,6 +666,9 @@ FINDINGS_COLUMNS = [
     "scripts_meeting_probe",
     "papers_linked",
     "papers_in_window",
+    "papers_lag1",
+    "papers_lag2",
+    "papers_lag3",
     "window_censored",
     "magnitude",
 ]
@@ -676,6 +704,10 @@ def findings_rows(bugs: list[Bug]) -> list[dict[str, Any]]:
                 "scripts_meeting_probe": bug.exposure.scripts_meeting_probe,
                 "papers_linked": len(papers) if papers else None,
                 "papers_in_window": bug.exposure.papers_in_window,
+                **{
+                    f"papers_lag{lag}": (bug.exposure.papers_by_lag or {}).get(lag)
+                    for lag in (1, 2, 3)
+                },
                 "window_censored": bug.censored,
                 "magnitude": " ".join((bug.magnitude or "").split()),
             }

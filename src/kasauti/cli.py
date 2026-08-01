@@ -380,9 +380,12 @@ def bug_papers(bug_id: str, bugs_dir: Path, datasets_dir: Path, enrich: bool) ->
         ]
 
     linkage = link_scripts(scripts, load_dataverse_index(datasets_dir))
-    if enrich:
-        for paper in linkage.papers:
-            enrich_paper(paper, ROOT / "data/cache/papers")
+    # The cache is always read; --enrich only decides whether a miss may hit the
+    # network. A Zenodo archive's publication date exists nowhere else, so a run
+    # that skipped the cache silently erased dates an earlier run had resolved --
+    # and erasing a date moves the paper count, which is the study's headline.
+    for paper in linkage.papers:
+        enrich_paper(paper, ROOT / "data/cache/papers", network=enrich)
 
     # With no fix date, no archive can be placed relative to the bug at all.
     # Recording zero would read as "no papers affected" when the truth is "not
@@ -398,6 +401,12 @@ def bug_papers(bug_id: str, bugs_dir: Path, datasets_dir: Path, enrich: bool) ->
     record.exposure.papers_in_window = None if undated_fix else len(in_window)
     if record.censored and not undated_fix:
         record.exposure.papers_censored = len(in_window)
+    # Publication is a late proxy for analysis, so the lag-0 count is a lower
+    # bound rather than a neutral estimate. The curve reports how much the answer
+    # depends on that, instead of picking a lag and presenting it as measured.
+    record.exposure.papers_by_lag = linkage.window_curve(
+        record.fixed_on, record.introduced_on
+    )
     write_bug(advance(record, "LINKED"))
 
     if undated_fix:
@@ -410,6 +419,11 @@ def bug_papers(bug_id: str, bugs_dir: Path, datasets_dir: Path, enrich: bool) ->
         f"{bug_id}: {len(scripts)} script(s) -> {len(linkage.papers)} archive(s), "
         f"{window}"
     )
+    if record.exposure.papers_by_lag:
+        curve = ", ".join(
+            f"{lag}y: {n}" for lag, n in sorted(record.exposure.papers_by_lag.items())
+        )
+        click.echo(f"  by analysis lag ({curve})")
     if linkage.by_source:
         click.echo(f"  by source: {linkage.by_source}")
     if linkage.unresolved:

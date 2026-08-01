@@ -22,6 +22,11 @@ exposure:
   scripts_meeting_probe: 1
   papers_in_window: 0
   papers_censored: 0
+  papers_by_lag:
+    0: 0
+    1: 0
+    2: 0
+    3: 0
 magnitude: 'Verified against sandwich 2.4-0. All six within-equation covariances identical
   to the fixed version at relative difference exactly 0. All four cross-equation covariances
   differ: three flip sign, and y1:x/y2:x is +0.109997852 against a corrected 0.003342536347,

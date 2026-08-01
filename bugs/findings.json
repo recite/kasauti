@@ -12,6 +12,9 @@
       "magnitude": "Verified with lfe 3.1.1 against its own psdef=FALSE, which is the pre-2.5 computation the changelog says the flag restores. On a deterministic panel of 60 rows, 3 firms and 4 years, the smallest eigenvalue of the clustered covariance is -5.256398e-03 unadjusted and numerically zero adjusted. The standard error on x1 goes 0.012410243463 to 0.071774488067 -- the corrected value is 5.78 times the old one -- and its t-statistic goes 83.03 to 14.36. Coefficients are identical at relative difference exactly 0, and the other coefficient's standard error moves by 2.1e-03, so a 5.78-fold error sits in one direction of three while the rest of the table looks untouched. The direction matters as much as the size: the superseded computation is the one reporting the tighter interval.",
       "package": "lfe",
       "papers_in_window": 0,
+      "papers_lag1": 0,
+      "papers_lag2": 0,
+      "papers_lag3": 0,
       "papers_linked": 12,
       "scripts_calling_function": 244,
       "scripts_meeting_probe": 22,
@@ -32,6 +35,9 @@
       "magnitude": "Verified against fixest 0.10.3, the immediately preceding release. Adjacent versions on purpose: 0.10.3 against current 0.14.2 also diverges, but through a second change -- fixest began dropping singleton fixed-effect groups, so it estimates on 70 rows where 0.10.3 uses 71 -- and a comparison spanning four minor versions measures every change at once rather than this one. On a deterministic 48-row panel with four fixed-effect dimensions, the extracted effects fail their own defining identity: added back to Xb they miss the fitted values by 3.366909547 in 0.10.3 against 4.579378239e-06 in 0.10.4. That makes the case self-adjudicating -- no third implementation is needed, because the buggy version contradicts the definition of the quantity it reports. Individual values move correspondingly: the first id effect is 1.278791359 against -1.458587022, a sign change, and three of the four dimensions were pinned to exactly 0 as though that level were the reference, which is precisely what makes the output look correctly normalised. The coefficient on x is identical at 1.006553381002.",
       "package": "fixest",
       "papers_in_window": 0,
+      "papers_lag1": 0,
+      "papers_lag2": 1,
+      "papers_lag3": 2,
       "papers_linked": 2,
       "scripts_calling_function": 28,
       "scripts_meeting_probe": 4,
@@ -52,6 +58,9 @@
       "magnitude": "Verified against sandwich 2.4-0. All six within-equation covariances identical to the fixed version at relative difference exactly 0. All four cross-equation covariances differ: three flip sign, and y1:x/y2:x is +0.109997852 against a corrected 0.003342536347, a factor of 33.",
       "package": "sandwich",
       "papers_in_window": 0,
+      "papers_lag1": 0,
+      "papers_lag2": 0,
+      "papers_lag3": 0,
       "papers_linked": 1,
       "scripts_calling_function": 76,
       "scripts_meeting_probe": 1,
@@ -72,6 +81,9 @@
       "magnitude": "Verified against scikit-learn 1.0.2 on Python 3.10. min and geometric both return 1.25 where 1.1.0 returns 0.0 -- a normalized mutual information above its own upper bound of 1, which cannot be interpreted at all. arithmetic and max return 8.2e-16 and 4.1e-16 against an exact 0.0, which is the same answer to floating-point precision. Two of four normalizers affected.",
       "package": "scikit-learn",
       "papers_in_window": 0,
+      "papers_lag1": 0,
+      "papers_lag2": 0,
+      "papers_lag3": 0,
       "papers_linked": null,
       "scripts_calling_function": 0,
       "scripts_meeting_probe": 0,
@@ -92,6 +104,9 @@
       "magnitude": "Not reproduced. The entry is almost certainly accurate -- \"a counter was initialized in the wrong place\" is too specific to be invented -- but the probe did not find the configuration that triggers it. Most likely candidates not yet tried: a different link or model structure, more than two linear predictors sharing a smooth, or a quantity other than vcov() and edf. Recorded so the next session starts from here rather than re-deriving it.",
       "package": "mgcv",
       "papers_in_window": null,
+      "papers_lag1": null,
+      "papers_lag2": null,
+      "papers_lag3": null,
       "papers_linked": null,
       "scripts_calling_function": null,
       "scripts_meeting_probe": null,
@@ -112,6 +127,9 @@
       "magnitude": "Verified against sandwich 3.0-1. Exactly the two documented conditions move and nothing else: glm HC2 goes 3.257220214218 to 3.241862120725 (4.7e-3 relative) and weighted-lm HC2 goes 0.677590761111 to 0.687773564531 (1.5e-2). The other seven quantities -- HC0 and HC3 under all three fits, and every type on an unweighted lm -- are identical at relative difference exactly 0. Wide and mild, where sandwich 2.5-0 was narrow and severe: a 0.5 to 1.5 percent move in a standard error rarely flips a conclusion, but it is silent.",
       "package": "sandwich",
       "papers_in_window": 0,
+      "papers_lag1": 1,
+      "papers_lag2": 3,
+      "papers_lag3": 3,
       "papers_linked": 3,
       "scripts_calling_function": 37,
       "scripts_meeting_probe": 6,
@@ -132,6 +150,9 @@
       "magnitude": "Verified against plm 1.5-12. With a singleton group, white1 and white2 both raise \"non-conformable arguments\" and produce no value; the fixed version returns 0.1161825457 and 0.1271608291. arellano is unaffected on both panels. Separately and not attributable to this fix, white2 on a balanced panel moves from 0.1161825457 to 0.1271608291 across the decade between the two backends: in 1.5-12 white2 returned exactly what white1 returned, and by 2.6.7 it is a distinct estimator.",
       "package": "plm",
       "papers_in_window": null,
+      "papers_lag1": null,
+      "papers_lag2": null,
+      "papers_lag3": null,
       "papers_linked": 8,
       "scripts_calling_function": 76,
       "scripts_meeting_probe": 11,
@@ -156,10 +177,10 @@
         "doi": "https://doi.org/10.5281/zenodo.10012820",
         "in_window": "False",
         "journal": "",
-        "published": "",
+        "published": "2023-10-17",
         "repo_id": "10012820",
         "source": "zenodo",
-        "title": ""
+        "title": "Drilling Deadlines and Oil and Gas Development"
       }
     ],
     "r/lfe/2.5-multiway-cluster-psdef": [
@@ -197,7 +218,7 @@
         "published": "2022-07-28",
         "repo_id": "HWVUER",
         "source": "dataverse",
-        "title": ""
+        "title": "Do Politically Irrelevant Events Cause Conflict? The Cross-continental Effects of European Professional Football on Protests in Africa"
       },
       {
         "doi": "https://doi.org/10.7910/DVN/IP6B94",
@@ -248,19 +269,19 @@
         "doi": "https://doi.org/10.5281/zenodo.10012820",
         "in_window": "False",
         "journal": "",
-        "published": "",
+        "published": "2023-10-17",
         "repo_id": "10012820",
         "source": "zenodo",
-        "title": ""
+        "title": "Drilling Deadlines and Oil and Gas Development"
       },
       {
         "doi": "https://doi.org/10.5281/zenodo.10145562",
         "in_window": "False",
         "journal": "",
-        "published": "",
+        "published": "2023-11-16",
         "repo_id": "10145562",
         "source": "zenodo",
-        "title": ""
+        "title": "Replication Package for \"A Demand Curve For Disaster Recovery Loans"
       },
       {
         "doi": "https://doi.org/10.5281/zenodo.13765850",
@@ -280,7 +301,7 @@
         "published": "2023-03-02",
         "repo_id": "AAY3TQ",
         "source": "dataverse",
-        "title": ""
+        "title": "Experimental Tests of Rational Inattention"
       },
       {
         "doi": "https://doi.org/10.7910/DVN/HLO4XC",
@@ -289,7 +310,7 @@
         "published": "2022-05-24",
         "repo_id": "HLO4XC",
         "source": "dataverse",
-        "title": ""
+        "title": "'Systemic Discrimination Among Large U.S. Employers'"
       },
       {
         "doi": "https://doi.org/10.7910/DVN/HWVUER",
@@ -298,7 +319,7 @@
         "published": "2022-07-28",
         "repo_id": "HWVUER",
         "source": "dataverse",
-        "title": ""
+        "title": "Do Politically Irrelevant Events Cause Conflict? The Cross-continental Effects of European Professional Football on Protests in Africa"
       },
       {
         "doi": "https://doi.org/10.7910/DVN/Q9TFN2",
@@ -307,7 +328,7 @@
         "published": "2025-02-27",
         "repo_id": "Q9TFN2",
         "source": "dataverse",
-        "title": ""
+        "title": "Selecting Penalty Parameters of High-Dimensional M-Estimators using Bootstrapping after Cross-Validation"
       },
       {
         "doi": "https://doi.org/10.7910/DVN/TIL7KK",
@@ -316,7 +337,7 @@
         "published": "2024-07-12",
         "repo_id": "TIL7KK",
         "source": "dataverse",
-        "title": ""
+        "title": "Dissecting Mechanisms of Financial Crises: Intermediation and Sentiment"
       },
       {
         "doi": "https://doi.org/10.7910/DVN/VELJKG",
@@ -325,25 +346,25 @@
         "published": "2019-08-06",
         "repo_id": "VELJKG",
         "source": "dataverse",
-        "title": ""
+        "title": "'What Do Workplace Wellness Programs Do? Evidence from the Illinois Workplace Wellness Study'"
       },
       {
         "doi": "https://doi.org/10.5281/zenodo.10012820",
         "in_window": "False",
         "journal": "",
-        "published": "",
+        "published": "2023-10-17",
         "repo_id": "10012820",
         "source": "zenodo",
-        "title": ""
+        "title": "Drilling Deadlines and Oil and Gas Development"
       },
       {
         "doi": "https://doi.org/10.5281/zenodo.10145562",
         "in_window": "False",
         "journal": "",
-        "published": "",
+        "published": "2023-11-16",
         "repo_id": "10145562",
         "source": "zenodo",
-        "title": ""
+        "title": "Replication Package for \"A Demand Curve For Disaster Recovery Loans"
       }
     ],
     "r/sandwich/2.5-0-vcovhc-mlm-sign": [

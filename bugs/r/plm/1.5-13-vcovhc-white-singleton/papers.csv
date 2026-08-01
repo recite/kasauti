@@ -1,9 +1,9 @@
 source,repo_id,doi,published,journal,in_window,title
-dataverse,AAY3TQ,https://doi.org/10.7910/DVN/AAY3TQ,2023-03-02,JPE,False,
-dataverse,HLO4XC,https://doi.org/10.7910/DVN/HLO4XC,2022-05-24,qje,False,
-dataverse,HWVUER,https://doi.org/10.7910/DVN/HWVUER,2022-07-28,IOJ,False,
-dataverse,Q9TFN2,https://doi.org/10.7910/DVN/Q9TFN2,2025-02-27,JPE,False,
-dataverse,TIL7KK,https://doi.org/10.7910/DVN/TIL7KK,2024-07-12,JPE,False,
-dataverse,VELJKG,https://doi.org/10.7910/DVN/VELJKG,2019-08-06,qje,False,
-zenodo,10012820,https://doi.org/10.5281/zenodo.10012820,,,False,
-zenodo,10145562,https://doi.org/10.5281/zenodo.10145562,,,False,
+dataverse,AAY3TQ,https://doi.org/10.7910/DVN/AAY3TQ,2023-03-02,JPE,False,Experimental Tests of Rational Inattention
+dataverse,HLO4XC,https://doi.org/10.7910/DVN/HLO4XC,2022-05-24,qje,False,'Systemic Discrimination Among Large U.S. Employers'
+dataverse,HWVUER,https://doi.org/10.7910/DVN/HWVUER,2022-07-28,IOJ,False,Do Politically Irrelevant Events Cause Conflict? The Cross-continental Effects of European Professional Football on Protests in Africa
+dataverse,Q9TFN2,https://doi.org/10.7910/DVN/Q9TFN2,2025-02-27,JPE,False,Selecting Penalty Parameters of High-Dimensional M-Estimators using Bootstrapping after Cross-Validation
+dataverse,TIL7KK,https://doi.org/10.7910/DVN/TIL7KK,2024-07-12,JPE,False,Dissecting Mechanisms of Financial Crises: Intermediation and Sentiment
+dataverse,VELJKG,https://doi.org/10.7910/DVN/VELJKG,2019-08-06,qje,False,'What Do Workplace Wellness Programs Do? Evidence from the Illinois Workplace Wellness Study'
+zenodo,10012820,https://doi.org/10.5281/zenodo.10012820,2023-10-17,,False,Drilling Deadlines and Oil and Gas Development
+zenodo,10145562,https://doi.org/10.5281/zenodo.10145562,2023-11-16,,False,"Replication Package for ""A Demand Curve For Disaster Recovery Loans"

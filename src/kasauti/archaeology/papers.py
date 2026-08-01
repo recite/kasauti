@@ -37,6 +37,18 @@ HARVARD_API = "https://dataverse.harvard.edu/api/datasets/export"
 ZENODO_API = "https://zenodo.org/api/records"
 USER_AGENT = "kasauti/0.1 (research; differential testing of statistical software)"
 
+#: Lags in years between running an analysis and publishing it, reported as a
+#: sensitivity curve. Zero stays the headline everywhere -- it is the only value
+#: that assumes nothing -- but it is a *lower* bound rather than a neutral
+#: estimate, because publication trails the work by one to four years in this
+#: literature and testing publication dates against a fix date therefore
+#: excludes analyses that were genuinely run while the bug was live.
+#:
+#: Measured: `sandwich` 3.0-2 links three dated archives and none is in window at
+#: lag 0, one at lag 1, and all three at lag 2. No single lag is adopted as the
+#: answer; the curve is reported so a reader can apply their own.
+LAGS = (0, 1, 2, 3)
+
 #: Replication archives are titled "Replication Data for: <paper title>" on
 #: Dataverse and "Replication package for: <paper title>" on Zenodo. Stripping
 #: the prefix recovers the paper's own title.
@@ -69,8 +81,40 @@ class Paper:
     title: str | None = None
     author: str | None = None
 
-    def in_window(self, fixed_on: date | None, introduced_on: date | None) -> bool:
-        """Whether this archive was published while the bug was live.
+    def analysed_on(self, lag_years: int = 0) -> date | None:
+        """When the analysis behind this archive was plausibly run.
+
+        Publication is a *late* proxy for analysis. Social science papers appear
+        one to four years after the work is done, so testing the publication date
+        against a fix date systematically excludes analyses that were genuinely
+        run while the bug was live.
+
+        Args:
+            lag_years: Years between running the analysis and publishing it.
+
+        Returns:
+            The shifted date, or None when the archive is undated. February 29
+            is walked back a day rather than raising, which costs nothing and
+            avoids losing an archive to a calendar edge.
+        """
+        if self.published is None:
+            return None
+        if lag_years == 0:
+            return self.published
+        try:
+            return self.published.replace(year=self.published.year - lag_years)
+        except ValueError:
+            return self.published.replace(
+                year=self.published.year - lag_years, day=self.published.day - 1
+            )
+
+    def in_window(
+        self,
+        fixed_on: date | None,
+        introduced_on: date | None,
+        lag_years: int = 0,
+    ) -> bool:
+        """Whether this archive's analysis was run while the bug was live.
 
         Necessary, not sufficient: the analysis also had to meet the bug's
         triggering conditions. An archive with no recorded date is excluded --
@@ -81,15 +125,21 @@ class Paper:
             fixed_on: Release date of the version that fixed the bug.
             introduced_on: Release date of the version that introduced it, or
                 None when the window is left-censored.
+            lag_years: Years to shift the publication date back by, to stand in
+                for when the analysis was actually run. Zero -- the default and
+                the reported headline -- assumes the analysis happened on
+                publication day, which is the most conservative assumption
+                available and therefore a lower bound rather than a neutral one.
 
         Returns:
-            True when the publication date falls inside the window.
+            True when the analysis date falls inside the window.
         """
-        if self.published is None or fixed_on is None:
+        analysed = self.analysed_on(lag_years)
+        if analysed is None or fixed_on is None:
             return False
-        if self.published >= fixed_on:
+        if analysed >= fixed_on:
             return False
-        return introduced_on is None or self.published >= introduced_on
+        return introduced_on is None or analysed >= introduced_on
 
 
 def repo_id_from_path(path: str | Path) -> tuple[str, str] | None:
@@ -182,7 +232,9 @@ def _clean_title(raw: str | None) -> str | None:
     return TITLE_PREFIX.sub("", raw).strip().strip('"') or None
 
 
-def enrich(paper: Paper, cache_dir: Path, timeout: int = 30) -> Paper:
+def enrich(
+    paper: Paper, cache_dir: Path, timeout: int = 30, network: bool = True
+) -> Paper:
     """Fetch title, author, and date for one archive, using a disk cache.
 
     Called only for archives attached to a record being promoted, so the request
@@ -192,9 +244,14 @@ def enrich(paper: Paper, cache_dir: Path, timeout: int = 30) -> Paper:
         paper: The archive to enrich, mutated in place.
         cache_dir: Directory holding cached API responses.
         timeout: Seconds before giving up on a request.
+        network: Whether a cache miss may go to the API. False reads the cache
+            and stops, which is what makes re-running the linkage safe: a
+            Zenodo archive's date exists nowhere but this cache, so a run that
+            skipped it silently erased dates a previous run had resolved, and
+            that erasure changed the paper counts.
 
     Returns:
-        The same `Paper`, with whatever the API supplied.
+        The same `Paper`, with whatever the cache or API supplied.
     """
     cache_dir = Path(cache_dir)
     cache_dir.mkdir(parents=True, exist_ok=True)
@@ -202,6 +259,8 @@ def enrich(paper: Paper, cache_dir: Path, timeout: int = 30) -> Paper:
 
     if cached.exists():
         payload = json.loads(cached.read_text())
+    elif not network:
+        return paper
     else:
         try:
             if paper.source == "zenodo":
@@ -264,18 +323,50 @@ class PaperLinkage:
     by_source: dict[str, int]
 
     def in_window(
-        self, fixed_on: date | None, introduced_on: date | None
+        self,
+        fixed_on: date | None,
+        introduced_on: date | None,
+        lag_years: int = 0,
     ) -> list[Paper]:
-        """Archives published while the bug was live.
+        """Archives whose analysis was plausibly run while the bug was live.
 
         Args:
             fixed_on: Release date of the fix.
             introduced_on: Release date of the introducing version, if known.
+            lag_years: Years between analysis and publication.
 
         Returns:
             The subset inside the window.
         """
-        return [p for p in self.papers if p.in_window(fixed_on, introduced_on)]
+        return [
+            p for p in self.papers if p.in_window(fixed_on, introduced_on, lag_years)
+        ]
+
+    def window_curve(
+        self,
+        fixed_on: date | None,
+        introduced_on: date | None,
+        lags: tuple[int, ...] = LAGS,
+    ) -> dict[int, int] | None:
+        """In-window counts across a range of analysis lags.
+
+        The curve is the honest form of this measurement. A single number
+        pretends to know when the work was done; the curve says how the answer
+        depends on that, and lets a reader pick their own assumption.
+
+        Args:
+            fixed_on: Release date of the fix.
+            introduced_on: Release date of the introducing version, if known.
+            lags: Lags in years to evaluate.
+
+        Returns:
+            Lag to count, or None when the fix is undated -- in which case no
+            archive can be placed on the timeline at any lag, and zero would
+            read as "none affected" rather than "not determinable".
+        """
+        if fixed_on is None:
+            return None
+        return {lag: len(self.in_window(fixed_on, introduced_on, lag)) for lag in lags}
 
     def undated(self) -> list[Paper]:
         """Archives with no publication date.
