@@ -212,6 +212,30 @@ packages rather than pooled over episodes, a cluster bootstrap over packages for
 the documented share, and a package frailty term in the duration model, because a
 frailty leans on a parametric random effect a bootstrap does not.
 
+## Which packages get swept
+
+Sweeping is the expensive stage — a whole release history, one build each — so
+which packages are swept is a sampling decision, and made badly it repeats a
+mistake this project has already made twice (a frame named from memory, a queue
+worked in descending exposure). `kasauti frame sample` draws it **stratified,
+seeded, and recorded**: `data/frame/sample.csv` carries every package's inclusion
+probability and Horvitz–Thompson weight.
+
+Two stratifiers, neither aesthetic:
+
+- **Usage**, with the top 8 a **certainty stratum** taken at probability 1. A
+  study of statistical software that sampled away `MASS` is answering a different
+  question.
+- **Compiled code**, because it is the strongest available predictor of whether a
+  release builds at all. Every wall in `docs/reach.md` but one is a C or C++
+  symbol; `survival` at 12 of 94 reachable is the case that makes this necessary
+  rather than tidy. Sampling without it risks a draw that is mostly unbuildable,
+  and the shortfall would read as a finding about bug rates.
+
+The draw is **26 packages, 1347 releases**, weights 1.0 to 8.7. The three already
+swept (`sandwich`, `lmtest`, `plm`) all fall in the certainty stratum, which a
+test asserts — a design that excluded already-measured packages would waste them.
+
 ## What the first sweep measured
 
 Six packages, 14 probes, **851 release-runs**: 38 episodes, 24 of them closed.

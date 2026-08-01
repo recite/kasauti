@@ -68,6 +68,11 @@ for (field in fields) {
     for (name in unique(names)) out <- c(out, paste(field, name))
   }
 }
+needs <- db$NeedsCompilation
+for (i in seq_along(needs)) {
+  flag <- if (!is.na(needs[[i]]) && needs[[i]] == "yes") "yes" else "no"
+  out <- c(out, paste("NeedsCompilation", db$Package[[i]], flag))
+}
 writeLines(out)
 """
 
@@ -82,6 +87,8 @@ class Usage:
         strong: CRAN packages declaring it in Depends, Imports, or LinkingTo.
         suggests: CRAN packages declaring it in Suggests.
         downloads: Downloads over the recorded window.
+        compiled: Whether it ships code needing compilation -- the strongest
+            available predictor of whether an archived release will build.
     """
 
     package: str
@@ -89,6 +96,7 @@ class Usage:
     strong: int = 0
     suggests: int = 0
     downloads: int = 0
+    compiled: bool = False
 
 
 def fetch_reverse_dependencies(timeout: int = 600) -> dict[str, dict[str, int]]:
@@ -115,10 +123,16 @@ def fetch_reverse_dependencies(timeout: int = 600) -> dict[str, dict[str, int]]:
 
     counts: dict[str, dict[str, int]] = {}
     for line in proc.stdout.splitlines():
-        field, _, name = line.partition(" ")
-        if not name:
+        field, _, rest = line.partition(" ")
+        if not rest:
             continue
-        entry = counts.setdefault(name, {"strong": 0, "suggests": 0})
+        if field == "NeedsCompilation":
+            name, _, flag = rest.partition(" ")
+            counts.setdefault(name, {"strong": 0, "suggests": 0})["compiled"] = int(
+                flag == "yes"
+            )
+            continue
+        entry = counts.setdefault(rest, {"strong": 0, "suggests": 0})
         entry["strong" if field in STRONG else "suggests"] += 1
     return counts
 
@@ -183,12 +197,13 @@ def load_usage(
             strong=reverse.get(package, {}).get("strong", 0),
             suggests=reverse.get(package, {}).get("suggests", 0),
             downloads=downloads.get(package, 0),
+            compiled=bool(reverse.get(package, {}).get("compiled", 0)),
         )
         for package in packages
     }
 
 
-USAGE_COLUMNS = ["package", "corpus", "strong", "suggests", "downloads"]
+USAGE_COLUMNS = ["package", "corpus", "strong", "suggests", "downloads", "compiled"]
 
 
 def write_usage(rows: list[Usage], path: Path) -> None:
@@ -210,6 +225,7 @@ def write_usage(rows: list[Usage], path: Path) -> None:
                     "strong": row.strong,
                     "suggests": row.suggests,
                     "downloads": row.downloads,
+                    "compiled": int(row.compiled),
                 }
             )
 
@@ -231,6 +247,7 @@ def read_usage(path: Path) -> dict[str, Usage]:
                 strong=int(row["strong"]),
                 suggests=int(row["suggests"]),
                 downloads=int(row["downloads"]),
+                compiled=bool(int(row.get("compiled", 0))),
             )
             for row in csv.DictReader(handle)
         }

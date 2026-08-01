@@ -1108,6 +1108,7 @@ def episodes_command(
 RELEASED = [
     "data/frame/packages.csv",
     "data/frame/cran_usage.csv",
+    "data/frame/sample.csv",
     "data/frame/sampling_frame.csv",
     "data/builds.csv",
     "data/changes.csv",
@@ -1345,6 +1346,92 @@ def frame_usage(
     )
     if unknown:
         click.echo(f"  {len(unknown)} package(s) reported no downloads: {unknown[:6]}")
+
+
+@frame.command("sample")
+@click.option(
+    "--usage-csv",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/cran_usage.csv",
+)
+@click.option(
+    "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
+)
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=ROOT / "data/frame/sample.csv"
+)
+@click.option("--per-stratum", default=3, show_default=True)
+@click.option("--seed", default=20260801, show_default=True)
+@click.option(
+    "--max-releases",
+    default=200,
+    show_default=True,
+    help="Skip packages whose history costs more than this to sweep.",
+)
+def frame_sample(
+    usage_csv: Path,
+    cache_root: Path,
+    out: Path,
+    per_stratum: int,
+    seed: int,
+    max_releases: int,
+) -> None:
+    """Draw the stratified sample of packages to sweep.
+
+    Args:
+        usage_csv: Field-neutral usage table.
+        cache_root: Harvest cache, for release counts.
+        out: Destination CSV.
+        per_stratum: How many packages to draw from each non-certainty cell.
+        seed: Random seed, recorded in the output.
+        max_releases: Skip packages whose sweep would cost more than this.
+    """
+    from kasauti.archaeology.harvest import harvest
+    from kasauti.archaeology.sample import Candidate, draw, stratify, write_sample
+    from kasauti.archaeology.usage import read_usage
+
+    table = read_usage(Path(usage_csv))
+    candidates, skipped = [], []
+    for package, entry in table.items():
+        releases = len(harvest(package, "cran", Path(cache_root)).releases)
+        if releases == 0 or releases > max_releases:
+            skipped.append((package, releases))
+            continue
+        candidates.append(
+            Candidate(
+                package=package,
+                corpus=entry.corpus,
+                strong=entry.strong,
+                compiled=entry.compiled,
+                releases=releases,
+            )
+        )
+
+    strata = stratify(candidates, per_stratum=per_stratum)
+    selected = draw(strata, seed=seed)
+    write_sample(selected, Path(out))
+
+    click.echo(f"{'stratum':22} {'size':>5} {'take':>5} {'p':>7}  cost")
+    for stratum in strata:
+        cost = (
+            sum(c.releases for c in stratum.members[: stratum.take])
+            // max(stratum.take, 1)
+            * stratum.take
+        )
+        click.echo(
+            f"{stratum.name:22} {len(stratum.members):5d} {stratum.take:5d} "
+            f"{stratum.probability:7.3f}  ~{cost} release(s)"
+        )
+
+    click.echo(
+        f"\nwrote {out} -- {len(selected)} package(s), seed {seed}, "
+        f"{sum(s.releases for s in selected)} release(s) to sweep"
+    )
+    if skipped:
+        click.echo(
+            f"  {len(skipped)} package(s) outside the design: no dated releases, "
+            f"or more than {max_releases} of them"
+        )
 
 
 @frame.command("packages")

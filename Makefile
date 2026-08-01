@@ -24,6 +24,9 @@ data/frame/call_sites.csv:
 data/frame/package_loads.csv:
 	uv run kasauti frame loads --corpus $(CORPUS)
 
+data/frame/sample.csv: data/frame/cran_usage.csv
+	uv run kasauti frame sample
+
 data/frame/sampling_frame.csv: data/frame/call_sites.csv data/frame/packages.csv
 	uv run kasauti frame build
 
@@ -36,7 +39,7 @@ docs/reach.md: data/builds.csv
 docs/screening.md: $(wildcard screens/*/*.json)
 	uv run kasauti screen report
 
-data: data/frame/cran_usage.csv data/frame/sampling_frame.csv data/episodes.csv \
+data: data/frame/sample.csv data/frame/sampling_frame.csv data/episodes.csv \
       docs/reach.md docs/screening.md manifest  ## Rebuild every derived table
 
 analysis: data/episodes.csv  ## Compute the four estimands
