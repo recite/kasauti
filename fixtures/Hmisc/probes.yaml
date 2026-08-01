@@ -1,0 +1,19 @@
+# A battery: functions chosen by corpus call volume (`kasauti frame battery`),
+# not by a changelog entry, so none declares a `fixed_in` and none is screened.
+#
+# Hmisc has the weakest coverage in the sample at 16%, and the reason is on the
+# record rather than worked around: its three most-called functions are an
+# imputation routine, a wrapper that fits over the imputations, and a reshaping
+# helper. What is probed here is the weighted-estimator family -- lower in the
+# battery, but the only Hmisc functions in it that produce an estimate.
+
+package: Hmisc
+
+probes:
+  - entry: Hmisc/wtd
+    script: wtd_stats.R
+    functions: [wtd.mean, wtd.var, wtd.quantile]
+    conditions: >
+      Battery probe. Three estimators sharing one weighting convention, probed
+      together so a change to that convention shows up as a signature rather
+      than as one isolated move.
