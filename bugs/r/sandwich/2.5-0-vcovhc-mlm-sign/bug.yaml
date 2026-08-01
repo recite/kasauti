@@ -18,7 +18,7 @@ silent: true
 severity: HIGH
 status: VERIFIED
 exposure:
-  scripts_calling_function: 76
+  scripts_calling_function: 61
   scripts_meeting_probe: 1
   papers_in_window: 0
   papers_censored: 0

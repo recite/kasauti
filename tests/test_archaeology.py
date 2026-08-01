@@ -486,3 +486,72 @@ class TestClassification:
         stats = agreement(entries, cache)
         assert stats.judged == 1
         assert stats.rules_disagreed == 1
+
+
+class TestContestedNames:
+    def test_a_contested_name_needs_the_owner_loaded(self):
+        # `vcovHC` is exported by both sandwich and plm. Counting every caller
+        # against a sandwich bug counts plm's users too.
+        entries = [Entry("sandwich", "2.5-0", None, "vcovHC was incorrect", 0)]
+        call_index = {"vcovHC": {"/a/one.R", "/b/two.R"}}
+        loads = {"/a": {"sandwich"}, "/b": {"plm"}}
+        bugs, _ = build_bugs(
+            entries,
+            {"sandwich": {"vcovHC"}},
+            call_index,
+            contested={"vcovHC"},
+            loads=loads,
+        )
+        assert bugs[0].exposed_scripts["vcovHC"] == {"/a/one.R"}
+
+    def test_an_uncontested_name_is_untouched_by_the_rule(self):
+        # `felm` belongs to nobody but lfe, so requiring a load settles no
+        # question and costs real exposure -- 116 of 245 felm callers have no
+        # library(lfe) in the same file, because archives are multi-file.
+        entries = [Entry("lfe", "2.5", None, "felm was incorrect", 0)]
+        bugs, _ = build_bugs(
+            entries,
+            {"lfe": {"felm"}},
+            {"felm": {"/a/one.R", "/b/two.R"}},
+            contested=set(),
+            loads={"/a": {"lfe"}},
+        )
+        assert bugs[0].total_exposed == 2
+
+    def test_evidence_is_archive_level_not_file_level(self):
+        # The master script loads the package; the analysis script calls it.
+        entries = [Entry("sandwich", "2.5-0", None, "vcovHC was incorrect", 0)]
+        bugs, _ = build_bugs(
+            entries,
+            {"sandwich": {"vcovHC"}},
+            {"vcovHC": {"/archive/analysis.R"}},
+            contested={"vcovHC"},
+            loads={"/archive": {"sandwich"}},
+        )
+        assert bugs[0].total_exposed == 1
+
+    def test_a_qualified_call_counts_even_without_a_load(self):
+        # `sandwich::vcovHC` names its owner outright; no further evidence needed.
+        entries = [Entry("sandwich", "2.5-0", None, "vcovHC was incorrect", 0)]
+        bugs, _ = build_bugs(
+            entries,
+            {"sandwich": {"vcovHC"}},
+            {"vcovHC": {"/b/two.R"}},
+            qualified={("vcovHC", "sandwich"): {"/b/two.R"}},
+            contested={"vcovHC"},
+            loads={"/b": {"plm"}},
+        )
+        assert bugs[0].total_exposed == 1
+
+    def test_a_missing_index_degrades_to_over_counting_not_to_zero(self):
+        # Reporting zero exposure everywhere because an index was never built
+        # would be a silent, catastrophic wrong answer.
+        entries = [Entry("sandwich", "2.5-0", None, "vcovHC was incorrect", 0)]
+        bugs, _ = build_bugs(
+            entries,
+            {"sandwich": {"vcovHC"}},
+            {"vcovHC": {"/a/one.R", "/b/two.R"}},
+            contested={"vcovHC"},
+            loads={},
+        )
+        assert bugs[0].total_exposed == 2

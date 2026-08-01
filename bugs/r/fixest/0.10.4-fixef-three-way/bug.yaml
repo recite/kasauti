@@ -13,13 +13,13 @@ conditions: 'Three or more fixed-effect dimensions, and a fixed-effect structure
   must choose are not uniquely determined. The regression coefficients are unaffected: the
   defect is in `fixef()`, which runs after the fixed effects have been swept out, so it reaches
   only analyses that extract, report, or plot the fixed effects themselves.'
-condition_probe: (?s)\A(?=[\s\S]*(?:library\s*\(\s*[\"']?fixest|require\s*\(\s*[\"']?fixest|fixest::))(?=[\s\S]*fixef\s*\()
+condition_probe: fixef\s*\(
 category: RESULT_CHANGING
 silent: true
 severity: HIGH
 status: VERIFIED
 exposure:
-  scripts_calling_function: 28
+  scripts_calling_function: 4
   scripts_meeting_probe: 4
   papers_in_window: 0
   papers_censored: 0

@@ -26,7 +26,7 @@
     {
       "bug_id": "r/fixest/0.10.4-fixef-three-way",
       "category": "RESULT_CHANGING",
-      "condition_probe": "(?s)\\A(?=[\\s\\S]*(?:library\\s*\\(\\s*[\\\"']?fixest|require\\s*\\(\\s*[\\\"']?fixest|fixest::))(?=[\\s\\S]*fixef\\s*\\()",
+      "condition_probe": "fixef\\s*\\(",
       "conditions": "Three or more fixed-effect dimensions, and a fixed-effect structure fixest calls \"not regular\" -- the dimensions are not fully connected, so the reference levels the solver must choose are not uniquely determined. The regression coefficients are unaffected: the defect is in `fixef()`, which runs after the fixed effects have been swept out, so it reaches only analyses that extract, report, or plot the fixed effects themselves.",
       "fixed_in": "0.10.4",
       "fixed_on": "2022-03-31",
@@ -39,7 +39,7 @@
       "papers_lag2": 1,
       "papers_lag3": 2,
       "papers_linked": 2,
-      "scripts_calling_function": 28,
+      "scripts_calling_function": 4,
       "scripts_meeting_probe": 4,
       "severity": "HIGH",
       "silent": true,
@@ -62,7 +62,7 @@
       "papers_lag2": 0,
       "papers_lag3": 0,
       "papers_linked": 1,
-      "scripts_calling_function": 76,
+      "scripts_calling_function": 61,
       "scripts_meeting_probe": 1,
       "severity": "HIGH",
       "silent": true,
@@ -153,9 +153,9 @@
       "papers_lag1": null,
       "papers_lag2": null,
       "papers_lag3": null,
-      "papers_linked": 8,
-      "scripts_calling_function": 76,
-      "scripts_meeting_probe": 11,
+      "papers_linked": 3,
+      "scripts_calling_function": 24,
+      "scripts_meeting_probe": 4,
       "severity": "LOW",
       "silent": false,
       "status": "VERIFIED",
@@ -295,24 +295,6 @@
     ],
     "r/plm/1.5-13-vcovhc-white-singleton": [
       {
-        "doi": "https://doi.org/10.7910/DVN/AAY3TQ",
-        "in_window": "False",
-        "journal": "JPE",
-        "published": "2023-03-02",
-        "repo_id": "AAY3TQ",
-        "source": "dataverse",
-        "title": "Experimental Tests of Rational Inattention"
-      },
-      {
-        "doi": "https://doi.org/10.7910/DVN/HLO4XC",
-        "in_window": "False",
-        "journal": "qje",
-        "published": "2022-05-24",
-        "repo_id": "HLO4XC",
-        "source": "dataverse",
-        "title": "'Systemic Discrimination Among Large U.S. Employers'"
-      },
-      {
         "doi": "https://doi.org/10.7910/DVN/HWVUER",
         "in_window": "False",
         "journal": "IOJ",
@@ -320,33 +302,6 @@
         "repo_id": "HWVUER",
         "source": "dataverse",
         "title": "Do Politically Irrelevant Events Cause Conflict? The Cross-continental Effects of European Professional Football on Protests in Africa"
-      },
-      {
-        "doi": "https://doi.org/10.7910/DVN/Q9TFN2",
-        "in_window": "False",
-        "journal": "JPE",
-        "published": "2025-02-27",
-        "repo_id": "Q9TFN2",
-        "source": "dataverse",
-        "title": "Selecting Penalty Parameters of High-Dimensional M-Estimators using Bootstrapping after Cross-Validation"
-      },
-      {
-        "doi": "https://doi.org/10.7910/DVN/TIL7KK",
-        "in_window": "False",
-        "journal": "JPE",
-        "published": "2024-07-12",
-        "repo_id": "TIL7KK",
-        "source": "dataverse",
-        "title": "Dissecting Mechanisms of Financial Crises: Intermediation and Sentiment"
-      },
-      {
-        "doi": "https://doi.org/10.7910/DVN/VELJKG",
-        "in_window": "False",
-        "journal": "qje",
-        "published": "2019-08-06",
-        "repo_id": "VELJKG",
-        "source": "dataverse",
-        "title": "'What Do Workplace Wellness Programs Do? Evidence from the Illinois Workplace Wellness Study'"
       },
       {
         "doi": "https://doi.org/10.5281/zenodo.10012820",

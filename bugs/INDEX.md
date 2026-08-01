@@ -17,12 +17,12 @@ years of that trailing. No single lag is adopted as the answer.
 | bug | severity | silent | calls | probe | papers | by lag 1/2/3 | status |
 |---|---|---|---|---|---|---|---|
 | [`r/lfe/2.5-multiway-cluster-psdef`](r/lfe/2.5-multiway-cluster-psdef/) | HIGH | yes | 244 | 22 | 0* | 0/0/0 | VERIFIED |
-| [`r/fixest/0.10.4-fixef-three-way`](r/fixest/0.10.4-fixef-three-way/) | HIGH | yes | 28 | 4 | 0* | 0/1/2 | VERIFIED |
-| [`r/sandwich/2.5-0-vcovhc-mlm-sign`](r/sandwich/2.5-0-vcovhc-mlm-sign/) | HIGH | yes | 76 | 1 | 0* | 0/0/0 | VERIFIED |
+| [`r/fixest/0.10.4-fixef-three-way`](r/fixest/0.10.4-fixef-three-way/) | HIGH | yes | 4 | 4 | 0* | 0/1/2 | VERIFIED |
+| [`r/sandwich/2.5-0-vcovhc-mlm-sign`](r/sandwich/2.5-0-vcovhc-mlm-sign/) | HIGH | yes | 61 | 1 | 0* | 0/0/0 | VERIFIED |
 | [`python/scikit-learn/1.1.0-nmi-unbounded`](python/scikit-learn/1.1.0-nmi-unbounded/) | HIGH | yes | 0 | 0 | 0* | 0/0/0 | VERIFIED |
 | [`r/mgcv/1.9-0-multinom-variance`](r/mgcv/1.9-0-multinom-variance/) | HIGH | yes | -- | -- | -- | -- | NOT_REPRODUCED |
 | [`r/sandwich/3.0-2-vcovcl-hc2-glm`](r/sandwich/3.0-2-vcovcl-hc2-glm/) | MEDIUM | yes | 37 | 6 | 0* | 1/3/3 | VERIFIED |
-| [`r/plm/1.5-13-vcovhc-white-singleton`](r/plm/1.5-13-vcovhc-white-singleton/) | LOW | no | 76 | 11 | -- | -- | VERIFIED |
+| [`r/plm/1.5-13-vcovhc-white-singleton`](r/plm/1.5-13-vcovhc-white-singleton/) | LOW | no | 24 | 4 | -- | -- | VERIFIED |
 
 `*` marks a left-censored window: the version that introduced the
 defect is not recorded, so the paper count covers everything published

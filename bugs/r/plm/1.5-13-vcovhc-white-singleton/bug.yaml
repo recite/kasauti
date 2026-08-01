@@ -18,8 +18,8 @@ silent: false
 severity: LOW
 status: VERIFIED
 exposure:
-  scripts_calling_function: 76
-  scripts_meeting_probe: 11
+  scripts_calling_function: 24
+  scripts_meeting_probe: 4
   papers_in_window: null
   papers_censored: 0
   papers_by_lag: null

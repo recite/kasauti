@@ -77,11 +77,18 @@ sharing a name. The probe now requires the script to load `fixest` at all:
 So the honest count is zero, and the study's apparent first affected paper was an
 `lm` model calling a mixed-models function.
 
-This generalises: **21.8% of exposed entries (84 of 386) rest on at least one name
-exported by two or more frame packages** and not already handled — `coordinates`
-(raster/sp, 219 scripts), `vcovHC` (plm/sandwich, 76), `Surv` (rms/rstanarm/
-survival, 51), `lmer` (lme4/lmerTest, 36). Some are benign, because one package
-re-exports another's function and the call really does reach the owner. Some, like
-`fixef`, are not. Requiring the owning package to be loaded is the rule that
-separates them, and applying it across the funnel rather than one record at a time
-is the outstanding work this record documents.
+This generalised, and has since been applied across the whole funnel rather than
+in this one probe. 21.8% of exposed entries rested on a name two or more frame
+packages export — `coordinates` (raster/sp), `vcovHC` (plm/sandwich), `Surv`
+(rms/rstanarm/survival), `lmer` (lme4/lmerTest). A contested name now counts only
+where the archive loads its owner, and the general rule reproduces this record's
+hand-written probe exactly: 4 scripts, without the probe having to name `fixest`
+itself. Its `condition_probe` is back to plain `fixef\s*\(`.
+
+Two things that took a wrong turn first, both recorded because they are easy to
+repeat. The rule was applied to *every* name before it was restricted to
+contested ones, which cut `felm` from 244 callers to 129 — `felm` belongs to
+nobody but `lfe`, so the load settles no question and only discards exposure. And
+the evidence was taken file-by-file before it was rolled up to the archive: 116 of
+the 245 scripts calling `felm` have no `library(lfe)` above them, because
+replication archives are multi-file and the master script does the loading.

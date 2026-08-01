@@ -209,3 +209,34 @@ def test_shadowed_and_non_computing_do_not_overlap():
     # A name in both would be dropped twice over, and the shadow count would be
     # misleading.
     assert not (SHADOWED & NON_COMPUTING)
+
+
+class TestPackageLoads:
+    def test_r_load_forms(self):
+        from kasauti.archaeology.loads import loads_in
+
+        source = (
+            'library(fixest)\nrequire("dplyr")\n'
+            "suppressMessages(library(lme4))\nx <- MASS::ginv(m)\n"
+        )
+        assert loads_in(source, "R") == {"fixest", "dplyr", "lme4", "MASS"}
+
+    def test_python_load_forms_record_the_distribution(self):
+        from kasauti.archaeology.loads import loads_in
+
+        source = (
+            "import numpy as np\nfrom statsmodels.api import OLS\n"
+            "import scipy.stats\nfrom sklearn.linear_model import LogisticRegression\n"
+        )
+        assert loads_in(source, "Python") == {
+            "numpy",
+            "statsmodels",
+            "scipy",
+            "sklearn",
+        }
+
+    def test_loads_roll_up_to_the_archive(self):
+        from kasauti.archaeology.loads import by_archive
+
+        rolled = by_archive({"/a/master.R": {"lfe"}, "/a/analysis.R": set()})
+        assert rolled["/a"] == {"lfe"}

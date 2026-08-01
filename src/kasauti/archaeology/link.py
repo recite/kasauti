@@ -197,6 +197,24 @@ def affected_functions(
     return sorted(found)
 
 
+def _loading(scripts: set[str], package: str, loads: dict[str, set[str]]) -> set[str]:
+    """Keep only scripts whose archive loads a package.
+
+    Args:
+        scripts: Candidate script paths.
+        package: Package that must be loaded.
+        loads: Directory to packages loaded anywhere inside it.
+
+    Returns:
+        The surviving subset. Empty `loads` keeps everything, so a missing
+        index degrades to the old over-counting behaviour rather than silently
+        reporting zero exposure everywhere.
+    """
+    if not loads:
+        return scripts
+    return {p for p in scripts if package in loads.get(str(Path(p).parent), ())}
+
+
 def build_bugs(
     entries: list[Entry],
     package_exports: dict[str, set[str]],
@@ -204,6 +222,8 @@ def build_bugs(
     qualified: dict[tuple[str, str], set[str]] | None = None,
     shadowed: set[str] | None = None,
     excluded: set[str] | None = None,
+    contested: set[str] | None = None,
+    loads: dict[str, set[str]] | None = None,
 ) -> tuple[list[Bug], Funnel]:
     """Turn parsed entries into ranked bugs with corpus exposure.
 
@@ -219,6 +239,19 @@ def build_bugs(
             `head`, `crossprod`, and `rowMeans` -- names every script uses and
             almost none of them means Matrix's.
         excluded: Non-computing names to drop, defaulting to R's.
+        contested: Names more than one frame package exports. `fixef` belongs to
+            six -- brms, fixest, lme4, nlme, plm, rstanarm -- and of the 28
+            corpus scripts calling it, twelve load nlme, six lme4, and two
+            fixest. Neither `shadowed` nor `excluded` reaches these: base R does
+            not export `fixef`, and none of the six owners is non-inferential.
+            It is two *computing* packages sharing a name.
+        loads: Directory to the packages loaded anywhere inside it. A contested
+            name counts only where the owning package is loaded, which is the
+            evidence the call index cannot supply -- `library(fixest)` and
+            `library(dplyr)` are both just a call to `library` there. Rolled up
+            to the archive because replication archives are multi-file: a master
+            script loads the packages and sources the analysis, so requiring the
+            load in the *same file* would discard real exposure.
 
     Returns:
         A `(bugs, funnel)` pair, bugs sorted by exposure descending.
@@ -226,6 +259,8 @@ def build_bugs(
     funnel = Funnel(entries=len(entries))
     qualified = qualified or {}
     shadowed = shadowed or set()
+    contested = contested or set()
+    loads = loads or {}
     bugs = []
     for entry in entries:
         if not is_result_changing(entry.text):
@@ -240,11 +275,21 @@ def build_bugs(
 
         exposed = {}
         for function in functions:
-            scripts = (
-                qualified.get((function, entry.package), set())
-                if function in shadowed
-                else call_index.get(function, set())
-            )
+            if function in shadowed:
+                # Base R owns it; only a namespace-qualified call means this
+                # package, since nobody writes `library(base)`.
+                scripts = qualified.get((function, entry.package), set())
+            elif function in contested:
+                # Two computing packages own it. Qualification is too strict --
+                # most calls are bare -- so the evidence is whether the archive
+                # loaded this package at all. Applied to contested names only:
+                # `felm` belongs to nobody else, and requiring a load would drop
+                # a third of its callers for no gain.
+                scripts = _loading(
+                    call_index.get(function, set()), entry.package, loads
+                ) | qualified.get((function, entry.package), set())
+            else:
+                scripts = call_index.get(function, set())
             if scripts:
                 exposed[function] = scripts
         if not exposed:
@@ -350,6 +395,9 @@ def probe_exposure(
     functions: list[str],
     probe: str | None,
     call_index: dict[str, set[str]],
+    package: str | None = None,
+    loads: dict[str, set[str]] | None = None,
+    contested: set[str] | None = None,
 ) -> ProbeResult:
     """Narrow a bug's exposure by its triggering conditions.
 
@@ -360,6 +408,11 @@ def probe_exposure(
             reported as matching -- the honest reading of "we could not narrow
             this", not a claim that all of them qualify.
         call_index: Function name to the scripts calling it.
+        package: The package the bug is in.
+        loads: Directory to the packages loaded anywhere inside it.
+        contested: Names more than one frame package exports. Only these are
+            filtered by `loads`; for a name with a single owner the load adds no
+            information and costs real exposure.
 
     Returns:
         The probe result.
@@ -367,9 +420,17 @@ def probe_exposure(
     Raises:
         re.error: If the probe is not a valid regular expression.
     """
+    # `vcovHC` is exported by both sandwich and plm, so counting every caller
+    # against a sandwich bug counts plm's users too: 76 callers, of which 61
+    # come from an archive that loads sandwich and 24 from one that loads plm.
+    # Contested names only -- `felm` belongs to nobody else, and requiring a
+    # load would discard a third of its callers to settle a question nobody asked.
     calling: set[str] = set()
     for function in functions:
-        calling |= call_index.get(function, set())
+        scripts = call_index.get(function, set())
+        if package and loads and function in (contested or set()):
+            scripts = _loading(scripts, package, loads)
+        calling |= scripts
 
     vendored = sorted(p for p in calling if looks_vendored(p))
     calling_sorted = sorted(p for p in calling if not looks_vendored(p))

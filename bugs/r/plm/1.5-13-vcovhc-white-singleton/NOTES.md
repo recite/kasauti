@@ -4,9 +4,11 @@
 > group has only 1 element.
 > — plm 1.5-13, undated
 
-This entry was picked off the top of the classification shortlist: 76 corpus
-scripts call `vcovHC`, and a panel with a singleton group is about as ordinary a
-condition as this record contains — any unit that enters and leaves within a
+This entry was picked off the top of the classification shortlist when `vcovHC`
+appeared to have 76 corpus callers. It has 24: `vcovHC` is exported by both `plm`
+and `sandwich`, and most of those callers are in archives that load `sandwich`
+alone. A panel with a singleton group is still about as ordinary a condition as
+this record contains — any unit that enters and leaves within a
 period, or is cut to one usable row by missingness, produces one. It was
 classified `RESULT_CHANGING` with `silent: true`.
 

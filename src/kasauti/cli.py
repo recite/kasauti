@@ -235,6 +235,9 @@ def bug_probe(bug_id: str, bugs_dir: Path, call_sites: Path) -> None:
         record.functions,
         record.condition_probe,
         load_call_index(call_sites, language=language)[0],
+        package=record.package,
+        loads=archive_loads(LOADS_CSV),
+        contested=contested_names(cache_root=ROOT / "data/cache"),
     )
 
     write_exposure(result, record.path / "exposure.csv")
@@ -559,6 +562,38 @@ def frame_packages(views_cache, usage_csv, out, min_usage) -> None:
     click.echo(f"  written to {out}")
 
 
+#: Where the corpus of replication scripts lives. Outside this repository
+#: because it is a gigabyte, and it belongs to softverse.
+CORPUS = Path.home() / "Documents/GitHub/softverse/outputs/scripts"
+
+
+@frame.command("loads")
+@click.option("--corpus", type=click.Path(path_type=Path), default=CORPUS)
+@click.option(
+    "--out",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/package_loads.csv",
+)
+def frame_loads(corpus, out) -> None:
+    """Record which packages each corpus script loads."""
+    from kasauti.archaeology.loads import scan, write_loads
+
+    corpus = Path(corpus)
+    if not corpus.exists():
+        click.echo(f"no corpus at {corpus}", err=True)
+        sys.exit(1)
+
+    index: dict[str, set[str]] = {}
+    for language in ("R", "Python"):
+        found = scan([corpus], language)
+        index.update(found)
+        loading = sum(1 for packages in found.values() if packages)
+        click.echo(f"{language:7s} {len(found):6d} scripts, {loading} load a package")
+
+    rows = write_loads(index, Path(out))
+    click.echo(f"{rows} script-package pairs -> {out}")
+
+
 @frame.command("harvest")
 @click.option(
     "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
@@ -650,11 +685,54 @@ def frame_build(call_sites, extraction, cache_root, out_csv, out_md) -> None:
 PYTHON_PACKAGES = ["statsmodels", "scikit-learn", "scipy", "numpy"]
 
 
+#: Which packages each corpus script loads, built by `kasauti frame loads`.
+LOADS_CSV = ROOT / "data/frame/package_loads.csv"
+
+
+def archive_loads(path: Path = LOADS_CSV) -> dict[str, set[str]]:
+    """Packages loaded anywhere inside each corpus archive.
+
+    Args:
+        path: The index written by `kasauti frame loads`.
+
+    Returns:
+        Directory to packages, or empty when the index has not been built --
+        in which case the contested-name rule simply does not fire, which is
+        the old over-counting behaviour rather than a silent zero.
+    """
+    from kasauti.archaeology.loads import by_archive, read_loads
+
+    return by_archive(read_loads(path)) if Path(path).exists() else {}
+
+
+def contested_names(cache_root: Path) -> set[str]:
+    """Names more than one frame package exports.
+
+    Computed from the export lists rather than listed, the same way the base-R
+    and non-inferential shadows are.
+
+    Args:
+        cache_root: Harvest cache holding each package's exports.
+
+    Returns:
+        Contested names, excluding those base R already shadows.
+    """
+    from kasauti.archaeology.link import load_exports
+
+    exports = load_exports(classify_packages() + BASE_IN_FRAME, cache_root)
+    owners: dict[str, int] = {}
+    for names in exports.values():
+        for name in names:
+            owners[name] = owners.get(name, 0) + 1
+    return {n for n, count in owners.items() if count > 1} - base_shadow(cache_root)
+
+
 def _exposed_entries(
     cache_root: Path,
     call_sites: Path,
     packages: list[str] | None = None,
     language: str = "R",
+    loads_csv: Path = LOADS_CSV,
 ):
     """Load the entries that have corpus exposure, with their exposure counts.
 
@@ -665,6 +743,8 @@ def _exposed_entries(
         language: `R` or `Python`. The two are mined separately because their
             call indexes are separate: matching a Python callee named `index`
             against R's export list attributes a pandas method to `plm`.
+        loads_csv: Per-script package loads, used to settle names more than one
+            frame package exports.
 
     Returns:
         An `(entries, exposure, per_package, funnel)` tuple. `exposure` maps
@@ -689,6 +769,14 @@ def _exposed_entries(
     if language == "R":
         exports = load_exports(packages + BASE_IN_FRAME, cache_root)
         shadowed, excluded = base_shadow(cache_root), None
+        # A name more than one frame package exports needs the owner to have
+        # been loaded.
+        owners: dict[str, int] = {}
+        for names in exports.values():
+            for name in names:
+                owners[name] = owners.get(name, 0) + 1
+        contested = {n for n, count in owners.items() if count > 1} - shadowed
+        loads = archive_loads(loads_csv)
     else:
         # Python's equivalent of NAMESPACE is the imported module itself, so
         # exports come from the harvest rather than from a second source. There
@@ -696,9 +784,17 @@ def _exposed_entries(
         # builtin does not import it, so it never reaches the call index.
         exports = {p: set(harvest(p, "pypi", cache_root).exports) for p in packages}
         shadowed, excluded = set(), NON_COMPUTING_PYTHON
+        contested, loads = set(), {}
 
     bugs, funnel = build_bugs(
-        entries, exports, index, qualified, shadowed=shadowed, excluded=excluded
+        entries,
+        exports,
+        index,
+        qualified,
+        shadowed=shadowed,
+        excluded=excluded,
+        contested=contested,
+        loads=loads,
     )
     exposure = {b.entry.entry_id: b.total_exposed for b in bugs}
     exposed = [b.entry for b in bugs]
