@@ -236,6 +236,36 @@ The draw is **26 packages, 1347 releases**, weights 1.0 to 8.7. The three alread
 swept (`sandwich`, `lmtest`, `plm`) all fall in the certainty stratum, which a
 test asserts — a design that excluded already-measured packages would waste them.
 
+## Which functions get probed
+
+A sweep only sees changes in code it exercises, so the battery *is* the coverage
+statement. Choosing those functions by hand would put back the judgment the frame
+was rebuilt to remove — so a package's battery is its **most-called exported
+functions in the corpus**, read off `sampling_frame.csv`, with the same three
+filters that were already load-bearing elsewhere:
+
+- **Base R's names are base R's.** `Matrix` exports `length`, `names`, `rep`, and
+  `is.na`; the frame credits it with 3,268 scripts calling `length`. Unfiltered,
+  its battery would be four base-R primitives and nothing else.
+- **Non-computing names are not procedures.** Extraction and formatting cannot
+  move an estimate.
+- **A contested name is apportioned.** `vcovHC` is exported by `sandwich` *and*
+  `plm`, and the frame credits its 76 scripts to each — so `plm`'s battery led
+  with a function whose corpus reach is mostly somebody else's. Dropping contested
+  names instead cost `lme4` its `lmer`, the one function anyone sweeps `lme4` for,
+  because `lmerTest` re-exports it. Splitting the count in proportion to owners'
+  corpus usage fixes both: `plm` gets 23 of `vcovHC` and falls below its own
+  `plm()`; `lme4` keeps `lmer`. It is an apportionment, not an attribution, and
+  every contested name is written out flagged.
+
+Coverage is then a number rather than a hope: `lfe` 80% (`felm` alone is 245
+scripts), `lmtest` 66% (`coeftest`, 120), `sandwich` 56%, `Hmisc` **16%** — and
+that last one is the point of publishing it.
+
+Two sampled packages yield no probe at all (`erer`, `mapdata`). A package the
+corpus never calls for computation cannot be swept for one; that is the frame
+correcting itself, not a gap to patch by hand.
+
 ## What the first sweep measured
 
 Six packages, 14 probes, **851 release-runs**: 38 episodes, 24 of them closed.

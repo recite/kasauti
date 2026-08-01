@@ -30,6 +30,9 @@ data/frame/sample.csv: data/frame/cran_usage.csv
 data/frame/sampling_frame.csv: data/frame/call_sites.csv data/frame/packages.csv
 	uv run kasauti frame build
 
+data/frame/batteries.csv: data/frame/sample.csv data/frame/sampling_frame.csv
+	uv run kasauti frame battery
+
 data/episodes.csv data/changes.csv: $(wildcard sweeps/*/*.json)
 	uv run kasauti episodes
 
@@ -39,7 +42,7 @@ docs/reach.md: data/builds.csv
 docs/screening.md: $(wildcard screens/*/*.json)
 	uv run kasauti screen report
 
-data: data/frame/sample.csv data/frame/sampling_frame.csv data/episodes.csv \
+data: data/frame/batteries.csv data/episodes.csv \
       docs/reach.md docs/screening.md manifest  ## Rebuild every derived table
 
 analysis: data/episodes.csv  ## Compute the four estimands

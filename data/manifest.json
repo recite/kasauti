@@ -17,6 +17,12 @@
     "rows": 38,
     "sha256": "14789ee444ce1213ee82288653c6eb10e87696f4e275d4d62aaf3e401a30307b"
   },
+  "data/frame/batteries.csv": {
+    "bytes": 20340,
+    "present": true,
+    "rows": 381,
+    "sha256": "a9637d7095aaeb96a364dae5b11cfacd3d9059fa0ef138981538b023fbf08ec7"
+  },
   "data/frame/cran_usage.csv": {
     "bytes": 3471,
     "present": true,

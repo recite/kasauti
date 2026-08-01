@@ -1109,6 +1109,7 @@ RELEASED = [
     "data/frame/packages.csv",
     "data/frame/cran_usage.csv",
     "data/frame/sample.csv",
+    "data/frame/batteries.csv",
     "data/frame/sampling_frame.csv",
     "data/builds.csv",
     "data/changes.csv",
@@ -1431,6 +1432,85 @@ def frame_sample(
         click.echo(
             f"  {len(skipped)} package(s) outside the design: no dated releases, "
             f"or more than {max_releases} of them"
+        )
+
+
+@frame.command("battery")
+@click.argument("packages", nargs=-1)
+@click.option(
+    "--sample-csv",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/sample.csv",
+)
+@click.option(
+    "--frame-csv",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/sampling_frame.csv",
+)
+@click.option(
+    "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
+)
+@click.option(
+    "--out",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/batteries.csv",
+)
+@click.option("--size", default=3, show_default=True, help="Probes per package.")
+def frame_battery(
+    packages: tuple[str, ...],
+    sample_csv: Path,
+    frame_csv: Path,
+    cache_root: Path,
+    out: Path,
+    size: int,
+) -> None:
+    """Propose which functions to probe, from what the corpus calls.
+
+    Args:
+        packages: Packages to build batteries for. Defaults to the drawn sample.
+        sample_csv: The stratified sample.
+        frame_csv: Corpus-ranked procedure frame.
+        cache_root: Harvest cache, for the shadow set.
+        out: Destination CSV.
+        size: How many functions to probe per package.
+    """
+    from kasauti.archaeology.battery import build as build_battery
+    from kasauti.archaeology.battery import read_frame, write_batteries
+    from kasauti.archaeology.frame import NON_COMPUTING
+    from kasauti.archaeology.sample import read_sample
+    from kasauti.archaeology.taskviews import load_usage
+
+    names = list(packages) or [s.package for s in read_sample(Path(sample_csv))]
+    corpus = read_frame(Path(frame_csv))
+    shadowed = base_shadow(Path(cache_root))
+
+    usage = load_usage(ROOT / "data/frame/package_usage.csv")
+    batteries = [
+        build_battery(name, corpus, shadowed, NON_COMPUTING, usage=usage, size=size)
+        for name in names
+    ]
+    write_batteries(batteries, Path(out))
+
+    click.echo(f"{'package':16} {'coverage':>9} {'calls':>7}  probes")
+    for battery in sorted(batteries, key=lambda b: -b.covered):
+        chosen = ", ".join(f"{p.function}({p.scripts:.0f})" for p in battery.probes)
+        click.echo(
+            f"{battery.package:16} {battery.coverage:9.1%} {battery.calls:7.0f}  "
+            f"{chosen or '-- nothing survives the filters'}"
+        )
+
+    empty = [b.package for b in batteries if not b.probes]
+    click.echo(f"\nwrote {out}")
+    click.echo(
+        "  coverage is the share of this package's corpus calls the battery "
+        "reaches.\n  A change in a function no probe calls is invisible to the "
+        "sweep, and this is\n  how much of that there is."
+    )
+    if empty:
+        click.echo(
+            f"  {len(empty)} package(s) yield no probe at all: {', '.join(empty)}.\n"
+            "  A package the corpus never calls for computation cannot be swept "
+            "for one,\n  which is the frame correcting itself rather than a gap."
         )
 
 
