@@ -163,6 +163,11 @@ if (nrow(closed) > 0L) {
   by_package <- tapply(closed$closed_documented, closed$package, mean)
   say("\nby package (the unit that clusters):")
   print(round(by_package, 3))
+  say(
+    "\nThe documented flag counts a match on any function the probe declares, ",
+    "and a probe\nexercising three functions declares three. That biases it ",
+    "toward documented, so the\nundocumented share is a lower bound."
+  )
 
   # Cluster bootstrap over packages rather than a binomial interval over
   # episodes. Episodes within a package are not independent draws -- one

@@ -149,6 +149,10 @@ def documents(news: str, functions: list[str]) -> bool:
     Returns:
         True if any function is named as a word in the text.
     """
+    # More names make a spurious match likelier, and a probe that exercises three
+    # functions declares all three. That biases the flag *toward* documented, so
+    # the undocumented share this study reports is a lower bound rather than a
+    # point estimate -- the conservative direction for the claim being made.
     if not news:
         return False
     # A trailing dot is allowed and a leading one is not, because R dispatches

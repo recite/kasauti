@@ -266,43 +266,73 @@ Two sampled packages yield no probe at all (`erer`, `mapdata`). A package the
 corpus never calls for computation cannot be swept for one; that is the frame
 correcting itself, not a gap to patch by hand.
 
+## How far back each package can be seen at all
+
+This is the first thing to read, not a footnote, because every estimate below is
+conditional on it.
+
+| package | releases tried | built | buildable | C/C++ | reaches back to |
+|---|---|---|---|---|---|
+| `psych` | 97 | 97 | **100%** | no | 2007-05-06 |
+| `car` | 76 | 49 | 64% | no | 2006-02-06 |
+| `estimatr` | 22 | 22 | **100%** | yes | 2018-01-29 |
+| `MASS` | 75 | 14 | 19% | yes | **2022-07-14** |
+| `survival` | 94 | 12 | 13% | yes | **2022-08-09** |
+| `lme4` | 123 | 15 | 12% | yes | 2005-06-10 |
+| `lfe` | 64 | 2 | **3%** | yes | **2024-11-06** |
+
+Across packages with at least eight releases tried, **compiled packages build 30%
+of the time against 74% for pure R**. The releases that cannot be observed are not
+missing at random — they are concentrated in packages whose C sources predate a
+change to R's API, and those are disproportionately the old, widely used ones.
+
+`MASS` is the case that should worry a reader most: it ships *with R*, it has 2,139
+reverse dependencies, and its observable history begins in **2022**. `lfe` is the
+sharpest: `felm` is the highest-reach function in the entire corpus at 245 scripts,
+62 of its 64 releases fail on `Calloc`, and one year of history survives.
+
+Averaging over that silently would report a bug rate for the packages that happen
+to compile and call it a bug rate for statistical software. It is also exactly what
+stratifying the sample on compiled code was for, so the design anticipated it and
+can now report it.
+
+Note `lme4`: a 2005 floor and 12% coverage. A floor says how far back *one* release
+can be reached; it says nothing about the density in between, so both travel.
+
 ## What the first sweep measured
 
-Six packages, 14 probes, **851 release-runs**: 38 episodes, 24 of them closed.
+Ten packages, 17 probes, **1,556 release-runs**: 49 episodes, 25 of them closed.
 `make analysis` reproduces every number; `docs/estimands.txt` is its output.
 
 **About two in five result-changing releases are not described in the changelog.**
 Collapsing probe-level detections to the release — two `estimatr` probes call the
-same function, so one event was being counted twice — gives **11 of 18 documented
-(61%)**, cluster bootstrap over packages **[54%, 86%]**. That share is not
+same function, so one event was being counted twice — gives **12 of 19 documented
+(63%)**, cluster bootstrap over packages **[56%, 88%]**. That share is not
 estimable from inside a changelog-first design at all: an undocumented change is
-exactly what such a design cannot see.
+exactly what such a design cannot see. And the flag counts a match on any function
+a probe declares, which biases it *toward* documented — so the undocumented share
+is a lower bound.
 
-**Result changes are rare per release and long-lived when they happen.** About
-**0.15 changes per probe-year**. Median episode length **1109 days** by the
-Turnbull estimate, longest observed span 5394 days. A Weibull AFT puts the scale
-at **1.68** — hazard *decreasing* in duration, so the longer a value has held the
-less likely it is to change next. Package fixed effects are jointly
-indistinguishable from zero (χ² = 7.19 on 5 df, p = 0.21), which at 38 episodes
-is what honesty looks like rather than evidence packages are alike.
+**Result changes are rare and long-lived.** Median episode length **2613 days** by
+the Turnbull estimate, longest observed span 5671 days, about **0.1 changes per
+probe-year**. Three probes on `MASS` across 14 observable releases and two on
+`lme4` across 11 found **no change at all**: on these functions, the most
+depended-on packages in the ecosystem simply do not move.
 
-**Four of 24 changes are a quantity appearing or vanishing**, not moving —
-`estimatr` 0.6.0 began returning a standard error where 0.4.0 returned nothing.
-Those carry `max_reldiff = 0`, so they are counted apart rather than dragging the
-magnitude summary toward zero. Of the 20 numeric changes, **13 moved a number by
-more than 1%**.
+**Four changes are a quantity appearing or vanishing**, not moving — `estimatr`
+0.6.0 began returning a standard error where 0.4.0 returned nothing, and `car`
+2.1-3 began returning confidence intervals from `deltaMethod`. Those carry
+`max_reldiff = 0`, so they are counted apart rather than dragging the magnitude
+summary toward zero.
 
-Three limits stated in the same breath, because they all cut the same way:
+Two limits stated in the same breath:
 
-- **Coverage varies enormously.** `psych` and `estimatr` are fully buildable;
-  `survival` is **12 of 94 releases (13%)**, so its one episode is nearly all the
-  history that can be seen.
 - **Right-censoring is heavy enough to break an interval.** Zero of 1000 cluster
   resamples reached a median, and the script says so instead of omitting it.
 - **Package as a fixed effect, not a frailty.** `survreg` implements no frailty
-  term, `coxph` takes no interval censoring, and a variance component from six
-  clusters would be barely identified anyway. A random effect becomes the right
-  tool when the package count grows, not before.
+  term, `coxph` takes no interval censoring, and a variance component from ten
+  clusters would be barely identified. A random effect becomes the right tool when
+  the package count grows, not before.
 
 ## Usage, measured three ways
 

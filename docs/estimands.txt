@@ -2,38 +2,50 @@
 Coverage
 --------
   package probes episodes closed left_censored tried built buildable
+      car      2        3      1             2    76    49 0.6447368
  estimatr      2        6      4             2    22    22 1.0000000
-   lmtest      1        2      1             1    36    24 0.6666667
+      lfe      2        2      0             2    64     2 0.0312500
+     lme4      2        2      0             2   123    15 0.1219512
+   lmtest      2        3      1             2    36    24 0.6666667
+     MASS      3        3      0             3    75    14 0.1866667
       plm      5        9      4             5    50    34 0.6800000
     psych      4       17     13             4    97    97 1.0000000
  sandwich      1        2      1             1    39    24 0.6153846
  survival      1        2      1             1    94    12 0.1276596
 
-38 episode(s) across 6 package(s); 24 closed, 14 already in force at the floor.
+49 episode(s) across 10 package(s); 25 closed, 24 already in force at the floor.
 
 E1  Result-changing releases per probe-year
 -------------------------------------------
-  package probes     years changes per_probe_year
- estimatr      2  7.082820       4     0.28237341
-   lmtest      1 15.605749       1     0.06407895
-      plm      5 14.767967       4     0.05417130
-    psych      4 17.264887      13     0.18824334
- sandwich      1 16.594114       1     0.06026233
- survival      1  3.912389       1     0.25559832
+  package probes      years changes per_probe_year
+      car      2 15.5263518       1     0.03220332
+ estimatr      2  7.0828200       4     0.28237341
+      lfe      2  0.2655715       0     0.00000000
+     lme4      2  2.6995209       0     0.00000000
+   lmtest      2 15.6057495       1     0.03203947
+     MASS      3  4.0027379       0     0.00000000
+      plm      5 14.7679671       4     0.05417130
+    psych      4 17.2648871      13     0.18824334
+ sandwich      1 16.5941136       1     0.06026233
+ survival      1  3.9123888       1     0.25559832
 
-mean across packages: 0.151 change(s) per probe-year
+mean across packages: 0.090 change(s) per probe-year
 
 E2  Share of closing changes the changelog names
 ------------------------------------------------
-probe-level: 15 of 24 (62%)
-release-level (the independent unit): 11 of 18 (61%)
+probe-level: 16 of 25 (64%)
+release-level (the independent unit): 12 of 19 (63%)
   6 probe-level change(s) describe an event another probe also saw
 
 by package (the unit that clusters):
-estimatr   lmtest      plm    psych sandwich survival 
-   0.500    1.000    0.500    0.556    1.000    1.000 
+     car estimatr   lmtest      plm    psych sandwich survival 
+   1.000    0.500    1.000    0.500    0.556    1.000    1.000 
 
-cluster bootstrap over packages: 61% [54%, 86%]
+The documented flag counts a match on any function the probe declares, and a probe
+exercising three functions declares three. That biases it toward documented, so the
+undocumented share is a lower bound.
+
+cluster bootstrap over packages: 63% [56%, 88%]
 
 E3  How long a value held
 -------------------------
@@ -41,45 +53,49 @@ Turnbull estimate of the distribution of episode length (days):
 Call: survfit(formula = surv ~ 1)
 
       n events median 0.95LCL 0.95UCL
-[1,] 38     24   1109     448      NA
+[1,] 49     25   2613     586      NA
 
 observed spans, in days:
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    0.0    97.5   827.0  1375.3  2397.2  5394.0 
+      0     192     986    1479    2423    5671 
 
 Weibull AFT with package fixed effects:
 
 Call:
 survreg(formula = span ~ factor(package), data = fit_rows, dist = "weibull")
-                         Value Std. Error    z      p
-(Intercept)             6.9789     0.8410 8.30 <2e-16
-factor(package)lmtest   2.0639     1.8953 1.09 0.2762
-factor(package)plm      2.1097     1.2102 1.74 0.0813
-factor(package)psych    0.0582     0.9657 0.06 0.9519
-factor(package)sandwich 2.1691     1.8959 1.14 0.2526
-factor(package)survival 0.7272     1.8957 0.38 0.7013
-Log(scale)              0.5189     0.1920 2.70 0.0069
+                            Value Std. Error     z       p
+(Intercept)                10.003      1.673  5.98 2.2e-09
+factor(package)estimatr    -3.020      1.870 -1.62  0.1062
+factor(package)lfe         26.401  18997.765  0.00  0.9989
+factor(package)lme4        28.720  18997.765  0.00  0.9988
+factor(package)lmtest      -0.343      2.319 -0.15  0.8823
+factor(package)MASS        29.114  15511.610  0.00  0.9985
+factor(package)plm         -0.938      1.841 -0.51  0.6104
+factor(package)psych       -2.966      1.736 -1.71  0.0875
+factor(package)sandwich    -0.883      2.322 -0.38  0.7037
+factor(package)survival    -2.325      2.322 -1.00  0.3168
+Log(scale)                  0.495      0.188  2.63  0.0086
 
-Scale= 1.68 
+Scale= 1.64 
 
 Weibull distribution
-Loglik(model)= -73.3   Loglik(intercept only)= -76.9
-	Chisq= 7.19 on 5 degrees of freedom, p= 0.21 
-Number of Newton-Raphson Iterations: 5 
-n= 38 
+Loglik(model)= -79.3   Loglik(intercept only)= -87.7
+	Chisq= 16.73 on 9 degrees of freedom, p= 0.053 
+Number of Newton-Raphson Iterations: 18 
+n= 49 
 
 
 median episode length: only 0 of 1000 resample(s) reached a median, so no cluster interval is reported. Right-censoring is too heavy at this sample size.
 
 E4  How large the changes were
 ------------------------------
-4 of 24 change(s) are a quantity appearing or vanishing rather than moving
+5 of 25 change(s) are a quantity appearing or vanishing rather than moving
 
 largest relative difference, numeric changes only:
      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
 1.400e-07 6.287e-03 7.879e-02 3.751e-01 8.126e-01 1.748e+00 
 
 13 of 20 numeric change(s) moved a number by more than 1%
-22 of 24 are pinned to a single release; the rest span a build failure
+23 of 25 are pinned to a single release; the rest span a build failure
 
 done

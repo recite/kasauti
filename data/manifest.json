@@ -1,21 +1,21 @@
 {
   "data/builds.csv": {
-    "bytes": 35862,
+    "bytes": 93278,
     "present": true,
-    "rows": 367,
-    "sha256": "91e65e0ece5210a096c9f56539d0e5d7899eedbb8a2c27f71cb570cddc9da829"
+    "rows": 786,
+    "sha256": "98cfb13a6cd0a72588fd1220e691ba23adcbec932cd01fb8a496633669c19819"
   },
   "data/changes.csv": {
-    "bytes": 6527,
+    "bytes": 6649,
     "present": true,
-    "rows": 24,
-    "sha256": "250d7572b0c1ea0e6e83dd1a328cdba01099254f69bd0a69e4d97504bae150ec"
+    "rows": 25,
+    "sha256": "60fc6b28df36925277b72d8b2d9e2af0e54bb8a562e8059cc9bf0c27cf86b367"
   },
   "data/episodes.csv": {
-    "bytes": 4758,
+    "bytes": 5861,
     "present": true,
-    "rows": 38,
-    "sha256": "14789ee444ce1213ee82288653c6eb10e87696f4e275d4d62aaf3e401a30307b"
+    "rows": 49,
+    "sha256": "9bebe0becf0222ed0f8bd8276a253a82ece2387356897b81569c40aa57949b65"
   },
   "data/frame/batteries.csv": {
     "bytes": 20340,
