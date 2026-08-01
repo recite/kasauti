@@ -67,6 +67,24 @@ MISSING_DEPENDENCY = re.compile(
 #: The curly-quoted package names inside that complaint.
 QUOTED = re.compile("[\u2018']([A-Za-z][\\w.]*)[\u2019']")
 
+#: The tarball was not where it was looked for, which for the newest release of a
+#: package means it is still in the main contrib directory rather than the Archive.
+DOWNLOAD_FAILED = re.compile(r"download\.file|cannot open URL|HTTP status was '404")
+
+#: A C header the compiler could not find.
+MISSING_HEADER = re.compile(r"fatal error: '([\w./+-]+\.h)' file not found")
+
+#: Where such a header plausibly lives on a machine that has it. Package managers
+#: install into their own prefixes and R is not told, so the header can be present
+#: and invisible at the same time.
+HEADER_PREFIXES = (
+    "/opt/homebrew/opt/*/include",
+    "/usr/local/opt/*/include",
+    "/opt/homebrew/include",
+    "/usr/local/include",
+    "/opt/local/include",
+)
+
 LEDGER_COLUMNS = ["package", "version", "outcome", "r_version", "platform", "detail"]
 
 
@@ -284,6 +302,11 @@ class Ledger:
 #: which is true of every failure and explains none of them. The compiler's own
 #: first complaint is the reason -- `unknown type name 'Sint'` is what puts every
 #: `survival` before 3.4-0 out of reach, and keeping the tail loses it.
+#: A compiler diagnostic proper, which always writes `error:` with the colon.
+#: Preferred over the looser pattern because compilers echo the offending source
+#: line too, and `{ error(_("An out of bound write ..."` is source, not a reason.
+BUILD_DIAGNOSTIC = re.compile(r"^.*\berror:.*$", re.MULTILINE)
+
 BUILD_ERROR = re.compile(r"^.*\b(?:error|Error|ERROR)\b.*$", re.MULTILINE)
 
 #: Wrapper noise that matches BUILD_ERROR but says nothing.
@@ -301,19 +324,23 @@ def _tidy(log: str, limit: int = 240) -> str:
         The most informative error line, or the tail of the log if none stands
         out.
     """
-    for line in BUILD_ERROR.findall(log):
-        text = " ".join(line.split())
-        if text and not any(noise in text for noise in BUILD_NOISE):
-            return text[:limit]
+    for pattern in (BUILD_DIAGNOSTIC, BUILD_ERROR):
+        for line in pattern.findall(log):
+            text = " ".join(line.split())
+            if text and not any(noise in text for noise in BUILD_NOISE):
+                return text[:limit]
     return " ".join(log.split())[-limit:]
 
 
-def _rscript(script: str, timeout: int) -> tuple[str, bool]:
+def _rscript(
+    script: str, timeout: int, env: dict[str, str] | None = None
+) -> tuple[str, bool]:
     """Run an R expression and return its combined output.
 
     Args:
         script: R source.
         timeout: Seconds before giving up.
+        env: Extra environment variables for the run.
 
     Returns:
         An `(output, timed_out)` pair.
@@ -325,10 +352,41 @@ def _rscript(script: str, timeout: int) -> tuple[str, bool]:
             text=True,
             check=False,
             timeout=timeout,
+            env={**os.environ, **(env or {})},
         )
     except subprocess.TimeoutExpired:
         return "", True
     return (proc.stderr or "") + (proc.stdout or ""), False
+
+
+def header_include(log: str) -> Path | None:
+    """Where a header the build could not find actually lives, if it does.
+
+    `mgcv` fails on `fatal error: 'libintl.h' file not found` -- on a machine
+    that has `libintl.h`, sitting in a Homebrew prefix R was never told about.
+    Recording that as a wall would attribute to the package a fact about this
+    machine's include path, which is the same mistake the missing-dependency
+    retry exists to avoid.
+
+    Environment `CPPFLAGS` does not help: R's own `Makeconf` sets it and wins.
+    The supported route is a user `Makevars`, which is what the caller does with
+    the directory returned here.
+
+    Args:
+        log: A failed build log.
+
+    Returns:
+        The directory holding the missing header, or None if the failure is not
+        a missing header or the header is genuinely absent.
+    """
+    names = MISSING_HEADER.findall(log)
+    if not names:
+        return None
+    for pattern in HEADER_PREFIXES:
+        for directory in sorted(Path("/").glob(pattern.lstrip("/"))):
+            if (directory / names[0]).exists():
+                return directory
+    return None
 
 
 def missing_dependencies(log: str) -> list[str]:
@@ -363,6 +421,16 @@ def install(
     once. Dependencies land in the version's own library rather than the system
     one, which keeps decade-old sources out of the environment the tool runs in.
 
+    A missing *header* is the same mistake in the other direction. `mgcv` fails on
+    `fatal error: 'libintl.h' file not found` on a machine that has `libintl.h`,
+    in a package-manager prefix R was never told about. Environment `CPPFLAGS`
+    cannot fix it -- R's own `Makeconf` sets that variable and wins -- so the
+    retry writes a user `Makevars` and points `R_MAKEVARS_USER` at it.
+
+    Both retries are corrections for facts about *this machine*. Neither touches a
+    failure where the source itself no longer compiles, which is the only kind
+    that belongs in the ledger as a wall.
+
     Args:
         package: CRAN package name.
         version: Version to install.
@@ -376,14 +444,29 @@ def install(
     lib = path_for(package, version, root)
     lib.mkdir(parents=True, exist_ok=True)
 
-    url = f"{CRAN_ARCHIVE}/{package}/{package}_{version}.tar.gz"
-    build = f'install.packages("{url}", repos = NULL, type = "source", lib = "{lib}")'
+    def source(url: str) -> str:
+        return (
+            f'install.packages("{url}", repos = NULL, type = "source", lib = "{lib}")'
+        )
 
+    build = source(f"{CRAN_ARCHIVE}/{package}/{package}_{version}.tar.gz")
     log, expired = _rscript(build, timeout)
     if expired:
         return None, f"timed out after {timeout}s"
     if (lib / package).exists():
         return lib, ""
+
+    if DOWNLOAD_FAILED.search(log):
+        # A package's *current* version is not in the Archive -- CRAN moves a
+        # release there only once it is superseded. Without this the newest
+        # release of every package swept becomes a gap, which is the one release
+        # a reader is most likely to check.
+        build = source(f"{CRAN_MIRROR}/src/contrib/{package}_{version}.tar.gz")
+        log, expired = _rscript(build, timeout)
+        if expired:
+            return None, f"timed out after {timeout}s"
+        if (lib / package).exists():
+            return lib, ""
 
     wanted = missing_dependencies(log)
     if wanted:
@@ -393,6 +476,18 @@ def install(
             timeout,
         )
         log, expired = _rscript(build, timeout)
+        if expired:
+            return None, f"timed out after {timeout}s"
+        if (lib / package).exists():
+            return lib, ""
+
+    include = header_include(log)
+    if include is not None:
+        makevars = lib / "Makevars"
+        makevars.write_text(
+            f"CPPFLAGS += -I{include}\nLDFLAGS += -L{include.parent / 'lib'}\n"
+        )
+        log, expired = _rscript(build, timeout, {"R_MAKEVARS_USER": str(makevars)})
         if expired:
             return None, f"timed out after {timeout}s"
         if (lib / package).exists():

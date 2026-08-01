@@ -1,0 +1,14 @@
+# Only one of `survival`'s twelve shortlisted claims is declared here, and the
+# reason is recorded rather than left to look like an oversight: eighteen of its
+# archived versions fail to compile on `unknown type name 'Sint'`, so the floor
+# is 3.4-0 (2022-08-09) and eleven of the twelve name versions below it. See
+# docs/reach.md. The package with the most candidates is the least reachable.
+
+package: survival
+
+screens:
+  - entry: survival@3.6-1#8
+    fixed_in: 3.6-1
+    script: survfit_cluster_weights.R
+    functions: [survfit]
+    conditions: case weights varying between rows in the same cluster.

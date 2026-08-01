@@ -139,6 +139,18 @@ class TestFailureDetail:
     def test_a_log_with_no_error_line_falls_back_to_its_tail(self):
         assert library._tidy("something went wrong quietly") != ""
 
+    def test_the_diagnostic_beats_the_source_line_it_quotes(self):
+        # Compilers echo the offending source, and mgcv's happens to be a call to
+        # R's own `error()`. Matching any line containing "error" reported that
+        # source line as the reason the build failed.
+        log = (
+            '144 | { error(_("An out of bound write to matrix has occurred!"),1);\n'
+            "mat.c:218:33: error: too few arguments to function call\n"
+        )
+        assert library._tidy(log) == (
+            "mat.c:218:33: error: too few arguments to function call"
+        )
+
 
 class TestMissingDependencies:
     def test_one_named_dependency(self):
@@ -165,6 +177,31 @@ class TestMissingDependencies:
         # this machine, an undeclared C function is a wall.
         log = "classTree.c:302:36: error: call to undeclared function 'Calloc'"
         assert library.missing_dependencies(log) == []
+
+
+class TestHeaderInclude:
+    def test_a_header_the_machine_has_is_located(self, tmp_path, monkeypatch):
+        # `mgcv` fails on a header this machine owns, sitting in a prefix R was
+        # never told about. Recording that as a wall would attribute to the
+        # package a fact about the include path.
+        prefix = tmp_path / "opt" / "gettext" / "include"
+        prefix.mkdir(parents=True)
+        (prefix / "libintl.h").touch()
+        monkeypatch.setattr(
+            library, "HEADER_PREFIXES", (str(tmp_path / "opt/*/include"),)
+        )
+
+        log = "./general.h:4:10: fatal error: 'libintl.h' file not found"
+        assert library.header_include(log) == prefix
+
+    def test_a_header_nobody_has_is_not_invented(self, monkeypatch):
+        monkeypatch.setattr(library, "HEADER_PREFIXES", ())
+        log = "./general.h:4:10: fatal error: 'libintl.h' file not found"
+        assert library.header_include(log) is None
+
+    def test_a_failure_that_is_not_a_missing_header(self):
+        log = "./survproto.h:8:14: error: unknown type name 'Sint'"
+        assert library.header_include(log) is None
 
 
 class TestAdopt:

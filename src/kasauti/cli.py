@@ -36,6 +36,10 @@ LEDGER = ROOT / "data/builds.csv"
 #: moved nothing is a result, and the denominator is the point of screening.
 SCREENS = ROOT / "screens"
 
+#: One timeline per (package, probe): every release run, and every point where the
+#: answer moved. The sampling unit the analysis rests on, so it is tracked.
+SWEEPS = ROOT / "sweeps"
+
 
 def _json_load(path: Path) -> dict:
     """Read a JSON file.
@@ -865,6 +869,137 @@ def screen_report(fixtures: Path, out: Path) -> None:
     click.echo(f"wrote {out} -- {len(screens)} of {len(requests)} claim(s) screened")
 
 
+@main.command("sweep")
+@click.argument("packages", nargs=-1)
+@click.option("--fixtures", type=click.Path(path_type=Path), default=ROOT / "fixtures")
+@click.option("--probe", multiple=True, help="Probe scripts to run. Default: all.")
+@click.option("--ledger", type=click.Path(path_type=Path), default=LEDGER)
+@click.option(
+    "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
+)
+@click.option(
+    "--changes", type=click.Path(path_type=Path), default=ROOT / "data/changes.csv"
+)
+@click.option("--since", default=None, help="Skip releases before this ISO date.")
+def sweep_command(
+    packages: tuple[str, ...],
+    fixtures: Path,
+    probe: tuple[str, ...],
+    ledger: Path,
+    cache_root: Path,
+    changes: Path,
+    since: str | None,
+) -> None:
+    """Run every probe against every release, and record where numbers moved.
+
+    Args:
+        packages: Packages to sweep. Defaults to every one with a fixture.
+        fixtures: Directory holding the fixtures.
+        probe: Probe scripts to run. Defaults to every script the catalogue names.
+        ledger: Build ledger.
+        cache_root: Harvest cache, for the release history.
+        changes: Tidy change table to write.
+        since: Skip releases published before this date.
+    """
+    import subprocess as _subprocess
+
+    import yaml as _yaml
+
+    from kasauti.archaeology.harvest import harvest
+    from kasauti.archaeology.sweep import sweep
+
+    floor = date.fromisoformat(since) if since else None
+    names = list(packages) or sorted(
+        p.parent.name for p in Path(fixtures).glob("*/screens.yaml")
+    )
+    if not names:
+        click.echo(f"no fixtures under {fixtures}", err=True)
+        sys.exit(1)
+
+    book = library.Ledger.load(Path(ledger))
+
+    for name in names:
+        directory = Path(fixtures) / name
+        catalogue = _yaml.safe_load((directory / "screens.yaml").read_text())
+        scripts = list(probe) or sorted(
+            {row["script"] for row in catalogue.get("screens", [])}
+        )
+        _subprocess.run(  # noqa: S603
+            ["python3", str(directory / "data.py")],  # noqa: S607
+            cwd=directory,
+            check=True,
+            capture_output=True,
+        )
+        # An undated release cannot sit on a timeline, so it is excluded here
+        # rather than swept and then silently unusable by the analysis.
+        releases: list[tuple[str, date | None]] = [
+            (r.version, r.released)
+            for r in harvest(name, "cran", Path(cache_root)).releases
+            if r.released and (floor is None or r.released >= floor)
+        ]
+
+        for script in scripts:
+            click.echo(f"{name}/{script}: {len(releases)} release(s)")
+            timeline = sweep(
+                name,
+                script,
+                directory,
+                releases,
+                book,
+                on_release=lambda o: click.echo(
+                    f"  {o.version:12s} {o.state}"
+                    + (f" -- {o.detail[:70]}" if o.detail else "")
+                ),
+            )
+            timeline.write(SWEEPS / name)
+            click.echo(
+                f"  {timeline.observed} observed, {timeline.gaps} gap(s), "
+                f"{len(timeline.changes)} change point(s)"
+            )
+
+    total = _rebuild_changes(Path(changes), SWEEPS)
+    click.echo(f"\nwrote {changes} -- {total} change point(s) across every sweep")
+
+
+def _rebuild_changes(path: Path, sweeps: Path) -> int:
+    """Write the tidy change table from every timeline on disk.
+
+    Rebuilt from the stored timelines rather than from the run that just
+    finished, so sweeping one package does not silently drop the others out of
+    the table the analysis reads.
+
+    Args:
+        path: Destination CSV.
+        sweeps: Directory holding stored timelines.
+
+    Returns:
+        How many change points were written.
+    """
+    from kasauti.archaeology.sweep import Change, write_changes
+
+    stored: list = []
+    for file in sorted(sweeps.glob("*/*.json")):
+        payload = _json_load(file)
+        for row in payload["changes"]:
+            stored.append(
+                Change(
+                    package=payload["package"],
+                    probe=payload["probe"],
+                    at=row["at"],
+                    at_on=date.fromisoformat(row["at_on"]) if row["at_on"] else None,
+                    after=row["after"],
+                    after_on=(
+                        date.fromisoformat(row["after_on"]) if row["after_on"] else None
+                    ),
+                    gaps=row["gaps"],
+                    moved=row["moved"],
+                    max_reldiff=row["max_reldiff"],
+                )
+            )
+    write_changes(stored, path)
+    return len(stored)
+
+
 @main.group()
 def build() -> None:
     """Inspect what installs, and how far back it does."""
@@ -1002,6 +1137,60 @@ def _render_reach(rows: list, grouped: dict[str, list[tuple[str, str]]]) -> str:
 @main.group()
 def frame() -> None:
     """Build the sampling frame: which packages, and which procedures."""
+
+
+@frame.command("usage")
+@click.option("--packages-csv", type=click.Path(path_type=Path), default=PACKAGES_CSV)
+@click.option(
+    "--cache",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/cache/usage.json",
+)
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=ROOT / "data/frame/cran_usage.csv"
+)
+@click.option(
+    "--window",
+    default="2024-01-01:2024-12-31",
+    show_default=True,
+    help="cranlogs period. Fixed and recorded so a count cannot drift.",
+)
+@click.option("--refresh", is_flag=True, help="Re-fetch rather than use the cache.")
+def frame_usage(
+    packages_csv: Path, cache: Path, out: Path, window: str, refresh: bool
+) -> None:
+    """Measure usage without reference to any one field.
+
+    Args:
+        packages_csv: Selected packages, for their corpus counts.
+        cache: Where the raw measurements are cached.
+        out: Destination CSV.
+        window: cranlogs period for the download count.
+        refresh: Re-fetch even when the cache exists.
+    """
+    from kasauti.archaeology.taskviews import read_selection
+    from kasauti.archaeology.usage import load_usage, write_usage
+
+    selected = read_selection(Path(packages_csv))
+    names = [s.package for s in selected]
+    corpus = {s.package: s.usage for s in selected}
+
+    measured = load_usage(names, window, Path(cache), refresh=refresh)
+    for package, entry in measured.items():
+        entry.corpus = corpus.get(package, 0)
+
+    rows = list(measured.values())
+    write_usage(rows, Path(out))
+
+    unknown = [r.package for r in rows if r.downloads == 0]
+    click.echo(f"wrote {out} -- {len(rows)} package(s), window {window}")
+    click.echo(
+        "  corpus archives and CRAN reverse dependencies measure different "
+        "things:\n  a package can be central to a field and depended on by "
+        "nothing, or the reverse."
+    )
+    if unknown:
+        click.echo(f"  {len(unknown)} package(s) reported no downloads: {unknown[:6]}")
 
 
 @frame.command("packages")
