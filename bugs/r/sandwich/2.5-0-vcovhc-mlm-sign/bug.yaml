@@ -4,8 +4,9 @@ ecosystem: cran
 entry_id: sandwich@2.5-0#7
 fixed_in: 2.5-0
 fixed_on: '2018-08-17'
-introduced_in: null
-introduced_on: null
+introduced_in: 2.2-4
+introduction_evidence: bisected
+introduced_on: '2009-12-07'
 functions:
 - vcovHC
 conditions: Only lm() with a matrix response -- a multivariate lm, dispatching to vcovHC.mlm.

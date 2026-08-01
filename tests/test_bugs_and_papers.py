@@ -391,3 +391,33 @@ def test_every_verified_record_still_runs_through_the_shared_harness():
     assert verified, "no verified records found"
     assert verified <= discovered
     assert all(c.family == "version_regression" for c in discover_cases(ROOT / "bugs"))
+
+
+class TestLifetime:
+    def test_lifetime_needs_both_ends(self, tmp_path):
+        # Null, never zero: a bug whose start was never established did not
+        # live for no time, and reporting 0 would put it at the safe end of a
+        # distribution it does not belong in.
+        assert make_bug(tmp_path, fixed_on=date(2022, 6, 15)).lifetime_days is None
+        assert make_bug(tmp_path, introduced_on=date(2020, 1, 1)).lifetime_days is None
+
+    def test_lifetime_is_measured_in_days(self, tmp_path):
+        bug = make_bug(
+            tmp_path, introduced_on=date(2020, 1, 1), fixed_on=date(2022, 6, 15)
+        )
+        assert bug.lifetime_days == 896
+
+    def test_evidence_defaults_to_unknown_and_round_trips(self, tmp_path):
+        bug = make_bug(tmp_path)
+        assert bug.introduction_evidence == "unknown"
+        bug.introduced_in = "2.4-0"
+        bug.introduced_on = date(2015, 1, 1)
+        bug.introduction_evidence = "bisected"
+        write_bug(bug)
+        assert load_bug(bug.directory).introduction_evidence == "bisected"
+
+    def test_a_dated_introduction_closes_the_window(self, tmp_path):
+        # The whole reason to bisect: papers_in_window currently means
+        # "published before the fix" with no lower bound at all.
+        assert make_bug(tmp_path).censored
+        assert not make_bug(tmp_path, introduced_on=date(2015, 1, 1)).censored

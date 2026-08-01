@@ -130,6 +130,13 @@ class Bug:
         fixed_on: Date that version was released.
         introduced_in: Version that introduced the defect, if known.
         introduced_on: Date that version was released, if known.
+        introduction_evidence: How the introduction was established --
+            `bisected` (the reproducer was run against archived versions),
+            `changelog` (the entry names the version), `birth` (the behaviour
+            did not exist before, so the whole prior history qualifies), or
+            `unknown`. Recorded so a measured date is never mistaken for an
+            assumed one, which matters because the two narrow the exposure
+            window by the same amount and mean entirely different things.
         functions: Affected exported functions.
         conditions: When the bug bit, in prose. Mandatory -- a bug without
             stated conditions cannot have its exposure narrowed, and an
@@ -159,6 +166,7 @@ class Bug:
     fixed_on: date | None = None
     introduced_in: str | None = None
     introduced_on: date | None = None
+    introduction_evidence: str = "unknown"
     functions: list[str] = field(default_factory=list)
     condition_probe: str | None = None
     category: str = "RESULT_CHANGING"
@@ -211,6 +219,19 @@ class Bug:
         return self.introduced_on is None
 
     @property
+    def lifetime_days(self) -> int | None:
+        """How long the defect was live, in days.
+
+        Returns:
+            Days from the introducing release to the fix, or None when either
+            end is unknown. Null rather than zero: a bug whose start was never
+            established did not live for no time.
+        """
+        if self.introduced_on is None or self.fixed_on is None:
+            return None
+        return (self.fixed_on - self.introduced_on).days
+
+    @property
     def rank(self) -> tuple[int, int]:
         """Sort key: severity first, then narrowed exposure.
 
@@ -259,6 +280,7 @@ class Bug:
             "fixed_in": self.fixed_in,
             "fixed_on": self.fixed_on.isoformat() if self.fixed_on else None,
             "introduced_in": self.introduced_in,
+            "introduction_evidence": self.introduction_evidence,
             "introduced_on": (
                 self.introduced_on.isoformat() if self.introduced_on else None
             ),
@@ -397,6 +419,7 @@ def load_bug(directory: Path, root: Path | None = None) -> Bug:
         fixed_on=_as_date(raw.get("fixed_on")),
         introduced_in=raw.get("introduced_in"),
         introduced_on=_as_date(raw.get("introduced_on")),
+        introduction_evidence=raw.get("introduction_evidence", "unknown"),
         functions=list(raw.get("functions") or []),
         condition_probe=raw.get("condition_probe"),
         category=str(raw.get("category", "RESULT_CHANGING")).upper(),
@@ -484,6 +507,66 @@ def advance(bug: Bug, status: str) -> Bug:
     return bug
 
 
+#: How an introduction date was established, worst evidence last. Kept apart
+#: because "we ran it" and "we assumed it" narrow the exposure window by exactly
+#: the same amount and mean entirely different things.
+EVIDENCE_LABEL = {
+    "bisected": "run against archived versions",
+    "changelog": "the entry names the version",
+    "birth": "the behaviour did not exist before",
+    "unknown": "not established",
+}
+
+
+def render_lifetimes(bugs: list[Bug]) -> list[str]:
+    """Render how long each dated bug was live.
+
+    Args:
+        bugs: All records.
+
+    Returns:
+        Markdown lines, or an empty list when nothing has a measured lifetime.
+    """
+    dated = [b for b in bugs if b.lifetime_days is not None]
+    if not dated:
+        return []
+
+    out = [
+        "## How long was it wrong",
+        "",
+        "Changelogs record when a defect was fixed and almost never when it",
+        "started: of 369 exposed entries, four name an introducing version. So",
+        "these dates were measured by running the reproducer against archived",
+        "versions until the behaviour changed, and every one carries how it was",
+        "established.",
+        "",
+        "| bug | introduced | fixed | lived | evidence |",
+        "|---|---|---|---|---|",
+    ]
+    for bug in sorted(dated, key=lambda b: -(b.lifetime_days or 0)):
+        years = (bug.lifetime_days or 0) / 365.25
+        evidence = EVIDENCE_LABEL.get(
+            bug.introduction_evidence, bug.introduction_evidence
+        )
+        out.append(
+            f"| [`{bug.id}`]({bug.id}/) | {bug.introduced_in} "
+            f"({bug.introduced_on}) | {bug.fixed_in} ({bug.fixed_on}) | "
+            f"**{years:.1f} years** | {evidence} |"
+        )
+
+    censored = [b for b in bugs if b.lifetime_days is None and b.is_terminal]
+    if censored:
+        out += [
+            "",
+            f"{len(censored)} record(s) have no measured lifetime. That is not a",
+            "short one: it means the introduction was never established, either",
+            "because the reproducer could not be run against old enough versions",
+            "or because nothing was tried.",
+        ]
+    out.append("")
+    return out
+
+
 def render_index(bugs: list[Bug]) -> str:
     """Render the record index as markdown.
 
@@ -496,6 +579,7 @@ def render_index(bugs: list[Bug]) -> str:
     verified = [b for b in bugs if b.status == "VERIFIED"]
     negative = [b for b in bugs if b.status in ("REFUTED", "NOT_REPRODUCED")]
     open_records = [b for b in bugs if not b.is_terminal]
+    lifetimes = render_lifetimes(bugs)
 
     out = [
         "# Bug record",
@@ -546,6 +630,9 @@ def render_index(bugs: list[Bug]) -> str:
             "before the fix rather than only the interval when the bug was live.",
             "Those counts are upper bounds, not comparable with uncensored ones.",
         ]
+
+    if lifetimes:
+        out += ["", *lifetimes]
 
     if negative:
         out += [
@@ -665,6 +752,10 @@ FINDINGS_COLUMNS = [
     "scripts_calling_function",
     "scripts_meeting_probe",
     "papers_linked",
+    "introduced_in",
+    "introduced_on",
+    "introduction_evidence",
+    "lifetime_days",
     "papers_in_window",
     "papers_lag1",
     "papers_lag2",
@@ -693,6 +784,12 @@ def findings_rows(bugs: list[Bug]) -> list[dict[str, Any]]:
                 "bug_id": bug.id,
                 "fixed_in": bug.fixed_in,
                 "fixed_on": bug.fixed_on.isoformat() if bug.fixed_on else "",
+                "introduced_in": bug.introduced_in or "",
+                "introduced_on": (
+                    bug.introduced_on.isoformat() if bug.introduced_on else ""
+                ),
+                "introduction_evidence": bug.introduction_evidence,
+                "lifetime_days": bug.lifetime_days,
                 "functions": ";".join(bug.functions),
                 "category": bug.category,
                 "severity": bug.severity,

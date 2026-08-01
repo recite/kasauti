@@ -18,7 +18,7 @@ years of that trailing. No single lag is adopted as the answer.
 |---|---|---|---|---|---|---|---|
 | [`r/lfe/2.5-multiway-cluster-psdef`](r/lfe/2.5-multiway-cluster-psdef/) | HIGH | yes | 244 | 22 | 0* | 0/0/0 | VERIFIED |
 | [`r/fixest/0.10.4-fixef-three-way`](r/fixest/0.10.4-fixef-three-way/) | HIGH | yes | 4 | 4 | 0* | 0/1/2 | VERIFIED |
-| [`r/sandwich/2.5-0-vcovhc-mlm-sign`](r/sandwich/2.5-0-vcovhc-mlm-sign/) | HIGH | yes | 61 | 1 | 0* | 0/0/0 | VERIFIED |
+| [`r/sandwich/2.5-0-vcovhc-mlm-sign`](r/sandwich/2.5-0-vcovhc-mlm-sign/) | HIGH | yes | 61 | 1 | 0 | 0/0/0 | VERIFIED |
 | [`python/scikit-learn/1.1.0-nmi-unbounded`](python/scikit-learn/1.1.0-nmi-unbounded/) | HIGH | yes | 0 | 0 | 0* | 0/0/0 | VERIFIED |
 | [`r/mgcv/1.9-0-multinom-variance`](r/mgcv/1.9-0-multinom-variance/) | HIGH | yes | -- | -- | -- | -- | NOT_REPRODUCED |
 | [`r/sandwich/3.0-2-vcovcl-hc2-glm`](r/sandwich/3.0-2-vcovcl-hc2-glm/) | MEDIUM | yes | 37 | 6 | 0* | 1/3/3 | VERIFIED |
@@ -28,6 +28,24 @@ years of that trailing. No single lag is adopted as the answer.
 defect is not recorded, so the paper count covers everything published
 before the fix rather than only the interval when the bug was live.
 Those counts are upper bounds, not comparable with uncensored ones.
+
+## How long was it wrong
+
+Changelogs record when a defect was fixed and almost never when it
+started: of 369 exposed entries, four name an introducing version. So
+these dates were measured by running the reproducer against archived
+versions until the behaviour changed, and every one carries how it was
+established.
+
+| bug | introduced | fixed | lived | evidence |
+|---|---|---|---|---|
+| [`r/sandwich/2.5-0-vcovhc-mlm-sign`](r/sandwich/2.5-0-vcovhc-mlm-sign/) | 2.2-4 (2009-12-07) | 2.5-0 (2018-08-17) | **8.7 years** | run against archived versions |
+
+6 record(s) have no measured lifetime. That is not a
+short one: it means the introduction was never established, either
+because the reproducer could not be run against old enough versions
+or because nothing was tried.
+
 
 ## Did not survive verification
 

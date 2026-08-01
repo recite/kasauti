@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+from datetime import date
 from pathlib import Path
 
 import click
@@ -339,6 +340,134 @@ def bug_rank(bugs_dir, cache_file, cache_root, call_sites, datasets_dir, limit) 
         "\n~ marks a left-censored window: no known start, so the count is an "
         "upper bound on\n  how much of the corpus the bug could have reached."
     )
+
+
+@bug.command("bisect")
+@click.argument("bug_id")
+@click.option("--bugs-dir", type=click.Path(path_type=Path), default=ROOT / "bugs")
+@click.option(
+    "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
+)
+@click.option("--write/--no-write", default=True, help="Record the result on the bug.")
+def bug_bisect(bug_id: str, bugs_dir: Path, cache_root: Path, write: bool) -> None:
+    """Find when the bug was introduced, by running old versions.
+
+    Args:
+        bug_id: Record to bisect.
+        bugs_dir: Directory holding bug records.
+        cache_root: Harvest cache, for the release history.
+        write: Whether to store the measured date on the record.
+    """
+    import json as _json
+
+    import yaml as _yaml
+
+    from kasauti.archaeology.bisect import (
+        RLIBS,
+        Probe,
+        classify_run,
+        install,
+        run_backend,
+        search,
+    )
+    from kasauti.archaeology.bugs import load_bug, write_bug
+    from kasauti.archaeology.harvest import harvest
+
+    record = load_bug(Path(bugs_dir) / bug_id, Path(bugs_dir))
+    case = record.path / "case.yaml"
+    if not case.exists():
+        click.echo(f"{bug_id}: no case.yaml, so there is no reproducer", err=True)
+        sys.exit(1)
+
+    spec = _yaml.safe_load(case.read_text())
+    pinned = [b for b in spec.get("backends", []) if str(RLIBS) in " ".join(b["cmd"])]
+    if not pinned:
+        click.echo(
+            f"{bug_id}: no version-pinned backend. This record distinguishes its "
+            "versions by a flag or an environment, so there is nothing to install.",
+            err=True,
+        )
+        sys.exit(1)
+
+    references = {}
+    for name in ("buggy", "fixed", "unadjusted", "adjusted"):
+        path = record.path / f"results.{name}.json"
+        if path.exists():
+            references[name] = _json.loads(path.read_text())
+    if len(references) < 2:
+        click.echo(
+            f"{bug_id}: needs two reference outputs to compare against", err=True
+        )
+        sys.exit(1)
+    buggy_ref, fixed_ref = (references[k] for k in list(references)[:2])
+
+    releases = harvest(record.package, "cran", cache_root).releases
+    older: list[tuple[str, date | None]] = [
+        (r.version, r.released)
+        for r in releases
+        if r.released and record.fixed_on and r.released < record.fixed_on
+    ]
+    if not older:
+        click.echo(f"{bug_id}: no dated releases before the fix", err=True)
+        sys.exit(1)
+
+    click.echo(
+        f"{bug_id}: bisecting {len(older)} releases before {record.fixed_in} "
+        f"({older[0][0]} .. {older[-1][0]})"
+    )
+
+    def evaluate(version: str, released) -> Probe:
+        lib, detail = install(record.package, version)
+        if lib is None:
+            return Probe(version, released, "UNEVALUABLE", f"build failed: {detail}")
+        observed = run_backend(record.path, pinned[0]["cmd"], lib)
+        outcome, why = classify_run(observed, buggy_ref, fixed_ref)
+        return Probe(version, released, outcome, why)
+
+    found = search(
+        older,
+        evaluate,
+        on_probe=lambda p: click.echo(
+            f"  {p.version:12s} {p.released!s:12s} {p.outcome}"
+            + (f" -- {p.detail[:60]}" if p.detail else "")
+        ),
+    )
+
+    click.echo(f"\n{len(found.probes)} version(s) tested")
+    if not found.bracketed:
+        if found.first_buggy:
+            click.echo(
+                f"  buggy as far back as {found.first_buggy.version} "
+                f"({found.first_buggy.released}), which is the oldest version that "
+                "could be evaluated -- the introduction was not bracketed"
+            )
+        else:
+            click.echo("  no version could be judged; nothing measured")
+        return
+
+    below, above = found.last_fixed, found.first_buggy
+    if below is None or above is None:  # pragma: no cover - `bracketed` covers it
+        return
+    label = "not yet written" if below.outcome == "ABSENT" else "correct"
+    click.echo(
+        f"  {below.version} ({below.released}): {label}\n"
+        f"  {above.version} ({above.released}): wrong"
+    )
+    if found.arrived_with_the_feature:
+        click.echo(
+            "  the bug arrived with the feature -- nobody broke this, it was "
+            "wrong when written"
+        )
+    if record.fixed_on and found.introduced_on:
+        days = (record.fixed_on - found.introduced_on).days
+        click.echo(f"  lived {days} days ({days / 365.25:.1f} years) before the fix")
+
+    if write:
+        record.introduced_in = above.version
+        record.introduced_on = found.introduced_on
+        record.introduction_evidence = "bisected"
+        write_bug(record)
+        click.echo(f"  recorded on {bug_id}; re-run `bug papers` to tighten the window")
 
 
 @bug.command("papers")
