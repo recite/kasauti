@@ -434,13 +434,31 @@ def bug_bisect(bug_id: str, bugs_dir: Path, cache_root: Path, write: bool) -> No
     )
 
     click.echo(f"\n{len(found.probes)} version(s) tested")
+
+    if found.first_buggy and write:
+        # Recorded whether or not the introduction was bracketed: the oldest
+        # version seen to be wrong is a floor on the lifetime either way. It is
+        # kept out of `introduced_on`, because closing the window at a date the
+        # bug may predate would hide papers rather than over-count them.
+        record.oldest_buggy_on = found.first_buggy.released
+
     if not found.bracketed:
         if found.first_buggy:
+            floor = ""
+            if record.fixed_on and found.first_buggy.released:
+                days = (record.fixed_on - found.first_buggy.released).days
+                floor = f" -- wrong for at least {days / 365.25:.1f} years"
             click.echo(
                 f"  buggy as far back as {found.first_buggy.version} "
-                f"({found.first_buggy.released}), which is the oldest version that "
-                "could be evaluated -- the introduction was not bracketed"
+                f"({found.first_buggy.released}), the oldest version that could be "
+                f"evaluated{floor}"
             )
+            click.echo(
+                "  the introduction was not bracketed, so the window stays "
+                "left-censored"
+            )
+            if write:
+                write_bug(record)
         else:
             click.echo("  no version could be judged; nothing measured")
         return

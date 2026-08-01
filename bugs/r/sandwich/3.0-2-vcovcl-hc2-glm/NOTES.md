@@ -94,3 +94,21 @@ kasauti run sandwich_vcovcl_hc2
 kasauti bug probe sandwich-3.0-2-vcovcl-hc2-glm
 kasauti bug papers sandwich-3.0-2-vcovcl-hc2-glm --enrich
 ```
+
+## Why this one cannot be bisected
+
+Wrong for **at least 4.9 years** -- 2.4-0 (2017-07-26) already has it -- and the
+introduction was not bracketed. The reason is this record's own reproducer rather
+than anything about the versions.
+
+`run_r.R` wraps each call in `try(silent = TRUE)` and writes `NA_real_` on
+failure, which is the right thing for a case that fits three models under three
+covariance types and wants a full table either way. But it destroys the evidence a
+bisect needs. Against a version predating `vcovCL`, the run completes cleanly with
+every quantity null -- indistinguishable from a version where the function exists
+and broke. Thirty-one versions were tested and every one below 2.4-0 came back
+"produced no comparable quantity", so the bisect correctly refused to conclude.
+
+The lesson generalises to how reproducers should be written when they may later be
+bisected: let the error escape, or record it, because "this code did not exist
+yet" and "this code was broken" are the two states the whole method turns on.

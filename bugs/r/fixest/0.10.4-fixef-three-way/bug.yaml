@@ -5,6 +5,8 @@ entry_id: fixest@0.10.4#0
 fixed_in: 0.10.4
 fixed_on: '2022-03-31'
 introduced_in: null
+oldest_buggy_on: '2021-06-19'
+introduction_evidence: unknown
 introduced_on: null
 functions:
 - fixef

@@ -81,3 +81,27 @@ kasauti run sandwich_mlm_sign
 
 The `buggy` backend is marked `optional`, so the suite still runs without the
 side library installed — it reports the backend as skipped rather than failing.
+
+## It was wrong from the day it shipped
+
+Bisected against archived CRAN versions: `vcovHC` had no `mlm` method at all in
+2.2-3 (2009-11-30), and the first version that had one, 2.2-4 (2009-12-07),
+already computed the off-diagonals with the wrong sign. The fix landed in 2.5-0
+on 2018-08-17.
+
+**8.7 years and 31 releases.** And nobody broke it -- the method was wrong when
+it was written, which is a different claim from a regression and worth keeping
+separate. A regression has a culprit commit and a window; this has neither, and
+its exposure window is simply the whole life of the feature.
+
+Five probes settled it, which is the argument for bisecting rather than scanning:
+an R source install of a 2009 package takes a minute or two, and 31 of them would
+have taken an afternoon.
+
+The first attempt took nineteen probes and gave up unbracketed, because it treated
+"the backend errored" as "cannot tell". Three of those errors said `no applicable
+method for 'vcovHC' applied to an object of class "c('mlm', 'lm')"` -- which is
+not a failure to evaluate, it is the answer. A bug in a method nobody has written
+is not a bug. Everything older than 2008 fails differently and genuinely cannot be
+judged: `ERROR: a 'NAMESPACE' file is required`, because R made them mandatory,
+which is a hard floor on how far back R archaeology reaches at all.

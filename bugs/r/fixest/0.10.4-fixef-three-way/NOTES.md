@@ -92,3 +92,18 @@ nobody but `lfe`, so the load settles no question and only discards exposure. An
 the evidence was taken file-by-file before it was rolled up to the archive: 116 of
 the 245 scripts calling `felm` have no `library(lfe)` above them, because
 replication archives are multi-file and the master script does the loading.
+
+## How far back the toolchain reaches
+
+Wrong for **at least 0.8 years** -- 0.9.0 (2021-06-19) already has it -- and no
+older version could be judged. Every one of them fails the same way:
+`*** [parallel_funs.o] Error 1`. fixest is heavily templated C++, and releases
+before mid-2021 do not compile against a current compiler.
+
+So the wall here is neither the changelog nor the reproducer but the build. It is
+the R analogue of the ABI ceiling recorded for the scikit-learn record, and it
+bounds the archaeology the same way: a fix released long enough ago sits behind a
+toolchain nobody can reconstruct casually. The difference is that R's floor is
+usually about packaging conventions -- `NAMESPACE` became mandatory, which stops
+pre-2008 sources dead -- while a compiled package like this one hits its own wall
+much later and much harder.

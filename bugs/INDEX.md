@@ -33,18 +33,25 @@ Those counts are upper bounds, not comparable with uncensored ones.
 
 Changelogs record when a defect was fixed and almost never when it
 started: of 369 exposed entries, four name an introducing version. So
-these dates were measured by running the reproducer against archived
-versions until the behaviour changed, and every one carries how it was
-established.
+these were measured by running each record's own reproducer against
+archived versions until the behaviour changed.
 
-| bug | introduced | fixed | lived | evidence |
-|---|---|---|---|---|
-| [`r/sandwich/2.5-0-vcovhc-mlm-sign`](r/sandwich/2.5-0-vcovhc-mlm-sign/) | 2.2-4 (2009-12-07) | 2.5-0 (2018-08-17) | **8.7 years** | run against archived versions |
+Two columns, because a bisect answers two different questions. **Lived**
+is a measured lifetime: a version without the bug was found below a
+version with it. **At least** is what was observed when no such version
+could be reached -- the bug was already there in the oldest release that
+would still build and run, and how much older it is remains unknown.
 
-6 record(s) have no measured lifetime. That is not a
-short one: it means the introduction was never established, either
-because the reproducer could not be run against old enough versions
-or because nothing was tried.
+| bug | introduced | fixed | lived | at least | evidence |
+|---|---|---|---|---|---|
+| [`r/sandwich/2.5-0-vcovhc-mlm-sign`](r/sandwich/2.5-0-vcovhc-mlm-sign/) | 2.2-4 (2009-12-07) | 2.5-0 (2018-08-17) | **8.7 years** | -- | run against archived versions |
+| [`r/sandwich/3.0-2-vcovcl-hc2-glm`](r/sandwich/3.0-2-vcovcl-hc2-glm/) | before 2017-07-26 | 3.0-2 (2022-06-15) | -- | 4.9 years | not established |
+| [`r/fixest/0.10.4-fixef-three-way`](r/fixest/0.10.4-fixef-three-way/) | before 2021-06-19 | 0.10.4 (2022-03-31) | -- | 0.8 years | not established |
+
+4 terminal record(s) have no lifetime at all, and the
+reasons are worth separating. A bisect needs a dated fix to measure
+from, a reproducer that distinguishes *absent* from *broken*, and old
+versions that still build. Each of those failed at least once here.
 
 
 ## Did not survive verification

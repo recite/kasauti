@@ -120,6 +120,49 @@ entry reads "confidence intervals were incorrectly based upon alpha/2", and the
 **zero** corpus scripts, so that entry's real exposure is nil. Matching identifiers
 cannot tell a function name from a statistical symbol spelled the same way.
 
+## How long was it wrong
+
+A bug's lifetime cannot be read off the corpus. Of 369 exposed changelog entries,
+**four** name the version that introduced the defect and eleven call themselves
+regressions — so the left edge of every exposure window here starts out censored.
+The only way to get a real date is to run the code.
+
+`kasauti bug bisect` drives a verified record's own reproducer against archived
+CRAN versions and asks which of its two recorded outputs the run matches. No new
+oracle is needed: `results.buggy.json` and `results.fixed.json` were written when
+the bug was verified.
+
+**`sandwich`'s `vcovHC.mlm` sign error was wrong for 8.7 years** — introduced in
+2.2-4 (2009-12-07), fixed in 2.5-0 (2018-08-17), 31 releases apart. And it arrived
+*with* the feature: 2.2-3 has no `mlm` method at all. Nobody broke it; it was
+wrong when written, which is a different claim from a regression and is recorded
+as one.
+
+Four outcomes per probe, not two. `ABSENT` — the code does not exist in this
+version — is the one that matters: a bug in a method nobody has written is not a
+bug, and it bounds the search from below exactly as a working version would.
+Before that distinction existed, the same bisect tested 19 versions and gave up;
+with it, five probes settle the question.
+
+`UNEVALUABLE` stays separate from both. The old end of a version range is where
+things stop building, and collapsing "cannot tell" into "not buggy" would date
+every introduction to the last version that happened to compile.
+
+Three of four bisects did not bracket, each stopped by a different wall, and the
+walls are the finding:
+
+| record | result | what stopped it |
+|---|---|---|
+| `sandwich` 2.5-0 | **8.7 years**, bracketed | — |
+| `sandwich` 3.0-2 | at least 4.9 years | its reproducer wraps calls in `try(silent = TRUE)`, so "not implemented" and "broken" look identical |
+| `fixest` 0.10.4 | at least 0.8 years | templated C++ before mid-2021 will not compile against a current toolchain |
+| `plm` 1.5-13 | nothing | the changelog does not date 1.5-13, so there is no timeline to place anything on |
+
+An unbracketed bisect still yields a floor, and the floor is reported — but it is
+deliberately *not* written into `introduced_on`. Closing the window at a date the
+bug may predate would narrow it, and a window that is too narrow hides papers
+rather than over-counting them.
+
 ## The bug pipeline
 
 Five stages, each leaving a durable artifact, so a session picks up where the last

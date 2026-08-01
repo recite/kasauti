@@ -130,6 +130,13 @@ class Bug:
         fixed_on: Date that version was released.
         introduced_in: Version that introduced the defect, if known.
         introduced_on: Date that version was released, if known.
+        oldest_buggy_on: Release date of the oldest version a bisect actually
+            observed to have the bug. Recorded even when the introduction was
+            not bracketed, because "wrong at least this far back" is real
+            information. Deliberately *not* written into `introduced_on`: doing
+            so would close the exposure window at a date the bug may well
+            predate, and a window that is too narrow hides papers rather than
+            over-counting them.
         introduction_evidence: How the introduction was established --
             `bisected` (the reproducer was run against archived versions),
             `changelog` (the entry names the version), `birth` (the behaviour
@@ -166,6 +173,7 @@ class Bug:
     fixed_on: date | None = None
     introduced_in: str | None = None
     introduced_on: date | None = None
+    oldest_buggy_on: date | None = None
     introduction_evidence: str = "unknown"
     functions: list[str] = field(default_factory=list)
     condition_probe: str | None = None
@@ -232,6 +240,23 @@ class Bug:
         return (self.fixed_on - self.introduced_on).days
 
     @property
+    def lifetime_floor_days(self) -> int | None:
+        """How long the defect is *known* to have been live, at minimum.
+
+        Available from any bisect that found a buggy version, bracketed or not.
+        When the introduction was bracketed this equals `lifetime_days`; when it
+        was not -- because older versions will not build, or the reproducer
+        cannot tell "absent" from "broken" -- it is the part of the lifetime that
+        was actually observed.
+
+        Returns:
+            Days from the oldest observed buggy release to the fix, or None.
+        """
+        if self.oldest_buggy_on is None or self.fixed_on is None:
+            return None
+        return (self.fixed_on - self.oldest_buggy_on).days
+
+    @property
     def rank(self) -> tuple[int, int]:
         """Sort key: severity first, then narrowed exposure.
 
@@ -280,6 +305,9 @@ class Bug:
             "fixed_in": self.fixed_in,
             "fixed_on": self.fixed_on.isoformat() if self.fixed_on else None,
             "introduced_in": self.introduced_in,
+            "oldest_buggy_on": (
+                self.oldest_buggy_on.isoformat() if self.oldest_buggy_on else None
+            ),
             "introduction_evidence": self.introduction_evidence,
             "introduced_on": (
                 self.introduced_on.isoformat() if self.introduced_on else None
@@ -419,6 +447,7 @@ def load_bug(directory: Path, root: Path | None = None) -> Bug:
         fixed_on=_as_date(raw.get("fixed_on")),
         introduced_in=raw.get("introduced_in"),
         introduced_on=_as_date(raw.get("introduced_on")),
+        oldest_buggy_on=_as_date(raw.get("oldest_buggy_on")),
         introduction_evidence=raw.get("introduction_evidence", "unknown"),
         functions=list(raw.get("functions") or []),
         condition_probe=raw.get("condition_probe"),
@@ -527,8 +556,8 @@ def render_lifetimes(bugs: list[Bug]) -> list[str]:
     Returns:
         Markdown lines, or an empty list when nothing has a measured lifetime.
     """
-    dated = [b for b in bugs if b.lifetime_days is not None]
-    if not dated:
+    measured = [b for b in bugs if b.lifetime_floor_days is not None]
+    if not measured:
         return []
 
     out = [
@@ -536,32 +565,44 @@ def render_lifetimes(bugs: list[Bug]) -> list[str]:
         "",
         "Changelogs record when a defect was fixed and almost never when it",
         "started: of 369 exposed entries, four name an introducing version. So",
-        "these dates were measured by running the reproducer against archived",
-        "versions until the behaviour changed, and every one carries how it was",
-        "established.",
+        "these were measured by running each record's own reproducer against",
+        "archived versions until the behaviour changed.",
         "",
-        "| bug | introduced | fixed | lived | evidence |",
-        "|---|---|---|---|---|",
+        "Two columns, because a bisect answers two different questions. **Lived**",
+        "is a measured lifetime: a version without the bug was found below a",
+        "version with it. **At least** is what was observed when no such version",
+        "could be reached -- the bug was already there in the oldest release that",
+        "would still build and run, and how much older it is remains unknown.",
+        "",
+        "| bug | introduced | fixed | lived | at least | evidence |",
+        "|---|---|---|---|---|---|",
     ]
-    for bug in sorted(dated, key=lambda b: -(b.lifetime_days or 0)):
-        years = (bug.lifetime_days or 0) / 365.25
+    for bug in sorted(measured, key=lambda b: -(b.lifetime_floor_days or 0)):
+        floor = (bug.lifetime_floor_days or 0) / 365.25
         evidence = EVIDENCE_LABEL.get(
             bug.introduction_evidence, bug.introduction_evidence
         )
+        if bug.lifetime_days is not None:
+            lived = f"**{bug.lifetime_days / 365.25:.1f} years**"
+            introduced = f"{bug.introduced_in} ({bug.introduced_on})"
+            atleast = "--"
+        else:
+            lived = "--"
+            introduced = f"before {bug.oldest_buggy_on}"
+            atleast = f"{floor:.1f} years"
         out.append(
-            f"| [`{bug.id}`]({bug.id}/) | {bug.introduced_in} "
-            f"({bug.introduced_on}) | {bug.fixed_in} ({bug.fixed_on}) | "
-            f"**{years:.1f} years** | {evidence} |"
+            f"| [`{bug.id}`]({bug.id}/) | {introduced} | "
+            f"{bug.fixed_in} ({bug.fixed_on}) | {lived} | {atleast} | {evidence} |"
         )
 
-    censored = [b for b in bugs if b.lifetime_days is None and b.is_terminal]
-    if censored:
+    silent = [b for b in bugs if b.lifetime_floor_days is None and b.is_terminal]
+    if silent:
         out += [
             "",
-            f"{len(censored)} record(s) have no measured lifetime. That is not a",
-            "short one: it means the introduction was never established, either",
-            "because the reproducer could not be run against old enough versions",
-            "or because nothing was tried.",
+            f"{len(silent)} terminal record(s) have no lifetime at all, and the",
+            "reasons are worth separating. A bisect needs a dated fix to measure",
+            "from, a reproducer that distinguishes *absent* from *broken*, and old",
+            "versions that still build. Each of those failed at least once here.",
         ]
     out.append("")
     return out
@@ -756,6 +797,7 @@ FINDINGS_COLUMNS = [
     "introduced_on",
     "introduction_evidence",
     "lifetime_days",
+    "lifetime_floor_days",
     "papers_in_window",
     "papers_lag1",
     "papers_lag2",
@@ -790,6 +832,7 @@ def findings_rows(bugs: list[Bug]) -> list[dict[str, Any]]:
                 ),
                 "introduction_evidence": bug.introduction_evidence,
                 "lifetime_days": bug.lifetime_days,
+                "lifetime_floor_days": bug.lifetime_floor_days,
                 "functions": ";".join(bug.functions),
                 "category": bug.category,
                 "severity": bug.severity,
