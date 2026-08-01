@@ -413,8 +413,15 @@ def _last_archived(package: str) -> str | None:
 SUPPLY_DEPTH = 3
 
 
-def _supply(name: str, lib: Path, timeout: int, depth: int = SUPPLY_DEPTH) -> bool:
+def _supply(name: str, lib: Path, timeout: int, depth: int = SUPPLY_DEPTH) -> str:
     """Make one dependency available in a library, from CRAN or from the archive.
+
+    Returns the reason it could not be, rather than a bare failure. "dependency
+    `kinship` is not available" is true and useless: `kinship` is unavailable
+    because it needs `S.h`, the S-PLUS compatibility header R deleted, so
+    sixteen `plm` releases are blocked by a compiler and not by a missing file.
+    A recorded reason that names the symptom instead of the cause is how a wall
+    gets misfiled, and this ledger is meant to be read.
 
     Args:
         name: Package to supply.
@@ -423,33 +430,36 @@ def _supply(name: str, lib: Path, timeout: int, depth: int = SUPPLY_DEPTH) -> bo
         depth: How many further links of a deleted-dependency chain to follow.
 
     Returns:
-        Whether the package is present afterwards.
+        An empty string when the package is present afterwards, else why not.
     """
     if (lib / name).exists():
-        return True
+        return ""
 
-    log, _ = _rscript(
+    _rscript(
         f'install.packages("{name}", lib = "{lib}", repos = "{CRAN_MIRROR}")', timeout
     )
     if (lib / name).exists():
-        return True
+        return ""
     if depth <= 0:
-        return False
+        return f"{name}: dependency chain deeper than {SUPPLY_DEPTH}"
 
     newest = _last_archived(name)
     if not newest:
-        return False
+        return f"{name}: not on CRAN and not in the archive"
 
     url = f"{CRAN_ARCHIVE}/{name}/{name}_{newest}.tar.gz"
     build = f'install.packages("{url}", repos = NULL, type = "source", lib = "{lib}")'
     log, _ = _rscript(build, timeout)
     if (lib / name).exists():
-        return True
+        return ""
 
-    for wanted in missing_dependencies(log):
-        _supply(wanted, lib, timeout, depth - 1)
-    _rscript(build, timeout)
-    return (lib / name).exists()
+    deeper = [_supply(w, lib, timeout, depth - 1) for w in missing_dependencies(log)]
+    log, _ = _rscript(build, timeout)
+    if (lib / name).exists():
+        return ""
+
+    blocked = [reason for reason in deeper if reason]
+    return f"{name} {newest}: {blocked[0] if blocked else _tidy(log, 160)}"
 
 
 def missing_dependencies(log: str) -> list[str]:
@@ -547,14 +557,20 @@ def install(
         # A deleted package's own dependencies are often deleted too -- `Rcgmin`
         # wants `optextras` -- so the supply recurses, bounded. The alternative
         # is writing off the releases or writing a package manager.
-        for name in wanted:
-            _supply(name, lib, timeout)
+        unsupplied = [
+            reason for reason in (_supply(n, lib, timeout) for n in wanted) if reason
+        ]
 
         log, expired = _rscript(build, timeout)
         if expired:
             return None, f"timed out after {timeout}s"
         if (lib / package).exists():
             return lib, ""
+        if unsupplied:
+            # The dependency's own failure, not this package's complaint about
+            # it. Otherwise every one of these files under "a dependency CRAN
+            # deleted" when the truth is a compiler wall one level down.
+            return None, f"blocked by {unsupplied[0]}"
 
     include = header_include(log)
     if include is not None:
@@ -684,6 +700,8 @@ WALLS = (
         "a C function declared implicitly, which current compilers reject",
     ),
     ("libintl.h", "the C sources need gettext headers this machine does not have"),
+    ("S.h' file not found", "a dependency needing `S.h`, the S-PLUS header R deleted"),
+    ("blocked by", "a dependency that will not build either"),
     ("not available for package", "a dependency that is no longer on CRAN"),
     ("GDAL", "a geospatial system library this machine does not have"),
     ("too few arguments", "a C call whose R-internal signature has since changed"),

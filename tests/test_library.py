@@ -179,6 +179,58 @@ class TestMissingDependencies:
         assert library.missing_dependencies(log) == []
 
 
+class TestSupply:
+    def test_a_dependency_already_present_needs_nothing(self, tmp_path, monkeypatch):
+        monkeypatch.setattr(
+            library, "_rscript", lambda *a, **k: pytest.fail("should not install")
+        )
+        (tmp_path / "mnormt").mkdir()
+        assert library._supply("mnormt", tmp_path, 60) == ""
+
+    def test_a_dependency_the_archive_does_not_have_says_so(
+        self, tmp_path, monkeypatch
+    ):
+        monkeypatch.setattr(library, "_rscript", lambda *a, **k: ("", False))
+        monkeypatch.setattr(library, "_last_archived", lambda name: None)
+        assert "not in the archive" in library._supply("ghost", tmp_path, 60)
+
+    def test_the_reason_names_the_dependency_own_failure(self, tmp_path, monkeypatch):
+        # "dependency `kinship` is not available" is true and useless. kinship
+        # is unavailable because it needs S.h, the S-PLUS header R deleted, so
+        # sixteen plm releases are blocked by a compiler rather than by a
+        # missing file -- and filed under the wrong wall until this said so.
+        monkeypatch.setattr(
+            library,
+            "_rscript",
+            lambda *a, **k: (
+                "./coxmeS.h:15:10: fatal error: 'S.h' file not found",
+                False,
+            ),
+        )
+        monkeypatch.setattr(library, "_last_archived", lambda name: "1.1.3")
+
+        reason = library._supply("kinship", tmp_path, 60)
+        assert reason.startswith("kinship 1.1.3:")
+        assert "S.h" in reason
+
+    def test_the_chain_is_bounded(self, tmp_path, monkeypatch):
+        # A deleted package's dependencies are often deleted too, but past a
+        # few links the honest conclusion is that the release is out of reach,
+        # not that more effort is owed.
+        monkeypatch.setattr(
+            library,
+            "_rscript",
+            lambda *a, **k: (
+                "ERROR: dependency \u2018deeper\u2019 is not available",
+                False,
+            ),
+        )
+        monkeypatch.setattr(library, "_last_archived", lambda name: "1.0")
+        assert library._supply("outer", tmp_path, 60, depth=0) == (
+            f"outer: dependency chain deeper than {library.SUPPLY_DEPTH}"
+        )
+
+
 class TestHeaderInclude:
     def test_a_header_the_machine_has_is_located(self, tmp_path, monkeypatch):
         # `mgcv` fails on a header this machine owns, sitting in a prefix R was
