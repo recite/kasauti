@@ -1,0 +1,23 @@
+# A battery: functions chosen by corpus call volume (`kasauti frame battery`),
+# not by a changelog entry, so none declares a `fixed_in` and none is screened.
+#
+# `fixef` was third in the battery at 12 apportioned scripts, but it is an
+# accessor -- it returns what `lmer` already computed -- so it is exercised
+# inside both probes below rather than given one of its own.
+
+package: lme4
+
+probes:
+  - entry: lme4/lmer
+    script: lmer.R
+    functions: [lmer, fixef, VarCorr]
+    conditions: >
+      Battery probe, 33 corpus scripts. Fixed effects, variance components, and
+      the likelihood travel together because they fail differently.
+
+  - entry: lme4/glmer
+    script: glmer.R
+    functions: [glmer, fixef, VarCorr]
+    conditions: >
+      Battery probe, 12 corpus scripts. The generalised case, where the
+      likelihood is approximated and the approximation is a choice.
