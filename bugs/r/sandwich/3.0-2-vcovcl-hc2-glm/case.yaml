@@ -10,11 +10,11 @@ family: version_regression
 # Requires sandwich 3.0-1 in a side library:
 #   Rscript -e 'install.packages(
 #     "https://cran.r-project.org/src/contrib/Archive/sandwich/sandwich_3.0-1.tar.gz",
-#     repos = NULL, type = "source", lib = "/tmp/rlibs/sandwich_3.0-1")'
+#     repos = NULL, type = "source", lib = "${KASAUTI_RLIBS}/sandwich_3.0-1")'
 
 backends:
   - name: buggy
-    cmd: ["Rscript", "--vanilla", "run_r.R", "/tmp/rlibs/sandwich_3.0-1"]
+    cmd: ["Rscript", "--vanilla", "run_r.R", "${KASAUTI_RLIBS}/sandwich_3.0-1"]
     label: "sandwich 3.0-1 (before the fix)"
     optional: true
   - name: fixed

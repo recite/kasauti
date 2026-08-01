@@ -9,7 +9,7 @@ family: version_regression
 # Requires plm 1.5-12 in a side library:
 #   Rscript -e 'install.packages(
 #     "https://cran.r-project.org/src/contrib/Archive/plm/plm_1.5-12.tar.gz",
-#     repos = NULL, type = "source", lib = "/tmp/rlibs/plm_1.5-12")'
+#     repos = NULL, type = "source", lib = "${KASAUTI_RLIBS}/plm_1.5-12")'
 #
 # The comparison spans plm 1.5-12 to 2.6.7 -- a decade of releases, not one fix.
 # Only the singleton quantities isolate this entry; the balanced white2 gap
@@ -17,7 +17,7 @@ family: version_regression
 
 backends:
   - name: buggy
-    cmd: ["Rscript", "--vanilla", "run_r.R", "/tmp/rlibs/plm_1.5-12"]
+    cmd: ["Rscript", "--vanilla", "run_r.R", "${KASAUTI_RLIBS}/plm_1.5-12"]
     label: "plm 1.5-12 (before the fix)"
     optional: true
   - name: fixed

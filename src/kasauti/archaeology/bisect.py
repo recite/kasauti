@@ -12,11 +12,13 @@ two reference outputs -- `results.buggy.json` and `results.fixed.json` -- record
 when the bug was verified. Running that same script against an archived version
 and asking *which of the two it matches* needs no new oracle.
 
-Three outcomes per probe, never two. The old end of a version range is exactly
+Four outcomes per probe, never two. The old end of a version range is exactly
 where source packages stop building against a current toolchain, and collapsing
 "could not evaluate" into "not buggy" would date every introduction to the last
 version that happened to compile -- an answer that looks precise and is an
-artifact of the build environment.
+artifact of the build environment. `ABSENT` is the fourth and the one that
+earned its place: a bug in a method nobody has written yet is not a bug, and
+saying so bounds the search where "unevaluable" merely widens it.
 
 The result is a bracket, not a point: the newest version observed FIXED and the
 oldest observed BUGGY. Bisection also assumes the predicate is monotone -- that a
@@ -33,6 +35,8 @@ import tempfile
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
+
+from kasauti.archaeology import library
 
 BUGGY = "BUGGY"
 FIXED = "FIXED"
@@ -53,12 +57,6 @@ NOT_YET_IMPLEMENTED = (
     "unused argument",
     "unable to find an inherited method",
 )
-
-#: Where archived versions are installed, matching what the `case.yaml` backends
-#: already use so a bisect and a verification exercise the same library. A
-#: throwaway location on purpose: these are decade-old sources built only to be
-#: interrogated, and they must never join the environment the tool itself runs in.
-RLIBS = Path("/tmp/rlibs")  # noqa: S108
 
 
 @dataclass
@@ -132,49 +130,23 @@ class Bisection:
         return self.last_fixed is not None and self.last_fixed.outcome == ABSENT
 
 
-def install(package: str, version: str, timeout: int = 900) -> tuple[Path | None, str]:
-    """Install one archived CRAN version into its own library.
-
-    Args:
-        package: CRAN package name.
-        version: Version to install.
-        timeout: Seconds before giving up.
-
-    Returns:
-        A `(library_path, detail)` pair. The path is None when the build failed,
-        and `detail` carries the tail of the build log -- which is a result worth
-        keeping, since a version that cannot be built bounds how far back the
-        archaeology can reach.
-    """
-    lib = RLIBS / f"{package}_{version}"
-    if (lib / package).exists():
-        return lib, "already installed"
-    lib.mkdir(parents=True, exist_ok=True)
-
-    url = f"https://cran.r-project.org/src/contrib/Archive/{package}/{package}_{version}.tar.gz"
-    script = f'install.packages("{url}", repos = NULL, type = "source", lib = "{lib}")'
-    proc = subprocess.run(  # noqa: S603
-        ["Rscript", "--vanilla", "-e", script],  # noqa: S607
-        capture_output=True,
-        text=True,
-        check=False,
-        timeout=timeout,
-    )
-    if (lib / package).exists():
-        return lib, ""
-    return None, (proc.stderr or proc.stdout)[-400:]
-
-
 def run_backend(
-    directory: Path, cmd: list[str], lib: Path, timeout: int = 600
+    directory: Path,
+    cmd: list[str],
+    lib: Path,
+    timeout: int = 600,
+    data: Path | None = None,
 ) -> dict | None:
     """Run a record's backend script against an installed library.
 
     Args:
-        directory: The bug record's directory.
-        cmd: Backend argv from `case.yaml`, whose first flag is the library path.
+        directory: The bug record's directory, used as the working directory.
+        cmd: Backend argv from `case.yaml`, one argument of which names the
+            version library.
         lib: Library holding the version under test.
         timeout: Seconds before giving up.
+        data: Dataset to pass. Defaults to `data.csv` beside the record, which is
+            what a bug record carries; a screen points this at a shared fixture.
 
     Returns:
         The parsed result JSON, or None when the run failed or wrote nothing.
@@ -185,9 +157,11 @@ def run_backend(
 
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / "result.json"
-        argv = [*cmd, str(directory / "data.csv"), str(out)]
-        # The library path is the first flag in every version-pinned backend.
-        argv = [str(lib) if arg.startswith(str(RLIBS)) else arg for arg in argv]
+        argv = [
+            *library.substitute(cmd, lib),
+            str(data or directory / "data.csv"),
+            str(out),
+        ]
         try:
             subprocess.run(  # noqa: S603
                 argv,

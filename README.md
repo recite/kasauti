@@ -277,17 +277,30 @@ kasauti frame loads              # record which packages each script loads
 kasauti frame harvest            # fetch changelogs, releases, exports
 kasauti frame build              # rank the procedures the corpus calls
 kasauti classify report          # judged-vs-unjudged coverage, yield by package
+kasauti build audit              # how far back each package still installs
 make check                       # lint, types, tests
 ```
 
 Some cases need a pinned old package. They are marked `optional`, so the suite runs
-without them and reports the backend as skipped:
+without them and reports the backend as skipped. A pinned backend names its library
+as `${KASAUTI_RLIBS}/<package>_<version>` rather than a literal path — the variable
+defaults to `~/.cache/kasauti/rlibs` and can point anywhere:
 
 ```bash
 Rscript -e 'install.packages(
   "https://cran.r-project.org/src/contrib/Archive/sandwich/sandwich_2.4-0.tar.gz",
-  repos = NULL, type = "source", lib = "/tmp/rlibs/sandwich_2.4-0")'
+  repos = NULL, type = "source", lib = "~/.cache/kasauti/rlibs/sandwich_2.4-0")'
 ```
+
+**Every build is recorded, successes and failures alike.** `data/builds.csv` holds
+one row per `(package, version)` with the R version it was tried against, so a
+version that will not compile costs its timeout once rather than once per bisect,
+screen, and sweep. That ledger is also a measurement: `kasauti build audit` reads
+the **buildability floor** off it — the oldest release of each package that still
+installs against a current toolchain, which is the hard limit on how far back any
+of this can reach. `fixest` stops at 0.9.0 (2021-06-19), where its templated C++
+begins to fail; `sandwich` reaches 2.2-1 (2009-02-05), just past R making
+`NAMESPACE` mandatory.
 
 Python needs no side library — `uv` builds each environment on demand — but it does
 need the whole ABI-coupled stack pinned, which bounds how far back Python archaeology

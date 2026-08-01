@@ -15,11 +15,11 @@ family: version_regression
 # Requires sandwich 2.4-0 in a side library:
 #   Rscript -e 'install.packages(
 #     "https://cran.r-project.org/src/contrib/Archive/sandwich/sandwich_2.4-0.tar.gz",
-#     repos = NULL, type = "source", lib = "/tmp/rlibs/sandwich_2.4-0")'
+#     repos = NULL, type = "source", lib = "${KASAUTI_RLIBS}/sandwich_2.4-0")'
 
 backends:
   - name: buggy
-    cmd: ["Rscript", "--vanilla", "run_r.R", "/tmp/rlibs/sandwich_2.4-0"]
+    cmd: ["Rscript", "--vanilla", "run_r.R", "${KASAUTI_RLIBS}/sandwich_2.4-0"]
     label: "sandwich 2.4-0 (before the fix)"
     optional: true
   - name: fixed

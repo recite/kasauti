@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import sys
 from datetime import date
 from pathlib import Path
@@ -17,6 +18,8 @@ from milaan.compare import compare_case
 from milaan.loader import discover_cases, select_cases
 from milaan.runner import DEFAULT_TIMEOUT, run_case
 
+from kasauti.archaeology import library
+
 ROOT = Path(__file__).resolve().parents[2]
 
 #: Only bug records now. Cross-implementation comparisons moved to milaan; what
@@ -24,11 +27,21 @@ ROOT = Path(__file__).resolve().parents[2]
 #: runner executes because they write the same result schema.
 CASE_ROOTS = [ROOT / "bugs"]
 
+#: What built and what refused to. Tracked, because the set of versions that will
+#: not compile against a current toolchain is the hard limit on how far back this
+#: study can reach, and rediscovering it costs a timeout per version.
+LEDGER = ROOT / "data/builds.csv"
+
 
 @click.group()
 @click.version_option()
 def main() -> None:
     """Changelog archaeology: which package bugs reached published work."""
+    # Exported rather than written into each `case.yaml`, so a pinned backend can
+    # say `${KASAUTI_RLIBS}/sandwich_2.4-0` and stay portable. Only defaulted:
+    # setting it in the environment is how a second machine, or a scratch disk
+    # with room for 700 builds, gets used without editing any case.
+    os.environ.setdefault(library.ROOT_VARIABLE, str(library.DEFAULT_ROOT))
 
 
 @main.command("list")
@@ -362,11 +375,10 @@ def bug_bisect(bug_id: str, bugs_dir: Path, cache_root: Path, write: bool) -> No
 
     import yaml as _yaml
 
+    from kasauti.archaeology import library
     from kasauti.archaeology.bisect import (
-        RLIBS,
         Probe,
         classify_run,
-        install,
         run_backend,
         search,
     )
@@ -379,8 +391,13 @@ def bug_bisect(bug_id: str, bugs_dir: Path, cache_root: Path, write: bool) -> No
         click.echo(f"{bug_id}: no case.yaml, so there is no reproducer", err=True)
         sys.exit(1)
 
+    ledger = library.Ledger.load(LEDGER)
     spec = _yaml.safe_load(case.read_text())
-    pinned = [b for b in spec.get("backends", []) if str(RLIBS) in " ".join(b["cmd"])]
+    pinned = [
+        b
+        for b in spec.get("backends", [])
+        if any(library.mentions_root(arg) for arg in b["cmd"])
+    ]
     if not pinned:
         click.echo(
             f"{bug_id}: no version-pinned backend. This record distinguishes its "
@@ -417,7 +434,7 @@ def bug_bisect(bug_id: str, bugs_dir: Path, cache_root: Path, write: bool) -> No
     )
 
     def evaluate(version: str, released) -> Probe:
-        lib, detail = install(record.package, version)
+        lib, detail = library.ensure(record.package, version, ledger)
         if lib is None:
             return Probe(version, released, "UNEVALUABLE", f"build failed: {detail}")
         observed = run_backend(record.path, pinned[0]["cmd"], lib)
@@ -654,6 +671,58 @@ def classify_packages() -> list[str]:
     from kasauti.archaeology.taskviews import read_selection
 
     return [s.package for s in read_selection(PACKAGES_CSV)]
+
+
+@main.group()
+def build() -> None:
+    """Inspect what installs, and how far back it does."""
+
+
+@build.command("audit")
+@click.argument("packages", nargs=-1)
+@click.option("--ledger", type=click.Path(path_type=Path), default=LEDGER)
+@click.option(
+    "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
+)
+def build_audit(packages: tuple[str, ...], ledger: Path, cache_root: Path) -> None:
+    """Report how far back each package can be built.
+
+    Args:
+        packages: Packages to report on. Defaults to every package in the ledger.
+        ledger: Build ledger.
+        cache_root: Harvest cache, for the release history.
+    """
+    from kasauti.archaeology.harvest import harvest
+
+    book = library.Ledger.load(Path(ledger))
+    adopted = library.adopt(book)
+    if adopted:
+        click.echo(f"adopted {adopted} version(s) already installed under the root\n")
+
+    names = list(packages) or sorted({package for package, _ in book.builds})
+    if not names:
+        click.echo("nothing built yet", err=True)
+        sys.exit(1)
+
+    click.echo(
+        f"{'package':16} {'releases':>8} {'tried':>6} {'built':>6} {'failed':>7} "
+        f"{'floor':12} reaches back to"
+    )
+    for name in names:
+        releases = harvest(name, "cran", Path(cache_root)).releases
+        versions = [r.version for r in releases]
+        counts = library.reach(name, versions, book)
+        oldest = library.floor(name, versions, book)
+        dated = next((r.released for r in releases if r.version == oldest), None)
+        click.echo(
+            f"{name:16} {len(versions):8d} {counts['tried']:6d} {counts['built']:6d} "
+            f"{counts['failed']:7d} {oldest or '--':12} {dated or '--'}"
+        )
+    click.echo(
+        "\nThe floor is the oldest version that builds against this toolchain, not "
+        "the oldest\nthat exists. Everything before it is out of reach, and a bug "
+        "living there can be\nbounded but not dated."
+    )
 
 
 @main.group()
