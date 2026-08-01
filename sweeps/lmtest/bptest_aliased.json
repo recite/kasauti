@@ -1,0 +1,443 @@
+{
+  "changes": [
+    {
+      "after": "0.9-34",
+      "after_on": "2015-06-06",
+      "at": "0.9-35",
+      "at_on": "2017-02-11",
+      "exact": true,
+      "gaps": 0,
+      "max_reldiff": 0.3333333333333333,
+      "moved": [
+        "aliased.p.value",
+        "aliased.parameter"
+      ]
+    }
+  ],
+  "gaps": 12,
+  "observations": [
+    {
+      "detail": "build: ERROR: a 'NAMESPACE' file is required",
+      "quantities": {},
+      "released": "2001-12-01",
+      "state": "GAP",
+      "version": "0.9-0"
+    },
+    {
+      "detail": "build: ERROR: a 'NAMESPACE' file is required",
+      "quantities": {},
+      "released": "2003-11-21",
+      "state": "GAP",
+      "version": "0.9-5"
+    },
+    {
+      "detail": "build: ERROR: a 'NAMESPACE' file is required",
+      "quantities": {},
+      "released": "2004-01-30",
+      "state": "GAP",
+      "version": "0.9-6"
+    },
+    {
+      "detail": "build: ERROR: a 'NAMESPACE' file is required",
+      "quantities": {},
+      "released": "2004-11-02",
+      "state": "GAP",
+      "version": "0.9-8"
+    },
+    {
+      "detail": "build: ERROR: a 'NAMESPACE' file is required",
+      "quantities": {},
+      "released": "2004-11-29",
+      "state": "GAP",
+      "version": "0.9-9"
+    },
+    {
+      "detail": "build: ERROR: a 'NAMESPACE' file is required",
+      "quantities": {},
+      "released": "2005-01-21",
+      "state": "GAP",
+      "version": "0.9-10"
+    },
+    {
+      "detail": "build: ERROR: a 'NAMESPACE' file is required",
+      "quantities": {},
+      "released": "2005-04-27",
+      "state": "GAP",
+      "version": "0.9-11"
+    },
+    {
+      "detail": "build: ERROR: a 'NAMESPACE' file is required",
+      "quantities": {},
+      "released": "2005-05-31",
+      "state": "GAP",
+      "version": "0.9-12"
+    },
+    {
+      "detail": "build: ERROR: a 'NAMESPACE' file is required",
+      "quantities": {},
+      "released": "2005-11-30",
+      "state": "GAP",
+      "version": "0.9-13"
+    },
+    {
+      "detail": "build: ERROR: a 'NAMESPACE' file is required",
+      "quantities": {},
+      "released": "2006-01-18",
+      "state": "GAP",
+      "version": "0.9-14"
+    },
+    {
+      "detail": "build: ERROR: a 'NAMESPACE' file is required",
+      "quantities": {},
+      "released": "2006-05-24",
+      "state": "GAP",
+      "version": "0.9-15"
+    },
+    {
+      "detail": "build: ERROR: a 'NAMESPACE' file is required",
+      "quantities": {},
+      "released": "2006-08-07",
+      "state": "GAP",
+      "version": "0.9-16"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2006-08-12",
+      "state": "OBSERVED",
+      "version": "0.9-17"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2006-08-18",
+      "state": "OBSERVED",
+      "version": "0.9-18"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2007-04-23",
+      "state": "OBSERVED",
+      "version": "0.9-19"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2007-06-28",
+      "state": "OBSERVED",
+      "version": "0.9-20"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2007-07-26",
+      "state": "OBSERVED",
+      "version": "0.9-21"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2008-12-09",
+      "state": "OBSERVED",
+      "version": "0.9-22"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2009-02-05",
+      "state": "OBSERVED",
+      "version": "0.9-23"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2009-05-28",
+      "state": "OBSERVED",
+      "version": "0.9-24"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2009-11-18",
+      "state": "OBSERVED",
+      "version": "0.9-25"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2009-12-07",
+      "state": "OBSERVED",
+      "version": "0.9-26"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2010-07-26",
+      "state": "OBSERVED",
+      "version": "0.9-27"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2011-05-31",
+      "state": "OBSERVED",
+      "version": "0.9-28"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2011-09-16",
+      "state": "OBSERVED",
+      "version": "0.9-29"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2012-05-31",
+      "state": "OBSERVED",
+      "version": "0.9-30"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2013-04-20",
+      "state": "OBSERVED",
+      "version": "0.9-31"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2013-09-19",
+      "state": "OBSERVED",
+      "version": "0.9-32"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2014-01-23",
+      "state": "OBSERVED",
+      "version": "0.9-33"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.942825097390031,
+        "aliased.parameter": 3.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2015-06-06",
+      "state": "OBSERVED",
+      "version": "0.9-34"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.823889361273471,
+        "aliased.parameter": 2.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2017-02-11",
+      "state": "OBSERVED",
+      "version": "0.9-35"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.823889361273471,
+        "aliased.parameter": 2.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2018-04-04",
+      "state": "OBSERVED",
+      "version": "0.9-36"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.823889361273471,
+        "aliased.parameter": 2.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2019-04-30",
+      "state": "OBSERVED",
+      "version": "0.9-37"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.823889361273471,
+        "aliased.parameter": 2.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2020-09-09",
+      "state": "OBSERVED",
+      "version": "0.9-38"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.823889361273471,
+        "aliased.parameter": 2.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2021-11-07",
+      "state": "OBSERVED",
+      "version": "0.9-39"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "aliased.p.value": 0.823889361273471,
+        "aliased.parameter": 2.0,
+        "aliased.statistic": 0.38743805677383,
+        "clean.p.value": 0.823889361273471,
+        "clean.parameter": 2.0,
+        "clean.statistic": 0.38743805677383
+      },
+      "released": "2022-03-21",
+      "state": "OBSERVED",
+      "version": "0.9-40"
+    }
+  ],
+  "observed": 24,
+  "package": "lmtest",
+  "probe": "bptest_aliased.R"
+}

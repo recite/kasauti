@@ -1,0 +1,314 @@
+{
+  "changes": [
+    {
+      "after": "0.4.0",
+      "after_on": "2018-02-15",
+      "at": "0.6.0",
+      "at_on": "2018-03-28",
+      "exact": true,
+      "gaps": 0,
+      "max_reldiff": 1.2382675278838626e-05,
+      "moved": [
+        "estimate",
+        "+p.value",
+        "+std.error"
+      ]
+    },
+    {
+      "after": "0.8.0",
+      "after_on": "2018-06-02",
+      "at": "0.10.0",
+      "at_on": "2018-07-12",
+      "exact": true,
+      "gaps": 0,
+      "max_reldiff": 0.0,
+      "moved": [
+        "+statistic"
+      ]
+    }
+  ],
+  "gaps": 0,
+  "observations": [
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795367905336264
+      },
+      "released": "2018-01-29",
+      "state": "OBSERVED",
+      "version": "0.2.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795367905336264
+      },
+      "released": "2018-02-15",
+      "state": "OBSERVED",
+      "version": "0.4.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "std.error": 0.082129494504745
+      },
+      "released": "2018-03-28",
+      "state": "OBSERVED",
+      "version": "0.6.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "std.error": 0.082129494504745
+      },
+      "released": "2018-06-02",
+      "state": "OBSERVED",
+      "version": "0.8.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2018-07-12",
+      "state": "OBSERVED",
+      "version": "0.10.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2018-09-15",
+      "state": "OBSERVED",
+      "version": "0.12"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2018-11-06",
+      "state": "OBSERVED",
+      "version": "0.14"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2019-03-02",
+      "state": "OBSERVED",
+      "version": "0.16"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2019-05-26",
+      "state": "OBSERVED",
+      "version": "0.18.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2019-09-09",
+      "state": "OBSERVED",
+      "version": "0.20.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2020-03-19",
+      "state": "OBSERVED",
+      "version": "0.22.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2020-09-02",
+      "state": "OBSERVED",
+      "version": "0.24.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2020-09-07",
+      "state": "OBSERVED",
+      "version": "0.26.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2020-11-19",
+      "state": "OBSERVED",
+      "version": "0.28.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2021-01-07",
+      "state": "OBSERVED",
+      "version": "0.30.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2021-01-17",
+      "state": "OBSERVED",
+      "version": "0.30.2"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2021-11-07",
+      "state": "OBSERVED",
+      "version": "0.30.4"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2022-01-31",
+      "state": "OBSERVED",
+      "version": "0.30.6"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2022-07-04",
+      "state": "OBSERVED",
+      "version": "1.0.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2024-01-17",
+      "state": "OBSERVED",
+      "version": "1.0.2"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2024-03-31",
+      "state": "OBSERVED",
+      "version": "1.0.4"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "df": 72.0,
+        "estimate": 0.795358056553765,
+        "p.value": 1.12601873473736e-14,
+        "statistic": 9.6841952011261,
+        "std.error": 0.082129494504745
+      },
+      "released": "2025-02-28",
+      "state": "OBSERVED",
+      "version": "1.0.6"
+    }
+  ],
+  "observed": 22,
+  "package": "estimatr",
+  "probe": "dim_weights_and_blocks.R"
+}

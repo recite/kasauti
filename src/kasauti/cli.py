@@ -1000,6 +1000,108 @@ def _rebuild_changes(path: Path, sweeps: Path) -> int:
     return len(stored)
 
 
+@main.command("episodes")
+@click.option("--fixtures", type=click.Path(path_type=Path), default=ROOT / "fixtures")
+@click.option(
+    "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
+)
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=ROOT / "data/episodes.csv"
+)
+@click.option(
+    "--changes", type=click.Path(path_type=Path), default=ROOT / "data/changes.csv"
+)
+def episodes_command(
+    fixtures: Path, cache_root: Path, out: Path, changes: Path
+) -> None:
+    """Turn every stored timeline into durations, with their censoring.
+
+    Both tidy tables are written here, from the same pass over the same stored
+    timelines, because an episode table that disagreed with the change table it
+    was derived from would be the hardest kind of error to notice.
+
+    Args:
+        fixtures: Directory holding the fixture catalogues.
+        cache_root: Harvest cache, for the changelog text.
+        out: Destination episode CSV.
+        changes: Destination change CSV.
+    """
+    import yaml as _yaml
+
+    from kasauti.archaeology.episodes import build as build_episodes
+    from kasauti.archaeology.episodes import write_episodes
+    from kasauti.archaeology.harvest import harvest
+    from kasauti.archaeology.parse import parse_news
+    from kasauti.archaeology.sweep import Change, Observation
+
+    # Which functions a probe exercises comes from the catalogue that declares
+    # it, so the NEWS join asks about the same names the probe calls.
+    exercised: dict[tuple[str, str], list[str]] = {}
+    for catalogue in sorted(Path(fixtures).glob("*/screens.yaml")):
+        spec = _yaml.safe_load(catalogue.read_text())
+        for row in spec.get("screens", []):
+            key = (spec["package"], row["script"])
+            exercised.setdefault(key, []).extend(row.get("functions") or [])
+
+    parsed: dict[str, list] = {}
+    every = []
+    for file in sorted(SWEEPS.glob("*/*.json")):
+        payload = _json_load(file)
+        package, probe = payload["package"], payload["probe"]
+        if package not in parsed:
+            parsed[package] = parse_news(
+                harvest(package, "cran", Path(cache_root))
+            ).entries
+
+        observations = [
+            Observation(
+                version=o["version"],
+                released=date.fromisoformat(o["released"]) if o["released"] else None,
+                state=o["state"],
+                detail=o["detail"],
+                quantities=o["quantities"],
+            )
+            for o in payload["observations"]
+        ]
+        points = [
+            Change(
+                package=package,
+                probe=probe,
+                at=c["at"],
+                at_on=date.fromisoformat(c["at_on"]) if c["at_on"] else None,
+                after=c["after"],
+                after_on=date.fromisoformat(c["after_on"]) if c["after_on"] else None,
+                gaps=c["gaps"],
+                moved=c["moved"],
+                max_reldiff=c["max_reldiff"],
+            )
+            for c in payload["changes"]
+        ]
+        every.extend(
+            build_episodes(
+                points,
+                observations,
+                package,
+                probe,
+                entries=parsed[package],
+                functions=sorted(set(exercised.get((package, probe), []))),
+            )
+        )
+
+    write_episodes(every, Path(out))
+    total = _rebuild_changes(Path(changes), SWEEPS)
+
+    closed = [e for e in every if e.end == "CLOSED"]
+    documented = [e for e in closed if e.closed_documented]
+    click.echo(f"wrote {changes} -- {total} change point(s)")
+    click.echo(f"wrote {out} -- {len(every)} episode(s) from {len(parsed)} package(s)")
+    click.echo(
+        f"  {len(closed)} closed, {len(every) - len(closed)} still running at the "
+        f"last release\n  {len(documented)} of {len(closed)} closing changes are "
+        "named in the changelog"
+    )
+
+
 @main.group()
 def build() -> None:
     """Inspect what installs, and how far back it does."""

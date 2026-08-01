@@ -6,26 +6,78 @@ MatchIt,4.3.4,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 MatchIt,4.4.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 car,1.0-17,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
 car,1.0-18,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+estimatr,0.10.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 estimatr,0.12,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 estimatr,0.14,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.16,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.18.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.2.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.20.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.22.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.24.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.26.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.28.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.30.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.30.2,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.30.4,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.30.6,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 estimatr,0.4.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 estimatr,0.6.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,0.8.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,1.0.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,1.0.2,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,1.0.4,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+estimatr,1.0.6,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 fixest,0.10.3,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 fixest,0.10.4,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 fixest,0.8.4,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'
 fixest,0.9.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 lfe,2.4-1788,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,factor.c:27:12: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
 lfe,2.5-1968,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,demean.c:634:10: error: call to undeclared function 'NAMED'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+lmtest,0.9-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+lmtest,0.9-10,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+lmtest,0.9-11,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+lmtest,0.9-12,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+lmtest,0.9-13,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+lmtest,0.9-14,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+lmtest,0.9-15,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+lmtest,0.9-16,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+lmtest,0.9-17,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-18,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-19,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-20,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-21,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-22,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-23,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-24,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-25,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-26,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-27,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-28,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-29,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-30,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-31,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-32,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-33,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 lmtest,0.9-34,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 lmtest,0.9-35,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-36,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-37,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-38,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-39,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-40,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+lmtest,0.9-5,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+lmtest,0.9-6,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+lmtest,0.9-8,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+lmtest,0.9-9,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
 mgcv,0.5-3,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
 mgcv,0.6-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
-mgcv,1.8-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./general.h:4:10: fatal error: 'libintl.h' file not found
-mgcv,1.8-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./general.h:4:10: fatal error: 'libintl.h' file not found
+mgcv,1.8-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"mat.c:218:33: error: too few arguments to function call, expected 15, have 13"
+mgcv,1.8-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"mat.c:218:33: error: too few arguments to function call, expected 15, have 13"
 mgcv,1.8-10,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"discrete.c:84:66: error: too few arguments to function call, expected 12, have 11"
 mgcv,1.8-42,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 mgcv,1.8-9,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"discrete.c:84:66: error: too few arguments to function call, expected 12, have 11"
-mgcv,1.9-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,./general.h:4:10: fatal error: 'libintl.h' file not found
+mgcv,1.9-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"144 | { error(_(""An out of bound write to matrix has occurred!""),1);"
 mice,3.16.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 mice,3.17.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 plm,1.2-5,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: dependency ‘kinship’ is not available for package ‘plm’
@@ -34,6 +86,36 @@ plm,1.2-7,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 plm,1.2-8,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 plm,1.4-0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 plm,1.5-12,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-17,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-18,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-23,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-25,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-27,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-33,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-42,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-51,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-58,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-61,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-62,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-63,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-65,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-67,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-70,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-72,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-74,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-75,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-76,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-77,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-78,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-80,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-81,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-83,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-85,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-87,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-88,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-89,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-90,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+psych,1.0-91,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 psych,1.5.8,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 psych,1.6.4,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 psych,1.8.12,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
@@ -42,6 +124,21 @@ psych,2.4.3,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 psych,2.4.6.26,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 randomForest,4.5-32,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,classTree.c:302:36: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
 randomForest,4.5-33,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,classTree.c:302:36: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+sandwich,0.1-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+sandwich,0.1-2,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+sandwich,0.1-3,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+sandwich,0.9-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+sandwich,1.0-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+sandwich,1.0-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+sandwich,1.1-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+sandwich,1.1-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+sandwich,1.9-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,ERROR: a 'NAMESPACE' file is required
+sandwich,2.0-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"Error in parse_Rd(""/private/var/folders/ks/1g8bn5m566n_w4l5hwwjv4180000gn/T/RtmpmnsrFO/R.INSTALLaade389c9f4f/sandwich/man/vcovHAC.Rd"", :"
+sandwich,2.0-1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"Error in parse_Rd(""/private/var/folders/ks/1g8bn5m566n_w4l5hwwjv4180000gn/T/RtmpeTIkgr/R.INSTALLab0f238aa976/sandwich/man/vcovHAC.Rd"", :"
+sandwich,2.0-2,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"Error in parse_Rd(""/private/var/folders/ks/1g8bn5m566n_w4l5hwwjv4180000gn/T/RtmpZ9DgZJ/R.INSTALLab441a6f5c2b/sandwich/man/vcovHAC.Rd"", :"
+sandwich,2.0-3,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"Error in parse_Rd(""/private/var/folders/ks/1g8bn5m566n_w4l5hwwjv4180000gn/T/RtmpMJonOl/R.INSTALLab78317373b8/sandwich/man/vcovHAC.Rd"", :"
+sandwich,2.1-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"Error in parse_Rd(""/private/var/folders/ks/1g8bn5m566n_w4l5hwwjv4180000gn/T/Rtmp3KfiWu/R.INSTALLabae4f0df16/sandwich/man/vcovHAC.Rd"", :"
+sandwich,2.2-0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,"Error in parse_Rd(""/private/var/folders/ks/1g8bn5m566n_w4l5hwwjv4180000gn/T/RtmpGyjbGV/R.INSTALLabdf2973e292/sandwich/man/vcovHAC.Rd"", :"
 sandwich,2.2-1,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 sandwich,2.2-10,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 sandwich,2.2-2,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
@@ -59,7 +156,13 @@ sandwich,2.3-3,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 sandwich,2.3-4,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 sandwich,2.4-0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 sandwich,2.5-0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+sandwich,2.5-1,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+sandwich,3.0-0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 sandwich,3.0-1,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+sandwich,3.0-2,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+sandwich,3.1-0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+sandwich,3.1-1,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+sandwich,3.1-2,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 sf,0.5-2,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,configure: error: pcs.csv not found in GDAL data directory.
 sf,0.5-3,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,configure: error: pcs.csv not found in GDAL data directory.
 sf,1.0-0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
