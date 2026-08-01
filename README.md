@@ -212,6 +212,44 @@ packages rather than pooled over episodes, a cluster bootstrap over packages for
 the documented share, and a package frailty term in the duration model, because a
 frailty leans on a parametric random effect a bootstrap does not.
 
+## What the first sweep measured
+
+Six packages, 14 probes, **851 release-runs**: 38 episodes, 24 of them closed.
+`make analysis` reproduces every number; `docs/estimands.txt` is its output.
+
+**About two in five result-changing releases are not described in the changelog.**
+Collapsing probe-level detections to the release — two `estimatr` probes call the
+same function, so one event was being counted twice — gives **11 of 18 documented
+(61%)**, cluster bootstrap over packages **[54%, 86%]**. That share is not
+estimable from inside a changelog-first design at all: an undocumented change is
+exactly what such a design cannot see.
+
+**Result changes are rare per release and long-lived when they happen.** About
+**0.15 changes per probe-year**. Median episode length **1109 days** by the
+Turnbull estimate, longest observed span 5394 days. A Weibull AFT puts the scale
+at **1.68** — hazard *decreasing* in duration, so the longer a value has held the
+less likely it is to change next. Package fixed effects are jointly
+indistinguishable from zero (χ² = 7.19 on 5 df, p = 0.21), which at 38 episodes
+is what honesty looks like rather than evidence packages are alike.
+
+**Four of 24 changes are a quantity appearing or vanishing**, not moving —
+`estimatr` 0.6.0 began returning a standard error where 0.4.0 returned nothing.
+Those carry `max_reldiff = 0`, so they are counted apart rather than dragging the
+magnitude summary toward zero. Of the 20 numeric changes, **13 moved a number by
+more than 1%**.
+
+Three limits stated in the same breath, because they all cut the same way:
+
+- **Coverage varies enormously.** `psych` and `estimatr` are fully buildable;
+  `survival` is **12 of 94 releases (13%)**, so its one episode is nearly all the
+  history that can be seen.
+- **Right-censoring is heavy enough to break an interval.** Zero of 1000 cluster
+  resamples reached a median, and the script says so instead of omitting it.
+- **Package as a fixed effect, not a frailty.** `survreg` implements no frailty
+  term, `coxph` takes no interval censoring, and a variance component from six
+  clusters would be barely identified anyway. A random effect becomes the right
+  tool when the package count grows, not before.
+
 ## Usage, measured three ways
 
 Corpus exposure answers *which published paper could this bug have reached*, and

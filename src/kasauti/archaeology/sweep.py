@@ -101,6 +101,22 @@ class Change:
         """
         return self.gaps == 0
 
+    @property
+    def shape_only(self) -> bool:
+        """Whether nothing shared moved and the returned object changed shape.
+
+        `max_reldiff` is 0 for these, which reads as "nothing happened" and is
+        the opposite of the truth: `estimatr` 0.6.0 began returning a standard
+        error where 0.4.0 returned nothing at all. Flagged so a reader is never
+        asked to infer a real change from a zero.
+
+        Returns:
+            True when every moved entry is an appearance or a disappearance.
+        """
+        return bool(self.moved) and all(
+            name.startswith(("+", "-")) for name in self.moved
+        )
+
 
 @dataclass
 class Timeline:
@@ -172,6 +188,7 @@ class Timeline:
                             "after_on": c.after_on.isoformat() if c.after_on else None,
                             "gaps": c.gaps,
                             "exact": c.exact,
+                            "shape_only": c.shape_only,
                             "moved": c.moved,
                             "max_reldiff": c.max_reldiff,
                         }
@@ -346,6 +363,7 @@ CHANGE_COLUMNS = [
     "after_on",
     "gaps",
     "exact",
+    "shape_only",
     "n_moved",
     "max_reldiff",
     "moved",
@@ -376,6 +394,7 @@ def write_changes(changes: list[Change], path: Path) -> None:
                     "after_on": change.after_on or "",
                     "gaps": change.gaps,
                     "exact": int(change.exact),
+                    "shape_only": int(change.shape_only),
                     "n_moved": len(change.moved),
                     "max_reldiff": f"{change.max_reldiff:.12g}",
                     "moved": ";".join(change.moved),
