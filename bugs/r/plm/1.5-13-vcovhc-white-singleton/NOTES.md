@@ -43,11 +43,11 @@ covariance matrix. Reading the sentence gets you that. Only running it gets you
 the truth.
 
 That has a consequence for the headline number. `docs/classification.md` reports
-90 entries that could have moved a number in a published table, of which 86 are
+110 entries that could have moved a number in a published table, of which 109 are
 silent result-changing bugs. That figure comes from reading, and reading has now
 been shown to be wrong in this direction at least once. Four bugs have been
 verified; **one had its classification overturned**. One in four is far too small
-a sample to correct the 90 by, but it is large enough to say the 90 is an upper
+a sample to correct the 110 by, but it is large enough to say the 110 is an upper
 bound rather than an estimate, and that the way to tighten it is to run more of
 them.
 

@@ -180,15 +180,6 @@ def _get(url: str) -> str:
     return response.text
 
 
-def available_views() -> list[str]:
-    """List every task view CRAN currently publishes.
-
-    Returns:
-        View names, sorted.
-    """
-    return sorted(set(VIEW_NAME.findall(_get(f"{CRAN_VIEWS}/"))))
-
-
 def fetch_views(names: list[str]) -> dict[str, list[str]]:
     """Fetch the package membership of each named task view.
 

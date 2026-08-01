@@ -567,6 +567,55 @@ def frame_packages(views_cache, usage_csv, out, min_usage) -> None:
 CORPUS = Path.home() / "Documents/GitHub/softverse/outputs/scripts"
 
 
+@frame.command("extract")
+@click.option("--corpus", type=click.Path(path_type=Path), default=CORPUS)
+@click.option(
+    "--out",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/call_sites.csv",
+)
+@click.option(
+    "--report",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/extraction_report.json",
+)
+def frame_extract(corpus, out, report) -> None:
+    """Recover every function call in the corpus, using each language's parser."""
+    import json as _json
+
+    from kasauti.archaeology.calls import extract_python, extract_r, write_call_sites
+
+    corpus = Path(corpus)
+    if not corpus.exists():
+        click.echo(f"no corpus at {corpus}", err=True)
+        sys.exit(1)
+
+    r_files = sorted(p for s in (".R", ".r") for p in corpus.rglob(f"*{s}"))
+    py_files = sorted(corpus.rglob("*.py"))
+    click.echo(f"extracting from {len(r_files)} R and {len(py_files)} Python scripts")
+
+    reports = [extract_r(r_files), extract_python(py_files)]
+    write_call_sites(reports, Path(out))
+
+    coverage = {}
+    for item in reports:
+        coverage[item.language] = {
+            "files_seen": item.files_seen,
+            "files_parsed": item.files_parsed,
+            "files_failed": item.files_failed,
+            "parse_rate": round(item.parse_rate, 4),
+            "call_sites": len(item.call_sites),
+        }
+        # Scripts that fail to parse are counted, never dropped: the rate is a
+        # property of the archives, and hiding it would overstate coverage.
+        click.echo(
+            f"{item.language:7s} {item.files_parsed}/{item.files_seen} parsed "
+            f"({item.parse_rate:.1%}), {len(item.call_sites)} call sites"
+        )
+    Path(report).write_text(_json.dumps(coverage, indent=2))
+    click.echo(f"wrote {out} and {report}")
+
+
 @frame.command("loads")
 @click.option("--corpus", type=click.Path(path_type=Path), default=CORPUS)
 @click.option(

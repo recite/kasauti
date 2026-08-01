@@ -229,6 +229,8 @@ kasauti bug probe <bug-id>       # narrow exposure by the conditions probe
 kasauti bug papers <bug-id>      # resolve scripts to DOIs, dates, journals
 kasauti bug rank                 # order candidates by estimated paper reach
 kasauti frame packages           # select packages: task views ∩ corpus usage
+kasauti frame extract            # recover call sites from the corpus
+kasauti frame loads              # record which packages each script loads
 kasauti frame harvest            # fetch changelogs, releases, exports
 kasauti frame build              # rank the procedures the corpus calls
 kasauti classify report          # judged-vs-unjudged coverage, yield by package
@@ -266,8 +268,8 @@ release notes, not about their correctness. Raw bug counts across packages measu
 candor at least as much as bugginess, so NEWS thoroughness travels with every count.
 
 **The classification tail is unread, not cleared.** Every entry is judged by hand, so
-the queue is finite: 228 of 409 exposed entries are read, worked in descending
-exposure, and nothing in the unjudged 181 touches more than 25 corpus scripts.
+the queue is finite: **207 of 369** exposed entries are read, worked in descending
+exposure, and nothing in the unjudged 162 touches more than 25 corpus scripts.
 `kasauti classify report` states this each time it runs. A bug sitting in that tail
 has not been ruled out; it has not been looked at.
 

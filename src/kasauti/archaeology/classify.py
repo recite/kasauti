@@ -14,16 +14,22 @@ Two things the classifier is asked for that the regex cannot supply:
   intentional, documented, and silently altered every RNG-dependent result in
   the literature. A rate that counts only "bugs" misses it.
 
-Entries are classified in bulk through the Batches API, which is half price and
-has no latency requirement here, and cached on disk by entry id so that
-re-running the downstream analysis costs nothing.
+Entries are classified by reading them, one session at a time, and cached on disk
+by entry id so re-running the downstream analysis costs nothing. `classify
+pending` writes a queue in descending corpus exposure, the judgments come back
+through `classify ingest`, and `classify report` measures the regular-expression
+baseline against them.
+
+There was once a Batches API path here as well. It was removed rather than left
+dormant: every one of the cached records carries `source: "agent"`, none carries
+`source: "api"`, so the code was describing a way of working that was never used
+and the module docstring was advertising it as the live one. Recoverable from git
+if bulk classification ever becomes worth the dependency.
 """
 
 from __future__ import annotations
 
 import json
-import os
-import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
@@ -43,7 +49,8 @@ MODEL = "claude-opus-5"
 #:   sampled, because in changelog prose "error" means a mistake in the code
 #:   rather than a raised exception.
 #: * `agent` -- read and judged in a Claude Code session.
-#: * `api` -- classified through the Batches API by `submit_batch`.
+#: * `api` -- classified through a model API. No record carries this today; the
+#:   value is kept so a cache written by some future bulk path stays readable.
 Source = Literal["rules", "agent", "api"]
 
 #: Categories an entry can fall into. `BEHAVIOR_CHANGE` is deliberately separate
@@ -59,6 +66,10 @@ Category = Literal[
     "UNCLEAR",
 ]
 
+#: The standard the reading follows. Written for a model prompt originally, and
+#: kept after that path was removed because a hand classification needs a stated
+#: rubric more than an automated one does -- it is the only thing making 207
+#: separate judgments comparable to each other.
 RUBRIC = """\
 You are classifying entries from the changelog of a statistics package, to \
 establish which past releases could have changed the numbers in a published \
@@ -167,27 +178,6 @@ class Classification(BaseModel):
         return self.category == "RESULT_CHANGING" and self.silent
 
 
-def entry_prompt(entry: Entry) -> str:
-    """Render one entry into a classification prompt.
-
-    Package and version are included because they carry real signal -- a
-    `survival` entry naming `coxph` is about a model fit, and the same words in
-    a plotting package are not.
-
-    Args:
-        entry: The changelog entry.
-
-    Returns:
-        The user-turn text.
-    """
-    released = entry.released.isoformat() if entry.released else "unknown"
-    return (
-        f"Package: {entry.package}\n"
-        f"Version: {entry.version} (released {released})\n"
-        f"Entry: {entry.text}"
-    )
-
-
 class ClassificationCache:
     """Disk cache of classifications, keyed by entry id.
 
@@ -242,158 +232,6 @@ class ClassificationCache:
             Number of cached entries.
         """
         return len(self._data)
-
-
-def _client():
-    """Construct an Anthropic client.
-
-    Returns:
-        The client.
-
-    Raises:
-        RuntimeError: If no credentials are configured, with the two ways to
-            supply them.
-    """
-    try:
-        import anthropic
-    except ImportError as exc:  # pragma: no cover - dependency is declared
-        raise RuntimeError("pip install anthropic") from exc
-
-    if not os.environ.get("ANTHROPIC_API_KEY") and not os.environ.get(
-        "ANTHROPIC_AUTH_TOKEN"
-    ):
-        # A profile from `ant auth login` also works and needs no env var, so
-        # this is a warning path rather than a hard precondition -- the client
-        # constructor resolves it. Only raise once the call itself fails.
-        pass
-    return anthropic.Anthropic()
-
-
-def classify_entries(
-    entries: list[Entry], cache: ClassificationCache
-) -> dict[str, Classification]:
-    """Classify entries one at a time, reusing the cache.
-
-    Suited to spot-checking and small reruns. Use `submit_batch` for the corpus.
-
-    Args:
-        entries: Entries to classify.
-        cache: Cache to read from and write to.
-
-    Returns:
-        Entry id to classification.
-    """
-    client = _client()
-    out: dict[str, Classification] = {}
-    for entry in entries:
-        cached = cache.get(entry.entry_id)
-        if cached:
-            out[entry.entry_id] = cached
-            continue
-        response = client.messages.parse(
-            model=MODEL,
-            max_tokens=2048,
-            system=RUBRIC,
-            output_format=Classification,
-            messages=[{"role": "user", "content": entry_prompt(entry)}],
-        )
-        parsed = response.parsed_output
-        if parsed is None:
-            continue
-        out[entry.entry_id] = parsed
-        cache.put(entry.entry_id, parsed)
-    cache.save()
-    return out
-
-
-def submit_batch(entries: list[Entry], cache: ClassificationCache) -> str | None:
-    """Submit uncached entries to the Batches API.
-
-    Args:
-        entries: Entries to classify.
-        cache: Cache used to skip already-classified entries.
-
-    Returns:
-        The batch id, or None if every entry was already cached.
-    """
-    from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
-    from anthropic.types.messages.batch_create_params import Request
-
-    pending = [e for e in entries if cache.get(e.entry_id) is None]
-    if not pending:
-        return None
-
-    schema = Classification.model_json_schema()
-    schema["additionalProperties"] = False
-    requests = [
-        Request(
-            custom_id=f"e{index}",
-            params=MessageCreateParamsNonStreaming(
-                model=MODEL,
-                max_tokens=2048,
-                system=RUBRIC,
-                output_config={"format": {"type": "json_schema", "schema": schema}},
-                messages=[{"role": "user", "content": entry_prompt(entry)}],
-            ),
-        )
-        for index, entry in enumerate(pending)
-    ]
-
-    client = _client()
-    batch = client.messages.batches.create(requests=requests)
-    # custom_id must be short, so the index-to-entry mapping is written beside
-    # the cache rather than encoded in the id.
-    mapping = {f"e{i}": e.entry_id for i, e in enumerate(pending)}
-    (cache.path.parent / f"batch_{batch.id}.json").write_text(
-        json.dumps({"batch_id": batch.id, "mapping": mapping}, indent=2)
-    )
-    return batch.id
-
-
-def collect_batch(
-    batch_id: str, cache: ClassificationCache, poll_seconds: int = 60
-) -> int:
-    """Wait for a batch to finish and fold its results into the cache.
-
-    Args:
-        batch_id: Batch to collect.
-        cache: Cache to write into.
-        poll_seconds: Seconds between status checks.
-
-    Returns:
-        How many classifications were added.
-
-    Raises:
-        RuntimeError: If the batch's id mapping is missing.
-    """
-    mapping_path = cache.path.parent / f"batch_{batch_id}.json"
-    if not mapping_path.exists():
-        raise RuntimeError(f"no id mapping for batch {batch_id}")
-    mapping = json.loads(mapping_path.read_text())["mapping"]
-
-    client = _client()
-    while True:
-        batch = client.messages.batches.retrieve(batch_id)
-        if batch.processing_status == "ended":
-            break
-        time.sleep(poll_seconds)
-
-    added = 0
-    for result in client.messages.batches.results(batch_id):
-        if result.result.type != "succeeded":
-            continue
-        entry_id = mapping.get(result.custom_id)
-        if not entry_id:
-            continue
-        text = next(
-            (b.text for b in result.result.message.content if b.type == "text"), None
-        )
-        if not text:
-            continue
-        cache.put(entry_id, Classification(**json.loads(text)))
-        added += 1
-    cache.save()
-    return added
 
 
 def classify_by_rules(entry: Entry) -> Classification:

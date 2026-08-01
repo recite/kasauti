@@ -19,7 +19,6 @@ dependencies = [
     # uses to ask whether R agrees with Python, so the two share one runner.
     "milaan",
     "requests>=2.31",
-    "anthropic>=0.69",
     "pydantic>=2.0",
 ]
 
