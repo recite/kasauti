@@ -12,6 +12,7 @@ build/
 # and are reproducible from it, so they are not tracked.
 cases/**/data.csv
 cases/**/results.*.json
+fixtures/**/data.csv
 reports/*.md
 reports/*.json
 !reports/.gitkeep

@@ -1,0 +1,18 @@
+# Which changelog claims this fixture tests, and how.
+#
+# The catalogue sits beside the fixture because the two are edited together: a
+# new claim usually means a new script over the same data, and occasionally a new
+# column. The version to compare against is not written here -- it is the release
+# immediately preceding `fixed_in`, which the harvested release history knows.
+
+package: sandwich
+
+screens:
+  - entry: sandwich@2.5-0#7
+    fixed_in: 2.5-0
+    script: vcovhc_mlm.R
+    functions: [vcovHC]
+    conditions: >
+      Multivariate lm only. The off-diagonal (cross-equation) blocks lost the
+      sign of the underlying residuals; the diagonal is unaffected because the
+      cross product squares them.

@@ -32,6 +32,24 @@ CASE_ROOTS = [ROOT / "bugs"]
 #: study can reach, and rediscovering it costs a timeout per version.
 LEDGER = ROOT / "data/builds.csv"
 
+#: One JSON per screened changelog claim. Tracked: a claim that was tested and
+#: moved nothing is a result, and the denominator is the point of screening.
+SCREENS = ROOT / "screens"
+
+
+def _json_load(path: Path) -> dict:
+    """Read a JSON file.
+
+    Args:
+        path: File to read.
+
+    Returns:
+        Its parsed contents.
+    """
+    import json as _json
+
+    return _json.loads(path.read_text())
+
 
 @click.group()
 @click.version_option()
@@ -671,6 +689,180 @@ def classify_packages() -> list[str]:
     from kasauti.archaeology.taskviews import read_selection
 
     return [s.package for s in read_selection(PACKAGES_CSV)]
+
+
+def screen_requests(fixtures: Path, packages: list[str] | None = None) -> list:
+    """Read every screen the fixture catalogues declare.
+
+    Args:
+        fixtures: Directory holding one subdirectory per package.
+        packages: Packages to read. Defaults to all of them.
+
+    Returns:
+        The requests, in catalogue order.
+    """
+    import yaml as _yaml
+
+    from kasauti.archaeology.screen import Request
+
+    requests = []
+    for catalogue in sorted(Path(fixtures).glob("*/screens.yaml")):
+        spec = _yaml.safe_load(catalogue.read_text())
+        package = spec["package"]
+        if packages and package not in packages:
+            continue
+        for row in spec.get("screens", []):
+            requests.append(
+                Request(
+                    entry_id=row["entry"],
+                    package=package,
+                    fixed_in=str(row["fixed_in"]),
+                    script=row["script"],
+                    functions=list(row.get("functions") or []),
+                    conditions=(row.get("conditions") or "").strip(),
+                )
+            )
+    return requests
+
+
+@main.group()
+def screen() -> None:
+    """Test a changelog claim against the release before the fix."""
+
+
+@screen.command("queue")
+@click.option("--fixtures", type=click.Path(path_type=Path), default=ROOT / "fixtures")
+def screen_queue(fixtures: Path) -> None:
+    """List every claim a fixture catalogue declares, and whether it has run.
+
+    Args:
+        fixtures: Directory holding the fixture catalogues.
+    """
+    requests = screen_requests(Path(fixtures))
+    if not requests:
+        click.echo(f"no screens declared under {fixtures}", err=True)
+        sys.exit(1)
+
+    click.echo(f"{'entry':24} {'script':24} {'verdict':16} detail")
+    for request in requests:
+        path = SCREENS / request.package / f"{request.slug}.json"
+        if path.exists():
+            found = _json_load(path)
+            verdict, detail = found["verdict"], found["detail"]
+        else:
+            verdict, detail = "--", "not run"
+        click.echo(f"{request.entry_id:24} {request.script:24} {verdict:16} {detail}")
+
+
+@screen.command("run")
+@click.argument("entries", nargs=-1)
+@click.option("--fixtures", type=click.Path(path_type=Path), default=ROOT / "fixtures")
+@click.option("--package", multiple=True, help="Screen a whole package.")
+@click.option("--ledger", type=click.Path(path_type=Path), default=LEDGER)
+@click.option(
+    "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
+)
+@click.option("--force", is_flag=True, help="Re-run screens already on disk.")
+def screen_run(
+    entries: tuple[str, ...],
+    fixtures: Path,
+    package: tuple[str, ...],
+    ledger: Path,
+    cache_root: Path,
+    force: bool,
+) -> None:
+    """Run screens and write one JSON per claim.
+
+    Args:
+        entries: Changelog entry ids to screen. Defaults to everything declared.
+        fixtures: Directory holding the fixture catalogues.
+        package: Restrict to these packages.
+        ledger: Build ledger.
+        cache_root: Harvest cache, for the release history.
+        force: Re-run screens that already have a result on disk.
+    """
+    import subprocess as _subprocess
+
+    from kasauti.archaeology import screen as screening
+    from kasauti.archaeology.harvest import harvest
+
+    requests = screen_requests(Path(fixtures), list(package) or None)
+    if entries:
+        requests = [r for r in requests if r.entry_id in entries]
+    if not requests:
+        click.echo("no screens selected", err=True)
+        sys.exit(1)
+
+    book = library.Ledger.load(Path(ledger))
+    generated: set[Path] = set()
+    counts: dict[str, int] = {}
+
+    for request in requests:
+        out = SCREENS / request.package / f"{request.slug}.json"
+        if out.exists() and not force:
+            click.echo(f"{request.entry_id}: already screened (--force to re-run)")
+            continue
+
+        directory = Path(fixtures) / request.package
+        data = directory / "data.csv"
+        if directory not in generated:
+            # Regenerated rather than tracked, on the same reasoning the cases
+            # use: the generator is the artifact, the CSV is its output.
+            _subprocess.run(  # noqa: S603
+                ["python3", str(directory / "data.py")],  # noqa: S607
+                cwd=directory,
+                check=True,
+                capture_output=True,
+            )
+            generated.add(directory)
+        if not data.exists():
+            click.echo(f"{request.entry_id}: {data} was not generated", err=True)
+            sys.exit(1)
+
+        releases = [
+            (r.version, r.released)
+            for r in harvest(request.package, "cran", Path(cache_root)).releases
+        ]
+        click.echo(f"{request.entry_id}: screening {request.fixed_in} ... ", nl=False)
+        found = screening.run(request, directory, releases, book)
+        found.write(SCREENS / request.package)
+        counts[found.verdict] = counts.get(found.verdict, 0) + 1
+        click.echo(
+            f"{found.verdict} ({found.before} -> {found.after}) -- {found.detail}"
+        )
+
+    if counts:
+        click.echo(
+            "\n" + ", ".join(f"{n} {verdict}" for verdict, n in sorted(counts.items()))
+        )
+
+
+@screen.command("report")
+@click.option("--fixtures", type=click.Path(path_type=Path), default=ROOT / "fixtures")
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=ROOT / "docs/screening.md"
+)
+def screen_report(fixtures: Path, out: Path) -> None:
+    """Write the screening coverage report.
+
+    Args:
+        fixtures: Directory holding the fixture catalogues.
+        out: Markdown file to write.
+    """
+    from kasauti.archaeology.screen import Screen, render_report
+
+    requests = screen_requests(Path(fixtures))
+    screens = []
+    for request in requests:
+        path = SCREENS / request.package / f"{request.slug}.json"
+        if not path.exists():
+            continue
+        screens.append(Screen.load(path))
+
+    names = sorted({r.package for r in requests})
+    Path(out).parent.mkdir(parents=True, exist_ok=True)
+    Path(out).write_text(render_report(screens, len(requests), names))
+    click.echo(f"wrote {out} -- {len(screens)} of {len(requests)} claim(s) screened")
 
 
 @main.group()

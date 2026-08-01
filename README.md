@@ -271,6 +271,9 @@ kasauti bug index                # validate records, regenerate all four views
 kasauti bug probe <bug-id>       # narrow exposure by the conditions probe
 kasauti bug papers <bug-id>      # resolve scripts to DOIs, dates, journals
 kasauti bug rank                 # order candidates by estimated paper reach
+kasauti screen queue             # every declared claim, and whether it has run
+kasauti screen run               # test claims against the release before the fix
+kasauti screen report            # what moved, what did not, what could not be told
 kasauti frame packages           # select packages: task views ∩ corpus usage
 kasauti frame extract            # recover call sites from the corpus
 kasauti frame loads              # record which packages each script loads
