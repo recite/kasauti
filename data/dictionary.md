@@ -1,6 +1,6 @@
 # Data dictionary
 
-Six tables. `data/manifest.json` carries the SHA-256 and row count of each, so a
+Nine tables. `data/manifest.json` carries the SHA-256 and row count of each, so a
 claim traces to the bytes it was computed from.
 
 Rebuild everything derived with `make data`; recompute the estimands with
@@ -65,6 +65,27 @@ episode carries `NA` on the right, which is the same encoding.
 A quantity prefixed `+` appeared and one prefixed `-` vanished: what a function
 returns changing shape is a changed result.
 
+## `data/flagged.csv` — one row per changelog issue citation
+
+| column | meaning |
+|---|---|
+| `entry_id`, `package`, `version` | the changelog entry and the release it belongs to |
+| `fixed_on` | that release's date |
+| `repo` | `owner/name` searched, from CRAN's `URL` / `BugReports` |
+| `issue` | the number the entry cited |
+| `flagged_on` | when that issue was opened |
+| `response_days` | `fixed_on - flagged_on` |
+| `plausible` | 1 when the report precedes the release |
+
+**Filter on `plausible` before using `response_days`.** A number in a changelog is
+not always an issue in that repository — it can be a version, a pull request, or
+somebody else's ticket — and the one check that must hold if it is real is that an
+issue cannot be opened by the release that already fixed it. Failures are kept
+here flagged rather than dropped, so the share that is noise stays visible.
+
+Every row is conditional on the package naming a public GitHub repository on
+CRAN. Twelve of the 26 sampled packages do not, and they are not a random half.
+
 ## `data/builds.csv` — what compiled, and what refused
 
 The coverage table, and the reason every estimate above is conditional.
@@ -108,7 +129,8 @@ corpus rather than chosen by hand.
 
 ## What every estimate is conditional on
 
-Five gates, and they all push the same way — toward shorter measured lifetimes.
+Six gates, and they all push the same way — toward shorter measured lifetimes
+and fewer detected changes.
 Each is a column here rather than a caveat in prose.
 
 | gate | where it is visible |
@@ -118,3 +140,4 @@ Each is a column here rather than a caveat in prose.
 | **probe coverage** — a change no probe exercises is invisible | `probe` column; the battery is drawn from `sampling_frame.csv` |
 | **documentation** — NEWS may not mention a change | `closed_documented`; this is the estimand, not an assumption |
 | **eventual change** — a value still holding may be wrong and undiscovered | `RIGHT_CENSORED`; these must not be dropped |
+| **open development** — a package with no public tracker has no report date | `data/flagged.csv` covers 14 of 26 sampled packages |

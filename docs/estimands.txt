@@ -101,4 +101,26 @@ largest relative difference, numeric changes only:
 13 of 20 numeric change(s) moved a number by more than 1%
 23 of 25 are pinned to a single release; the rest span a build failure
 
+E5  Report to release
+---------------------
+579 citation(s); 472 resolved to an issue; 470 precede their release and are usable.
+
+A citation that does not precede its release is not an issue in that repository --
+it is a version, a pull request, or somebody else's ticket. Those are kept in the
+table flagged rather than dropped, so the share that is noise stays visible.
+
+days from report to release:
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   0.00   27.25   55.00  158.48  131.75 4134.00 
+
+median by package (the unit that clusters):
+spdep  brms   plm  lme4   rms 
+ 29.5  54.0  92.0 106.5 225.0 
+
+median, cluster bootstrap over packages: 55 days [32, 105]
+
+Every number above is conditional on the package naming a public GitHub repository
+on CRAN. Packages developing privately -- MASS, sandwich, lmtest, Hmisc among them --
+contribute nothing, and they are not a random half of the frame.
+
 done

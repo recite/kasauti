@@ -23,7 +23,9 @@ instead of *backend = language*.
 ## What we found
 
 Every number here is reproduced by `make analysis` from the tables in `data/`.
-Scale so far: **11 packages, 25 probes, 1,723 release-runs, 50 episodes.**
+Scale so far: **11 packages swept, 25 probes, 1,723 release-runs, 50 episodes**,
+plus **470 reported issues** dated across the 14 sampled packages that develop in
+the open.
 
 ### The past is gone
 
@@ -80,6 +82,26 @@ Median episode length **2613 days** by the Turnbull estimate; longest observed
 span 5671 days; about **0.08 changes per probe-year**. The Weibull scale is 1.64,
 so the hazard *decreases* with duration: old code is stable code — and a bug that
 makes it past its first year is likely good for a decade.
+
+### Almost all of a bug's life is spent undiscovered, not unfixed
+
+Once somebody reports a defect, it is fixed fast: **median 55 days** from issue
+to release, cluster bootstrap over packages **[32, 105]**, from 470 resolved
+citations. By package: `spdep` 30, `brms` 54, `plm` 92, `lme4` 107, `rms` 225.
+
+Set that beside a median episode length of **2613 days**. The two are not the
+same bugs — one is 470 reported issues across the packages that develop in the
+open, the other 25 closed episodes across eleven swept packages — so this is a
+comparison of distributions, not a decomposition. But a **47× gap** is not a
+sampling artifact.
+
+**Maintainers are not slow. Discovery is the bottleneck.** Effort spent making
+bugs easier to *find* buys far more than effort spent making them faster to fix.
+
+This estimand carries a gate the others do not: **12 of the 26 sampled packages
+name no GitHub repository on CRAN** — `MASS`, `sandwich`, `lmtest`, `Hmisc` among
+them. Packages that develop in the open are not a random half of the frame, so
+every latency here is conditional on a development practice.
 
 ### Half the biggest packages never moved at all
 
@@ -195,7 +217,7 @@ reverse dependencies — invisible to any frame built on ecosystem centrality.
 
 ## What every number is conditional on
 
-Five gates, each a column somewhere rather than a caveat in prose, and **all of
+Six gates, each a column somewhere rather than a caveat in prose, and **all of
 them push the same way** — toward shorter measured lifetimes and fewer detected
 changes.
 
@@ -206,6 +228,7 @@ changes.
 | **probe coverage** — a change no probe exercises is invisible | `data/frame/batteries.csv` |
 | **documentation** — NEWS may not mention a change | `closed_documented`; this is the estimand, not an assumption |
 | **eventual change** — a value still holding may be wrong and undiscovered | `RIGHT_CENSORED`; these are never dropped |
+| **open development** — a package with no public tracker has no report date | `data/flagged.csv`, 14 of 26 sampled packages |
 
 `docs/reach.md` groups every recorded build failure by its cause.
 
@@ -235,6 +258,7 @@ kasauti sweep <package>  # run every probe against every release
 kasauti episodes         # durations, with their censoring
 kasauti build audit      # how far back each package still installs
 kasauti screen run       # test a changelog claim against the release before it
+kasauti flagged          # date changelog issue citations from GitHub
 kasauti bug bisect <id>  # date a confirmed bug by running old versions
 kasauti run --all --strict   # re-verify every bug record
 ```
@@ -266,9 +290,10 @@ term, `coxph` takes no interval censoring, and a variance component from eleven
 clusters would be barely identified. A random effect becomes the right tool when
 the package count grows, not before.
 
-**Time to *discovery* is not measured.** Only time to fix. Discovery latency needs
-a package-to-repository map and issue timestamps, which is real plumbing not yet
-built.
+**Discovery latency is inferred, not measured.** Report-to-release is measured
+directly; introduction-to-report is the gap between two distributions estimated on
+different samples. Closing that properly needs an introduction date and a report
+date for the *same* bug, which currently exists for a handful of records.
 
 **Changelogs are self-reported.** `survival` documents 114 versions meticulously;
 `MASS` has no version structure at all. **27 of the 131 selected packages ship no

@@ -1099,11 +1099,20 @@ def flagged_command(
     click.echo(
         f"wrote {out} -- {len(flags)} citation(s) across {len(names)} package(s)"
     )
+    # Two different reasons a resolved citation yields no latency, and the first
+    # summary of this run reported them as one -- reading as though every
+    # unusable row had failed the plausibility check when most simply belong to
+    # a release the changelog never dated.
+    timed = [f for f in resolved if f.response_days is not None]
     click.echo(
-        f"  {len(resolved)} resolved to an issue; {len(plausible)} of those precede "
-        "their release\n  and are usable. A citation that does not is a version, a "
-        "pull request, or\n  somebody else's ticket -- kept in the table and flagged, "
-        "never silently dropped."
+        f"  {len(resolved)} resolved to an issue\n"
+        f"  {len(resolved) - len(timed)} of those sit in a release the changelog "
+        "does not date\n"
+        f"  {len(timed) - len(plausible)} were opened after their own release, so "
+        "they are not issues in\n    that repository -- a version, a pull request, "
+        "or somebody else's ticket\n"
+        f"  {len(plausible)} usable, kept beside the rest rather than silently "
+        "dropped"
     )
     if without_repo:
         click.echo(
@@ -1226,6 +1235,7 @@ RELEASED = [
     "data/builds.csv",
     "data/changes.csv",
     "data/episodes.csv",
+    "data/flagged.csv",
 ]
 
 
