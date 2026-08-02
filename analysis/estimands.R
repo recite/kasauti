@@ -320,4 +320,70 @@ if (nrow(changes) > 0L) {
   )
 }
 
+# ------------------------------------------------- E5: response latency ----
+# How long between somebody reporting a defect and a release carrying the fix.
+# The only one of these estimands that needs no archived build, so it reaches
+# packages the sweep cannot -- and it is conditional on something the others are
+# not, which is stated rather than buried.
+
+rule("E5  Report to release")
+
+flagged_path <- file.path(data_dir, "flagged.csv")
+if (file.exists(flagged_path)) {
+  flags <- read.csv(flagged_path, stringsAsFactors = FALSE)
+  usable <- flags[flags$plausible == 1 & !is.na(flags$response_days), ]
+
+  say(
+    nrow(flags), " citation(s); ", sum(!is.na(flags$response_days)),
+    " resolved to an issue; ", nrow(usable), " precede their release and are usable."
+  )
+  say(
+    "\nA citation that does not precede its release is not an issue in that ",
+    "repository --\nit is a version, a pull request, or somebody else's ticket. ",
+    "Those are kept in the\ntable flagged rather than dropped, so the share that ",
+    "is noise stays visible."
+  )
+
+  if (nrow(usable) > 0L) {
+    say("\ndays from report to release:")
+    print(summary(usable$response_days))
+
+    by_package <- tapply(usable$response_days, usable$package, median)
+    say("\nmedian by package (the unit that clusters):")
+    print(round(by_package[order(by_package)], 1))
+
+    packages <- unique(usable$package)
+    if (length(packages) > 1L) {
+      set.seed(1L)
+      draws <- replicate(2000L, {
+        picked <- sample(packages, length(packages), replace = TRUE)
+        rows <- do.call(rbind, lapply(picked, function(p) {
+          usable[usable$package == p, ]
+        }))
+        median(rows$response_days)
+      })
+      say(
+        "\nmedian, cluster bootstrap over packages: ",
+        sprintf(
+          "%.0f days [%.0f, %.0f]",
+          median(usable$response_days),
+          quantile(draws, 0.025), quantile(draws, 0.975)
+        )
+      )
+    }
+
+    # The gate this estimand carries and the others do not. A package that
+    # develops privately contributes nothing here, and packages that develop in
+    # the open are not a random half of CRAN.
+    say(
+      "\nEvery number above is conditional on the package naming a public GitHub ",
+      "repository\non CRAN. Packages developing privately -- MASS, sandwich, ",
+      "lmtest, Hmisc among them --\ncontribute nothing, and they are not a random ",
+      "half of the frame."
+    )
+  }
+} else {
+  say("data/flagged.csv is not present; run `kasauti flagged`")
+}
+
 say("\ndone")

@@ -1009,6 +1009,109 @@ def _rebuild_changes(path: Path, sweeps: Path) -> int:
     return len(stored)
 
 
+@main.command("flagged")
+@click.argument("packages", nargs=-1)
+@click.option(
+    "--sample-csv",
+    type=click.Path(path_type=Path),
+    default=ROOT / "data/frame/sample.csv",
+)
+@click.option(
+    "--cache-root", type=click.Path(path_type=Path), default=ROOT / "data/cache"
+)
+@click.option(
+    "--out", type=click.Path(path_type=Path), default=ROOT / "data/flagged.csv"
+)
+@click.option(
+    "--limit", default=0, help="Stop after this many lookups. 0 means no limit."
+)
+def flagged_command(
+    packages: tuple[str, ...],
+    sample_csv: Path,
+    cache_root: Path,
+    out: Path,
+    limit: int,
+) -> None:
+    """Resolve changelog issue citations to the dates they were reported.
+
+    Args:
+        packages: Packages to resolve. Defaults to the drawn sample.
+        sample_csv: The stratified sample.
+        cache_root: Harvest cache, for changelogs and release dates.
+        out: Destination CSV.
+        limit: Stop after this many issue lookups.
+    """
+    from kasauti.archaeology.flagged import (
+        Flag,
+        IssueCache,
+        cited,
+        fetch_repositories,
+        write_flags,
+    )
+    from kasauti.archaeology.harvest import harvest
+    from kasauti.archaeology.parse import parse_news
+    from kasauti.archaeology.sample import read_sample
+
+    names = list(packages) or [s.package for s in read_sample(Path(sample_csv))]
+
+    import json as _json
+
+    repo_cache = Path(cache_root) / "repositories.json"
+    if repo_cache.exists():
+        repositories = _json_load(repo_cache)
+    else:
+        repositories = fetch_repositories()
+        repo_cache.parent.mkdir(parents=True, exist_ok=True)
+        repo_cache.write_text(_json.dumps(repositories, indent=2, sort_keys=True))
+
+    issues = IssueCache(Path(cache_root) / "issues.json")
+    flags: list[Flag] = []
+    lookups = 0
+    without_repo = []
+
+    for name in names:
+        repo = repositories.get(name)
+        if not repo:
+            without_repo.append(name)
+            continue
+        report = parse_news(harvest(name, "cran", Path(cache_root)))
+        for entry in report.entries:
+            for number in cited(entry.text):
+                if limit and lookups >= limit:
+                    break
+                lookups += 1
+                flags.append(
+                    Flag(
+                        entry_id=entry.entry_id,
+                        package=name,
+                        version=entry.version,
+                        fixed_on=entry.released,
+                        repo=repo,
+                        issue=number,
+                        flagged_on=issues.get(repo, number),
+                    )
+                )
+
+    write_flags(flags, Path(out))
+
+    resolved = [f for f in flags if f.flagged_on]
+    plausible = [f for f in resolved if f.plausible]
+    click.echo(
+        f"wrote {out} -- {len(flags)} citation(s) across {len(names)} package(s)"
+    )
+    click.echo(
+        f"  {len(resolved)} resolved to an issue; {len(plausible)} of those precede "
+        "their release\n  and are usable. A citation that does not is a version, a "
+        "pull request, or\n  somebody else's ticket -- kept in the table and flagged, "
+        "never silently dropped."
+    )
+    if without_repo:
+        click.echo(
+            f"  {len(without_repo)} package(s) name no GitHub repository on CRAN: "
+            f"{', '.join(without_repo[:8])}"
+        )
+
+
 @main.command("episodes")
 @click.option("--fixtures", type=click.Path(path_type=Path), default=ROOT / "fixtures")
 @click.option(
