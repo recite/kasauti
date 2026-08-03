@@ -1,0 +1,464 @@
+{
+  "changes": [
+    {
+      "after": "0.11.2",
+      "after_on": "2023-11-24",
+      "at": "0.12.0",
+      "at_on": "2024-04-17",
+      "exact": true,
+      "gaps": 0,
+      "max_reldiff": 0.0,
+      "moved": [
+        "+df.residual"
+      ],
+      "shape_only": true
+    },
+    {
+      "after": "0.12.1",
+      "after_on": "2024-06-13",
+      "at": "0.13.2",
+      "at_on": "2025-09-08",
+      "exact": true,
+      "gaps": 0,
+      "max_reldiff": 0.3333333333333333,
+      "moved": [
+        "fixef.params",
+        "groups.g",
+        "nobs",
+        "se.x1",
+        "se.x2"
+      ],
+      "shape_only": false
+    }
+  ],
+  "gaps": 19,
+  "observations": [
+    {
+      "detail": "build: parallel_funs.cpp:115:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2019-09-03",
+      "state": "GAP",
+      "version": "0.1.0"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:115:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2019-09-20",
+      "state": "GAP",
+      "version": "0.1.1"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:115:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2019-10-04",
+      "state": "GAP",
+      "version": "0.1.2"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:115:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2019-11-19",
+      "state": "GAP",
+      "version": "0.2.0"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:129:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2019-11-23",
+      "state": "GAP",
+      "version": "0.2.1"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:129:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2020-02-01",
+      "state": "GAP",
+      "version": "0.3.0"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:129:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2020-02-09",
+      "state": "GAP",
+      "version": "0.3.1"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:129:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2020-03-29",
+      "state": "GAP",
+      "version": "0.4.0"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:129:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2020-04-14",
+      "state": "GAP",
+      "version": "0.4.1"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:129:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2020-06-10",
+      "state": "GAP",
+      "version": "0.5.0"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:136:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2020-06-18",
+      "state": "GAP",
+      "version": "0.5.1"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:136:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2020-07-13",
+      "state": "GAP",
+      "version": "0.6.0"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2020-10-24",
+      "state": "GAP",
+      "version": "0.7.0"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2020-10-27",
+      "state": "GAP",
+      "version": "0.7.1"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2020-12-14",
+      "state": "GAP",
+      "version": "0.8.0"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2021-01-13",
+      "state": "GAP",
+      "version": "0.8.1"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2021-02-11",
+      "state": "GAP",
+      "version": "0.8.2"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2021-03-01",
+      "state": "GAP",
+      "version": "0.8.3"
+    },
+    {
+      "detail": "build: parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'",
+      "quantities": {},
+      "released": "2021-03-29",
+      "state": "GAP",
+      "version": "0.8.4"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "coef.x1": 1.60144801573067,
+        "coef.x2": -0.917948178762791,
+        "fixef.params": 66.0,
+        "groups.g": 60.0,
+        "groups.t": 6.0,
+        "input.groups": 60.0,
+        "input.rows": 260.0,
+        "input.singletons": 20.0,
+        "nobs": 260.0,
+        "se.x1": 0.0326176876869212,
+        "se.x2": 0.175431874328406
+      },
+      "released": "2021-06-19",
+      "state": "OBSERVED",
+      "version": "0.9.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "coef.x1": 1.60144801573067,
+        "coef.x2": -0.917948178762791,
+        "fixef.params": 66.0,
+        "groups.g": 60.0,
+        "groups.t": 6.0,
+        "input.groups": 60.0,
+        "input.rows": 260.0,
+        "input.singletons": 20.0,
+        "nobs": 260.0,
+        "se.x1": 0.0326176876869212,
+        "se.x2": 0.175431874328406
+      },
+      "released": "2021-09-28",
+      "state": "OBSERVED",
+      "version": "0.10.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "coef.x1": 1.60144801573067,
+        "coef.x2": -0.917948178762791,
+        "fixef.params": 66.0,
+        "groups.g": 60.0,
+        "groups.t": 6.0,
+        "input.groups": 60.0,
+        "input.rows": 260.0,
+        "input.singletons": 20.0,
+        "nobs": 260.0,
+        "se.x1": 0.0326176876869212,
+        "se.x2": 0.175431874328406
+      },
+      "released": "2021-10-30",
+      "state": "OBSERVED",
+      "version": "0.10.1"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "coef.x1": 1.60144801573067,
+        "coef.x2": -0.917948178762791,
+        "fixef.params": 66.0,
+        "groups.g": 60.0,
+        "groups.t": 6.0,
+        "input.groups": 60.0,
+        "input.rows": 260.0,
+        "input.singletons": 20.0,
+        "nobs": 260.0,
+        "se.x1": 0.0326176876869212,
+        "se.x2": 0.175431874328406
+      },
+      "released": "2022-02-17",
+      "state": "OBSERVED",
+      "version": "0.10.2"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "coef.x1": 1.60144801573067,
+        "coef.x2": -0.917948178762791,
+        "fixef.params": 66.0,
+        "groups.g": 60.0,
+        "groups.t": 6.0,
+        "input.groups": 60.0,
+        "input.rows": 260.0,
+        "input.singletons": 20.0,
+        "nobs": 260.0,
+        "se.x1": 0.0326176876869212,
+        "se.x2": 0.175431874328406
+      },
+      "released": "2022-03-02",
+      "state": "OBSERVED",
+      "version": "0.10.3"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "coef.x1": 1.60144801573067,
+        "coef.x2": -0.917948178762791,
+        "fixef.params": 66.0,
+        "groups.g": 60.0,
+        "groups.t": 6.0,
+        "input.groups": 60.0,
+        "input.rows": 260.0,
+        "input.singletons": 20.0,
+        "nobs": 260.0,
+        "se.x1": 0.0326176876869212,
+        "se.x2": 0.175431874328406
+      },
+      "released": "2022-03-31",
+      "state": "OBSERVED",
+      "version": "0.10.4"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "coef.x1": 1.60144801573067,
+        "coef.x2": -0.917948178762791,
+        "fixef.params": 66.0,
+        "groups.g": 60.0,
+        "groups.t": 6.0,
+        "input.groups": 60.0,
+        "input.rows": 260.0,
+        "input.singletons": 20.0,
+        "nobs": 260.0,
+        "se.x1": 0.0326176876869212,
+        "se.x2": 0.175431874328406
+      },
+      "released": "2022-10-19",
+      "state": "OBSERVED",
+      "version": "0.11.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "coef.x1": 1.60144801573067,
+        "coef.x2": -0.917948178762791,
+        "fixef.params": 66.0,
+        "groups.g": 60.0,
+        "groups.t": 6.0,
+        "input.groups": 60.0,
+        "input.rows": 260.0,
+        "input.singletons": 20.0,
+        "nobs": 260.0,
+        "se.x1": 0.0326176876869212,
+        "se.x2": 0.175431874328406
+      },
+      "released": "2023-01-10",
+      "state": "OBSERVED",
+      "version": "0.11.1"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "coef.x1": 1.60144801573067,
+        "coef.x2": -0.917948178762791,
+        "fixef.params": 66.0,
+        "groups.g": 60.0,
+        "groups.t": 6.0,
+        "input.groups": 60.0,
+        "input.rows": 260.0,
+        "input.singletons": 20.0,
+        "nobs": 260.0,
+        "se.x1": 0.0326176876869212,
+        "se.x2": 0.175431874328406
+      },
+      "released": "2023-11-24",
+      "state": "OBSERVED",
+      "version": "0.11.2"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "coef.x1": 1.60144801573067,
+        "coef.x2": -0.917948178762791,
+        "df.residual": 193.0,
+        "fixef.params": 66.0,
+        "groups.g": 60.0,
+        "groups.t": 6.0,
+        "input.groups": 60.0,
+        "input.rows": 260.0,
+        "input.singletons": 20.0,
+        "nobs": 260.0,
+        "se.x1": 0.0326176876869212,
+        "se.x2": 0.175431874328406
+      },
+      "released": "2024-04-17",
+      "state": "OBSERVED",
+      "version": "0.12.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "coef.x1": 1.60144801573067,
+        "coef.x2": -0.917948178762791,
+        "df.residual": 193.0,
+        "fixef.params": 66.0,
+        "groups.g": 60.0,
+        "groups.t": 6.0,
+        "input.groups": 60.0,
+        "input.rows": 260.0,
+        "input.singletons": 20.0,
+        "nobs": 260.0,
+        "se.x1": 0.0326176876869212,
+        "se.x2": 0.175431874328406
+      },
+      "released": "2024-06-13",
+      "state": "OBSERVED",
+      "version": "0.12.1"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "coef.x1": 1.60144801573067,
+        "coef.x2": -0.917948178762792,
+        "df.residual": 193.0,
+        "fixef.params": 46.0,
+        "groups.g": 40.0,
+        "groups.t": 6.0,
+        "input.groups": 60.0,
+        "input.rows": 260.0,
+        "input.singletons": 20.0,
+        "nobs": 240.0,
+        "se.x1": 0.0326556638110313,
+        "se.x2": 0.17563612606323
+      },
+      "released": "2025-09-08",
+      "state": "OBSERVED",
+      "version": "0.13.2"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "coef.x1": 1.60144801573067,
+        "coef.x2": -0.917948178762792,
+        "df.residual": 193.0,
+        "fixef.params": 46.0,
+        "groups.g": 40.0,
+        "groups.t": 6.0,
+        "input.groups": 60.0,
+        "input.rows": 260.0,
+        "input.singletons": 20.0,
+        "nobs": 240.0,
+        "se.x1": 0.0326556638110313,
+        "se.x2": 0.17563612606323
+      },
+      "released": "2026-03-18",
+      "state": "OBSERVED",
+      "version": "0.14.0"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "coef.x1": 1.60144801573067,
+        "coef.x2": -0.917948178762792,
+        "df.residual": 193.0,
+        "fixef.params": 46.0,
+        "groups.g": 40.0,
+        "groups.t": 6.0,
+        "input.groups": 60.0,
+        "input.rows": 260.0,
+        "input.singletons": 20.0,
+        "nobs": 240.0,
+        "se.x1": 0.0326556638110313,
+        "se.x2": 0.17563612606323
+      },
+      "released": "2026-05-04",
+      "state": "OBSERVED",
+      "version": "0.14.1"
+    },
+    {
+      "detail": "",
+      "quantities": {
+        "coef.x1": 1.60144801573067,
+        "coef.x2": -0.917948178762792,
+        "df.residual": 193.0,
+        "fixef.params": 46.0,
+        "groups.g": 40.0,
+        "groups.t": 6.0,
+        "input.groups": 60.0,
+        "input.rows": 260.0,
+        "input.singletons": 20.0,
+        "nobs": 240.0,
+        "se.x1": 0.0326556638110313,
+        "se.x2": 0.17563612606323
+      },
+      "released": "2026-06-26",
+      "state": "OBSERVED",
+      "version": "0.14.2"
+    }
+  ],
+  "observed": 15,
+  "package": "fixest",
+  "probe": "singletons.R"
+}

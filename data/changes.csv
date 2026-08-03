@@ -4,6 +4,8 @@ estimatr,dim_three_conditions.R,0.6.0,2018-03-28,0.4.0,2018-02-15,0,1,1,2,0,+p.v
 estimatr,dim_three_conditions.R,0.10.0,2018-07-12,0.8.0,2018-06-02,0,1,1,3,0,+conf.high;+conf.low;+statistic
 estimatr,dim_weights_and_blocks.R,0.6.0,2018-03-28,0.4.0,2018-02-15,0,1,0,3,1.23826752788e-05,estimate;+p.value;+std.error
 estimatr,dim_weights_and_blocks.R,0.10.0,2018-07-12,0.8.0,2018-06-02,0,1,1,1,0,+statistic
+fixest,singletons.R,0.12.0,2024-04-17,0.11.2,2023-11-24,0,1,1,1,0,+df.residual
+fixest,singletons.R,0.13.2,2025-09-08,0.12.1,2024-06-13,0,1,0,5,0.333333333333,fixef.params;groups.g;nobs;se.x1;se.x2
 lmtest,bptest_aliased.R,0.9-35,2017-02-11,0.9-34,2015-06-06,0,1,0,2,0.333333333333,aliased.p.value;aliased.parameter
 plm,pgmm_instrument_lags.R,1.3-1,2012-12-13,1.2-10,2012-05-05,0,1,0,4,0.999974489753,"coef.lag(y, 1);coef.x1;var.lag(y, 1);var.x1"
 plm,pgmm_mtest_twoways.R,1.4-0,2013-12-28,1.3-1,2012-12-13,0,1,0,1,0.5,mtest.p.value

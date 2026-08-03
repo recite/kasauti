@@ -39,6 +39,40 @@ changes <- read.csv(file.path(data_dir, "changes.csv"), stringsAsFactors = FALSE
 episodes <- read.csv(file.path(data_dir, "episodes.csv"), stringsAsFactors = FALSE)
 builds <- read.csv(file.path(data_dir, "builds.csv"), stringsAsFactors = FALSE)
 
+# Not every swept package was drawn, and the ones that were not did not arrive
+# at random.
+#
+#   case-study  fixest, swept because a singleton-handling change was hit on a
+#               live analysis. Selection on the outcome in its purest form.
+#   screening   psych, estimatr, survival, which had fixtures from the screening
+#               pass -- so they entered by having a shortlisted changelog entry,
+#               which is selection on having a *documented* bug.
+#
+# Both are excluded from the estimates below and reported separately. The
+# screening group is the one that matters most: it supplies 12 of the 19 changes
+# in the pooled data, so the headline rests on packages the design never chose.
+sample_path <- file.path(data_dir, "frame", "sample.csv")
+designed <- unique(changes$package)
+outside <- character()
+if (file.exists(sample_path)) {
+  design <- read.csv(sample_path, stringsAsFactors = FALSE)
+  outside <- design$package[design$stratum %in% c("case-study", "screening")]
+  designed <- setdiff(design$package, outside)
+}
+
+pooled_changes <- changes
+pooled_episodes <- episodes
+if (length(outside)) {
+  changes <- changes[!changes$package %in% outside, ]
+  episodes <- episodes[!episodes$package %in% outside, ]
+  cat(
+    "outside the draw and excluded below: ", paste(outside, collapse = ", "),
+    "\nEstimates run on the designed sample; the pooled figure is reported ",
+    "beside E2 so the\ndifference is visible rather than assumed.\n",
+    sep = ""
+  )
+}
+
 say <- function(...) cat(..., "\n", sep = "")
 rule <- function(title) say("\n", title, "\n", strrep("-", nchar(title)))
 
@@ -190,6 +224,30 @@ if (nrow(closed) > 0L) {
     )
   } else {
     say("\nonly one package has closed episodes; no cluster interval is possible")
+  }
+
+  # The same quantity on everything swept, designed or not. Reported because the
+  # designed sample is thin and a reader is entitled to see how much of the
+  # familiar figure comes from packages the draw never chose -- and because the
+  # difference did not run the way it was predicted to.
+  if (length(outside)) {
+    pooled <- pooled_episodes[pooled_episodes$end == "CLOSED", ]
+    pooled_key <- paste(pooled$package, pooled$closed)
+    pooled_release <- do.call(rbind, lapply(split(pooled, pooled_key), function(d) {
+      data.frame(documented = as.integer(any(d$closed_documented == 1)))
+    }))
+    say(
+      "\npooled over every swept package, designed or not: ",
+      sum(pooled_release$documented), " of ", nrow(pooled_release),
+      sprintf(" (%.0f%%)", 100 * mean(pooled_release$documented))
+    )
+    say(
+      "  The undrawn packages entered by having a shortlisted changelog entry, ",
+      "which is\n  selection on having a *documented* bug -- so this was ",
+      "expected to sit above the\n  designed figure. It does not. With this few ",
+      "changes the two cannot be told apart,\n  and the prediction is recorded ",
+      "as refused rather than quietly dropped."
+    )
   }
 }
 

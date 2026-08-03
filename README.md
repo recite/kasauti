@@ -23,9 +23,10 @@ instead of *backend = language*.
 ## What we found
 
 Every number here is reproduced by `make analysis` from the tables in `data/`.
-Scale so far: **11 packages swept, 25 probes, 1,723 release-runs, 50 episodes**,
-plus **470 reported issues** dated across the 14 sampled packages that develop in
-the open.
+Scale so far: **12 packages swept, 26 probes, 1,757 release-runs, 53 episodes**,
+plus **470 reported issues** dated across the sampled packages that develop in the
+open. Estimates run on the **designed sample** of 8; four swept packages entered
+outside the draw and are reported separately, never pooled in.
 
 ### The past is gone
 
@@ -63,14 +64,21 @@ now.
 
 ### Changelogs miss about two in five result changes
 
-Of 19 distinct `(package, release)` changes the sweep found, **12 are named in
-NEWS — 63%**, cluster bootstrap over packages **[56%, 88%]**. It was 61% at six
-packages and 63% at eleven; surviving a near-doubling of the sample without moving
-is the best available sign it is estimating something rather than describing which
-packages happened to get swept first.
+On the **designed sample**, 5 of 7 distinct `(package, release)` changes are named
+in NEWS — **71%**, cluster bootstrap over packages **[54%, 100%]**. Pooling in the
+packages that were swept but never drawn gives **14 of 21 (67%)**.
+
+Those two are reported together because the pooled figure rests on packages the
+draw did not choose. `psych`, `estimatr`, and `survival` have fixtures from the
+earlier screening pass, so they entered by *having a shortlisted changelog
+entry* — selection on having a documented bug. That was expected to push the
+pooled share **above** the designed one. It does not. With seven designed changes
+the two cannot be told apart, and the prediction is recorded as refused rather
+than quietly dropped.
 
 It is a **lower bound**: the flag counts a match on any function a probe declares,
-which biases it toward "documented".
+which biases it toward "documented". And documented is not the same as noticed —
+see the singleton case below, which is in NEWS in detail and still cost a day.
 
 And this quantity is not estimable from inside a changelog-first design at any
 sample size — an undocumented change is exactly what such a design cannot see.
@@ -91,7 +99,7 @@ citations. By package: `spdep` 30, `brms` 54, `plm` 92, `lme4` 107, `rms` 225.
 
 Set that beside a median episode length of **2613 days**. The two are not the
 same bugs — one is 470 reported issues across the packages that develop in the
-open, the other 25 closed episodes across eleven swept packages — so this is a
+open, the other 27 closed episodes across twelve swept packages — so this is a
 comparison of distributions, not a decomposition. But a **47× gap** is not a
 sampling artifact.
 
@@ -128,6 +136,51 @@ change in 2" are different claims.
 | `psych` 1.9.12 | **all twelve** `ICC` confidence bounds moved; every point estimate unchanged |
 | `sandwich` 3.0-2 | cluster-robust HC2 on a glm off by 4.7e-3; 7 of 9 quantities bit-identical, which confines it to the documented conditions |
 | `mgcv` 1.9-0 | **NOT_REPRODUCED** — a recorded failure. The entry reads accurate; the reproducer did not reach it |
+
+### The singleton case: a change no coefficient comparison could find
+
+A regression table disagreed with itself across machines on a live analysis:
+7,188 → 7,082 observations, 465 → 359 parties, 54 → 53 clusters. Not the data —
+`fixest` changed what it does with **singleton fixed effects**, levels holding
+exactly one observation. Three answers were available and no two agreed:
+
+| source | says |
+|---|---|
+| recollection | `fixest` ≥ **0.12** drops them |
+| `fixest` NEWS | the default changed in **0.13.0** |
+| CRAN | never shipped 0.13.0 — the archive goes 0.12.1 → 0.13.2 |
+
+Running it settles it. A probe on 260 rows over 60 groups, 20 of them singletons:
+
+| version | `nobs` | groups kept | `se.x1` |
+|---|---|---|---|
+| 0.9.0 … 0.12.1 | 260 | 60 | 0.0326176876869212 |
+| 0.13.2 … 0.14.2 | **240** | **40** | 0.0326556638110313 |
+
+The changelog was right and the recollection was one minor version early: 0.12.0
+and 0.12.1 keep singletons, and 0.13.2 is the first release that drops them.
+
+**And the coefficients never moved.** `coef.x1` is 1.60144801573067 in every
+version on both sides of the transition. That is not luck — a singleton is
+perfectly fit by its own dummy, so it carries no identifying variation and cannot
+move a point estimate. What it carries is a parameter. Removing it changed the
+observation count, the fixed-effect parameter count (66 → 46), and therefore
+**the standard errors**.
+
+So the obvious probe — fit the model, compare the coefficients — returns *no
+change* and is wrong. The change is invisible in the estimates and plain in the
+sample. Every probe should report `nobs` and the groups it retained before it
+reports a coefficient, because `N` moving 7,188 → 7,082 is legible on sight and
+"a standard error moved 0.1%" is the same event described uselessly.
+
+**Documented is not noticed.** This change is in NEWS, in detail, with the
+replacement argument named. It still cost a day, because nobody re-reads a
+changelog on upgrade. `E2` measures whether a change is *described*; it does not
+measure whether anyone found out.
+
+`fixest` was **not drawn** in the sample — it is here because a bug was found in
+it, which is selection on the outcome — so it carries the `case-study` stratum,
+weight 0, and is excluded from every estimate. A test asserts that.
 
 ### Changes nobody wrote down
 

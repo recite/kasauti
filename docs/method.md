@@ -20,6 +20,8 @@ the resulting number looks completely fine.**
 | build failure vs *no change* | stability manufactured out of a compiler error | a `GAP` is not a data point; compare to the last **observed** release |
 | moved vs *appeared* | `max_reldiff = 0` reading as noise when a function began returning a standard error | `shape_only`, summarised apart |
 | "dependency unavailable" vs *dependency will not build* | sixteen `plm` releases filed under the wrong wall | the supply returns the dependency's own failure |
+| *estimates* vs *the sample they were estimated on* | `fixest` 0.13.2 dropped 20 of 260 observations with the coefficients bit-identical — a coefficient probe finds nothing | every probe reports `nobs` and groups retained first |
+| swept vs *drawn* | four packages were in the estimates without being in the design | `case-study` and `screening` strata, weight 0, excluded and asserted |
 
 Each fix looks like pedantry and each one changed an answer.
 
@@ -127,6 +129,51 @@ produces an estimate. Probing `upData` would have measured a reshaper's stabilit
 and called it a bug rate. So the battery drops to the weighted-estimator family,
 and the 16% coverage stays reported rather than improved by changing what it
 counts.
+
+### Probe the sample, not just the estimates
+
+Every probe reports `nobs` and the groups it retained before it reports a
+coefficient, and the singleton case is why.
+
+`fixest` 0.13.2 began dropping singleton fixed effects. On a fixture of 260 rows
+over 60 groups, 20 of them singletons, the observation count went 260 → 240, the
+groups kept 60 → 40, the fixed-effect parameter count 66 → 46, and both standard
+errors moved. **The coefficients did not.** `coef.x1` is 1.60144801573067 on both
+sides of the transition, to every digit.
+
+That is not luck. A singleton is perfectly fit by its own dummy, so it carries no
+identifying variation and cannot move a point estimate; what it carries is a
+parameter. So the obvious probe — fit the model, compare the coefficients —
+returns *no change* and is wrong.
+
+A changed estimation sample is also the more consequential class. It moves `N`,
+the degrees of freedom, and the cluster count, and every standard error in the
+table moves with them. Reporting it as sample composition makes it legible: `N`
+going 7,188 → 7,082 is readable on sight, and "a standard error moved 0.1%" is
+the same event described uselessly.
+
+### A package added because a bug was found in it is not part of the sample
+
+`fixest` was not drawn. It is swept because a singleton-handling change was hit
+on a live analysis, which is selection on the outcome: the probability a package
+enters this way is a function of whether it turned out to have a bug.
+
+`psych`, `estimatr`, and `survival` are the same problem in a quieter form. They
+have fixtures from the screening pass, so they entered by having a shortlisted
+changelog entry — selection on having a *documented* bug, which bears directly on
+E2.
+
+Both carry strata of their own (`case-study`, `screening`), weight 0, and are
+excluded from every estimate. A test asserts that no swept package is missing
+from `data/frame/sample.csv` at all, because a package with a timeline and no row
+would be neither weighted nor excluded — it would simply be in the estimates,
+unaccounted for.
+
+The prediction attached to this was wrong, and is kept: the screening packages
+were expected to push the documented share up, since they were selected for
+having documented bugs. Pooled gives 67% against the designed 71%. With seven
+designed changes the two cannot be distinguished, so the prediction is recorded
+as refused rather than quietly dropped.
 
 ---
 

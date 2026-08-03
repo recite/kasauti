@@ -264,8 +264,38 @@ estimatr,1.0.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 estimatr,1.0.2,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 estimatr,1.0.4,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 estimatr,1.0.6,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+fixest,0.1.0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:115:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.1.1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:115:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.1.2,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:115:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.10.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+fixest,0.10.1,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+fixest,0.10.2,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 fixest,0.10.3,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 fixest,0.10.4,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+fixest,0.11.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+fixest,0.11.1,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+fixest,0.11.2,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+fixest,0.12.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+fixest,0.12.1,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+fixest,0.13.2,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+fixest,0.14.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+fixest,0.14.1,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+fixest,0.14.2,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
+fixest,0.2.0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:115:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.2.1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:129:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.3.0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:129:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.3.1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:129:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.4.0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:129:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.4.1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:129:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.5.0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:129:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.5.1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:136:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.6.0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:136:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.7.0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.7.1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.8.0,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.8.1,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.8.2,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'
+fixest,0.8.3,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'
 fixest,0.8.4,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,parallel_funs.cpp:185:22: error: use of undeclared identifier 'DOUBLE_EPS'
 fixest,0.9.0,BUILT,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,
 lfe,1.0-418,FAILED,4.6.0,macOS-26.5.2-arm64-arm-64bit-Mach-O,lfe.c:196:11: error: call to undeclared function 'Calloc'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]

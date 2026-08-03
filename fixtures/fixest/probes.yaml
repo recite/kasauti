@@ -1,0 +1,17 @@
+# A case-study probe, not a battery probe drawn from corpus call volume.
+#
+# fixest was NOT selected by `kasauti frame sample`; it is here because a
+# singleton-handling change was hit on a live analysis. Adding a package because
+# a bug was found in it is selection on the outcome, so it carries the
+# `case-study` stratum and is excluded from every weighted estimate.
+
+package: fixest
+
+probes:
+  - entry: fixest/singletons
+    script: singletons.R
+    functions: [feols, fixef.rm]
+    conditions: >
+      Case study. A panel with 20 singleton fixed-effect levels among 60, so the
+      probe reports the estimation sample -- N, groups retained, residual
+      degrees of freedom, cluster count -- before it reports coefficients.
