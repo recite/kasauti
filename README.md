@@ -370,3 +370,32 @@ count is a technically-true upper bound carrying almost no information.
 **Publication date is a weak proxy for when an analysis was run**, in both
 directions. One archive here went up six weeks *after* the fix that would have
 affected it.
+
+**Stability is not correctness, and this instrument cannot tell them apart.** The
+sampling unit here is a *change* — a point where a number moved. A number that
+has been wrong since the first release never moves, so it never becomes an
+episode, and a clean sweep reads the same whether the package is right or has
+been quietly wrong throughout. The sibling repository has the same blind spot
+from the other side: [milaan](https://github.com/recite/milaan) asks whether R
+and Python agree, and two implementations of the same flawed procedure agree
+perfectly.
+
+A worked example, from
+[milaan#1](https://github.com/recite/milaan/pull/1). `sandwich::NeweyWest` and
+statsmodels' HAC compute the same estimator and reconcile to 6e-16 once pinned,
+and neither has moved in the releases swept here. Measured against a process
+whose coefficient is known — AR(1) regressor, AR(1) errors, rho 0.8, 1000
+replicates — the nominal 95% interval covers:
+
+| T | effective n | coverage |
+|---|---|---|
+| 100 | 11 | 0.790 |
+| 1000 | 111 | 0.880 |
+| 4000 | 444 | 0.903 |
+
+Nothing changed and nothing disagrees, so both instruments report nothing, and
+the interval is still four and a half points short at four thousand
+observations. This is the known finite-sample behaviour of kernel HAC estimators
+rather than a defect in either package — which is the point. Catching it needs a
+third axis: not agreement between implementations, nor stability across
+releases, but a comparison against a truth we set ourselves.
