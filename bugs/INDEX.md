@@ -34,7 +34,7 @@ Those counts are upper bounds, not comparable with uncensored ones.
 Changelogs record when a defect was fixed and almost never when it
 started: of 369 exposed entries, four name an introducing version. So
 these were measured by running each record's own reproducer against
-archived versions until the behaviour changed.
+archived versions until the behavior changed.
 
 Two columns, because a bisect answers two different questions. **Lived**
 is a measured lifetime: a version without the bug was found below a

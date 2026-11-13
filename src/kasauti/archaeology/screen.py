@@ -49,7 +49,7 @@ UNEVALUABLE = "UNEVALUABLE"
 #: at. The last group is a claim about this study rather than about the packages.
 ORDER = [MOVED, NOT_TRIGGERED, UNEVALUABLE]
 
-#: Below this a difference is arithmetic noise rather than a change in behaviour.
+#: Below this a difference is arithmetic noise rather than a change in behavior.
 #: The same band `AGREE` uses in the comparison harness, for the same reason.
 DEFAULT_TOL = 1e-8
 
@@ -183,7 +183,7 @@ def bracket(
     """The releases on either side of a changelog's stated fix version.
 
     Usually the fix version *is* a release and the pair is it and its immediate
-    predecessor. Often enough it is not. `survival`'s NEWS is organised under
+    predecessor. Often enough it is not. `survival`'s NEWS is organized under
     headings like "2.35" that CRAN never shipped, and six of the nine fix
     versions on this study's `survival` shortlist have no archive tarball at all
     -- Terry Therneau releases through his own channel and only some versions
@@ -327,7 +327,7 @@ def judge(
     largest = max(relative_difference(old[k], new[k]) for k in shared)
 
     # A quantity that appears or vanishes is a change in what the function
-    # returns, which is a changed result by any reading a user would recognise.
+    # returns, which is a changed result by any reading a user would recognize.
     only_before = sorted(set(old) - set(new))
     only_after = sorted(set(new) - set(old))
     reshaped = [*(f"-{k}" for k in only_before), *(f"+{k}" for k in only_after)]
@@ -352,7 +352,7 @@ def render_report(screens: list[Screen], declared: int, fixtures: list[str]) -> 
 
     Args:
         screens: Screens that have been run.
-        declared: How many claims the fixture catalogues declare.
+        declared: How many claims the fixture catalogs declare.
         fixtures: Fixture directories the screens drew on.
 
     Returns:

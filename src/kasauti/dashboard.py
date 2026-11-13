@@ -6,7 +6,7 @@ means publishing is a commit.
 
 The funnel is the centrepiece, and it is drawn as an ordinal ramp rather than a
 categorical one because its stages are ordered: each is a subset of the one
-before. Colour is doing the "how far along" job, not the "which one" job.
+before. Color is doing the "how far along" job, not the "which one" job.
 """
 
 from __future__ import annotations

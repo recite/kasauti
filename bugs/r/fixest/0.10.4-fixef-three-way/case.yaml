@@ -63,7 +63,7 @@ quantities:
     expect: DIVERGE
     reason: Same defect on the fourth dimension.
 
-# coef@x defaults to AGREE and is the control that localises this. The bug is in
+# coef@x defaults to AGREE and is the control that localizes this. The bug is in
 # extraction, after the fixed effects have been swept out, so the regression
 # coefficient must be untouched -- it is identical at 1.006553381002. A paper
 # reporting only the coefficient on x was never affected; a paper reporting or

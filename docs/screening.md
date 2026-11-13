@@ -32,7 +32,7 @@ A screen runs one fixture against the release that carried a fix and the release
 | `plm@1.2-6#4` | 1.2-5 → 1.2-6 | `UNEVALUABLE` | -- | -- | -- |
 | `psych@1.6.4#22` | 1.5.8 → 1.6.4 | `UNEVALUABLE` | -- | -- | -- |
 
-`~` marks the 4 claim(s) whose stated fix version CRAN never shipped, so the pair straddles it rather than pinning it. `survival`'s NEWS is organised under headings like `2.35` that are not releases, and several versions it names went out through the author's own channel. A movement there is attributable to the span, not to one release, and the bisect is what narrows it.
+`~` marks the 4 claim(s) whose stated fix version CRAN never shipped, so the pair straddles it rather than pinning it. `survival`'s NEWS is organized under headings like `2.35` that are not releases, and several versions it names went out through the author's own channel. A movement there is attributable to the span, not to one release, and the bisect is what narrows it.
 
 ## Fixtures
 

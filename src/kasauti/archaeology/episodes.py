@@ -22,7 +22,7 @@ number:
   code did not exist. That is not censoring, it is a start date. The distinction
   is the same one `ABSENT` taught the bisect -- a bug in a method nobody has
   written is not a bug -- and treating a birth as censored throws away a measured
-  date and inflates the censoring rate the analysis has to apologise for.
+  date and inflates the censoring rate the analysis has to apologize for.
 
 The **documented** flag is the other half. A change point in a release whose NEWS
 names an affected function is documented; one in a release whose NEWS says
@@ -203,7 +203,7 @@ def news_between(entries: list, after: str | None, at: str) -> str:
     """Changelog text belonging to the interval a change was located in.
 
     Not a lookup by release version, because a changelog's headings are often not
-    releases -- `survival`'s NEWS is organised under versions like `2.35` that
+    releases -- `survival`'s NEWS is organized under versions like `2.35` that
     CRAN never shipped, and six of the nine fix versions on its shortlist have no
     tarball at all. Matching on exact version would score those as undocumented
     when the maintainer did in fact describe them.

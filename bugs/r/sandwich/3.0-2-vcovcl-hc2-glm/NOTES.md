@@ -109,6 +109,6 @@ every quantity null -- indistinguishable from a version where the function exist
 and broke. Thirty-one versions were tested and every one below 2.4-0 came back
 "produced no comparable quantity", so the bisect correctly refused to conclude.
 
-The lesson generalises to how reproducers should be written when they may later be
+The lesson generalizes to how reproducers should be written when they may later be
 bisected: let the error escape, or record it, because "this code did not exist
 yet" and "this code was broken" are the two states the whole method turns on.

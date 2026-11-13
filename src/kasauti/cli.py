@@ -649,7 +649,7 @@ def base_shadow(cache_root: Path | None = None) -> set[str]:
     Two sources, and the second one was learned from a wrong answer. Base R is
     obvious: `Matrix` exports `diag` and `crossprod`, and a bare `diag()` means
     base R's. The non-inferential packages are the same problem one layer out.
-    `alpha` is Cronbach's alpha in `psych` and colour transparency in `scales`,
+    `alpha` is Cronbach's alpha in `psych` and color transparency in `scales`,
     and in this corpus it is written `scales::alpha` eight times against
     `psych::alpha` six -- so counting bare `alpha()` put seven `psych` entries
     near the top of the shortlist on the strength of ggplot2 code.
@@ -698,7 +698,7 @@ def classify_packages() -> list[str]:
 def screen_requests(fixtures: Path, packages: list[str] | None = None) -> list:
     """Read every probe that makes a testable claim.
 
-    One catalogue serves both stages, because a probe is a probe: the sweep runs
+    One catalog serves both stages, because a probe is a probe: the sweep runs
     every one of them across a package's history, and the screen runs the subset
     that names a release where something was supposedly fixed. A battery probe
     chosen by corpus call volume names no such release, so it declares no
@@ -710,7 +710,7 @@ def screen_requests(fixtures: Path, packages: list[str] | None = None) -> list:
         packages: Packages to read. Defaults to all of them.
 
     Returns:
-        The requests, in catalogue order.
+        The requests, in catalog order.
     """
     import yaml as _yaml
 
@@ -746,10 +746,10 @@ def screen() -> None:
 @screen.command("queue")
 @click.option("--fixtures", type=click.Path(path_type=Path), default=ROOT / "fixtures")
 def screen_queue(fixtures: Path) -> None:
-    """List every claim a fixture catalogue declares, and whether it has run.
+    """List every claim a fixture catalog declares, and whether it has run.
 
     Args:
-        fixtures: Directory holding the fixture catalogues.
+        fixtures: Directory holding the fixture catalogs.
     """
     requests = screen_requests(Path(fixtures))
     if not requests:
@@ -788,7 +788,7 @@ def screen_run(
 
     Args:
         entries: Changelog entry ids to screen. Defaults to everything declared.
-        fixtures: Directory holding the fixture catalogues.
+        fixtures: Directory holding the fixture catalogs.
         package: Restrict to these packages.
         ledger: Build ledger.
         cache_root: Harvest cache, for the release history.
@@ -859,7 +859,7 @@ def screen_report(fixtures: Path, out: Path) -> None:
     """Write the screening coverage report.
 
     Args:
-        fixtures: Directory holding the fixture catalogues.
+        fixtures: Directory holding the fixture catalogs.
         out: Markdown file to write.
     """
     from kasauti.archaeology.screen import Screen, render_report
@@ -904,7 +904,7 @@ def sweep_command(
     Args:
         packages: Packages to sweep. Defaults to every one with a fixture.
         fixtures: Directory holding the fixtures.
-        probe: Probe scripts to run. Defaults to every script the catalogue names.
+        probe: Probe scripts to run. Defaults to every script the catalog names.
         ledger: Build ledger.
         cache_root: Harvest cache, for the release history.
         changes: Tidy change table to write.
@@ -1142,7 +1142,7 @@ def episodes_command(
     was derived from would be the hardest kind of error to notice.
 
     Args:
-        fixtures: Directory holding the fixture catalogues.
+        fixtures: Directory holding the fixture catalogs.
         cache_root: Harvest cache, for the changelog text.
         out: Destination episode CSV.
         changes: Destination change CSV.
@@ -1155,7 +1155,7 @@ def episodes_command(
     from kasauti.archaeology.parse import parse_news
     from kasauti.archaeology.sweep import Change, Observation
 
-    # Which functions a probe exercises comes from the catalogue that declares
+    # Which functions a probe exercises comes from the catalog that declares
     # it, so the NEWS join asks about the same names the probe calls.
     exercised: dict[tuple[str, str], list[str]] = {}
     for catalogue in sorted(Path(fixtures).glob("*/probes.yaml")):
@@ -1225,7 +1225,7 @@ def episodes_command(
 
 #: The tables a reader is expected to reanalyse, in pipeline order. Hashed so a
 #: claim in a write-up traces to the bytes it came from, and so a table
-#: regenerated from a changed input cannot pass for the one that was analysed.
+#: regenerated from a changed input cannot pass for the one that was analyzed.
 RELEASED = [
     "data/frame/packages.csv",
     "data/frame/cran_usage.csv",
@@ -1909,7 +1909,7 @@ def archive_loads(path: Path = LOADS_CSV) -> dict[str, set[str]]:
     Returns:
         Directory to packages, or empty when the index has not been built --
         in which case the contested-name rule simply does not fire, which is
-        the old over-counting behaviour rather than a silent zero.
+        the old over-counting behavior rather than a silent zero.
     """
     from kasauti.archaeology.loads import by_archive, read_loads
 

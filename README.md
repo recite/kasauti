@@ -395,7 +395,7 @@ replicates — the nominal 95% interval covers:
 
 Nothing changed and nothing disagrees, so both instruments report nothing, and
 the interval is still four and a half points short at four thousand
-observations. This is the known finite-sample behaviour of kernel HAC estimators
+observations. This is the known finite-sample behavior of kernel HAC estimators
 rather than a defect in either package — which is the point. Catching it needs a
 third axis: not agreement between implementations, nor stability across
 releases, but a comparison against a truth we set ourselves.

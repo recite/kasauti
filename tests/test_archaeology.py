@@ -345,7 +345,7 @@ class TestBuildBugs:
         assert funnel.with_corpus_exposure == 0
 
     def test_a_plotting_packages_name_is_not_credited_to_a_computing_one(self):
-        # `alpha` is Cronbach's alpha in psych and colour transparency in
+        # `alpha` is Cronbach's alpha in psych and color transparency in
         # scales. In this corpus it is written scales::alpha eight times against
         # psych::alpha six, so counting bare alpha() put seven psych entries
         # near the top of the shortlist on the strength of ggplot2 code.
@@ -404,7 +404,7 @@ class TestClassification:
         behaviour = Classification(category="BEHAVIOR_CHANGE", silent=False)
         assert not loud.moves_published_numbers
         assert quiet.moves_published_numbers
-        # A behaviour change moves results whether or not anyone calls it a bug.
+        # A behavior change moves results whether or not anyone calls it a bug.
         assert behaviour.moves_published_numbers
 
     def test_cache_round_trips_source(self, tmp_path):

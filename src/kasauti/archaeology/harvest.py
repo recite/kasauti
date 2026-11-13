@@ -580,7 +580,7 @@ def github_notes(package: str, timeout: int = 60) -> tuple[str, str, list[str]]:
 #: and measured: methods added `values`, `get`, `set`, `fit`, `transform`,
 #: `score`, `shape`, and `size` to the export set, and those alone drove 150 of
 #: the candidate entries, none of them about a statistical procedure. What is
-#: kept is the analogue of what R's NAMESPACE declares.
+#: kept is the analog of what R's NAMESPACE declares.
 PYTHON_EXPORTS = """
 import importlib, inspect, json, pkgutil, sys, warnings
 warnings.simplefilter("ignore")

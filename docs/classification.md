@@ -49,7 +49,7 @@ how much the reading was worth.
 
 Silent (quietly wrong, no error or warning): **109**; loud: 98.
 
-**110** entries could have moved a number in a published table -- silent result-changing bugs, plus behaviour
+**110** entries could have moved a number in a published table -- silent result-changing bugs, plus behavior
 changes, which move results whether or not anyone calls them defects.
 
 ## Shortlist: silent, result-changing, high severity

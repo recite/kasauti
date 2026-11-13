@@ -207,7 +207,7 @@ def _loading(scripts: set[str], package: str, loads: dict[str, set[str]]) -> set
 
     Returns:
         The surviving subset. Empty `loads` keeps everything, so a missing
-        index degrades to the old over-counting behaviour rather than silently
+        index degrades to the old over-counting behavior rather than silently
         reporting zero exposure everywhere.
     """
     if not loads:

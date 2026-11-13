@@ -216,7 +216,7 @@ def differences(
     Returns:
         A `(moved, max_reldiff)` pair. A quantity present in one run and not the
         other is reported as moved, prefixed `-` or `+`: what a function returns
-        changing shape is a changed result by any reading a user would recognise.
+        changing shape is a changed result by any reading a user would recognize.
     """
     shared = sorted(set(old) & set(new))
     moved = [k for k in shared if relative_difference(old[k], new[k]) >= tol]
