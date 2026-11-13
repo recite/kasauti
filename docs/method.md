@@ -18,7 +18,7 @@ the resulting number looks completely fine.**
 | "no bug here" vs *the fixture never reached it* | a screen would have reported a maintainer's claim as refuted | `NOT_TRIGGERED`, plus a **positive control** in every fixture |
 | censored vs *born* | a measured start date thrown away, censoring rate inflated | `BORN`, when the prior releases failed because the code was unwritten |
 | build failure vs *no change* | stability manufactured out of a compiler error | a `GAP` is not a data point; compare to the last **observed** release |
-| moved vs *appeared* | `max_reldiff = 0` reading as noise when a function began returning a standard error | `shape_only`, summarised apart |
+| moved vs *appeared* | `max_reldiff = 0` reading as noise when a function began returning a standard error | `shape_only`, summarized apart |
 | "dependency unavailable" vs *dependency will not build* | sixteen `plm` releases filed under the wrong wall | the supply returns the dependency's own failure |
 | *estimates* vs *the sample they were estimated on* | `fixest` 0.13.2 dropped 20 of 260 observations with the coefficients bit-identical — a coefficient probe finds nothing | every probe reports `nobs` and groups retained first |
 | swept vs *drawn* | four packages were in the estimates without being in the design | `case-study` and `screening` strata, weight 0, excluded and asserted |
@@ -75,7 +75,7 @@ than by reasoning:
 - `Matrix` exports `diag`, `head`, `crossprod`, and `rowMeans`. Counting every
   bare `diag()` put `Matrix` at the top of the queue on **3,562 scripts** that
   meant base R's, burying `lfe` at 245.
-- `alpha` is Cronbach's alpha in `psych` and colour transparency in `scales`. In
+- `alpha` is Cronbach's alpha in `psych` and color transparency in `scales`. In
   this corpus it is written `scales::alpha` **eight** times against
   `psych::alpha` **six** — so seven `psych` entries reached the shortlist at 43
   scripts on the strength of ggplot2 code. Corrected, they sit at 6.
@@ -240,7 +240,7 @@ on a maintainer. Every fixture declares a **positive control** — `nlevels(z) >
 `anyNA(d)`, `anyNA(coef(fit))` — and a run without one is `UNEVALUABLE`, because
 "nothing moved" and "nothing ran" are otherwise indistinguishable.
 
-**Where the fix version is not a release.** `survival`'s NEWS is organised under
+**Where the fix version is not a release.** `survival`'s NEWS is organized under
 headings like `2.35` that CRAN never shipped, and several versions it names went
 out through the author's own channel; four of the thirteen screens straddle their
 stated version rather than pinning it. The report marks them, because a movement

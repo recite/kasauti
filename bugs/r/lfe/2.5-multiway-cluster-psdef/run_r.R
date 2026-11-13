@@ -3,7 +3,7 @@ library(lfe)
 
 # No archived install is needed for this one, which is unusual and worth saying.
 # The changelog entry ends "Can be switched off by felm(...,psdef=FALSE)", so the
-# package still ships the pre-2.5 behaviour behind a flag: one current version
+# package still ships the pre-2.5 behavior behind a flag: one current version
 # produces both answers. Where a fix is revertible by argument, archaeology costs
 # nothing and cannot be defeated by a package that no longer builds.
 flags <- cc_args()$flags
@@ -17,7 +17,7 @@ body <- function(data_path) {
   # Two-way clustering by firm and year. suppressWarnings because the adjusted
   # run announces itself -- "Negative eigenvalues set to zero" -- and that
   # warning is a finding recorded in NOTES.md rather than something to hide:
-  # the fix is loud, the behaviour it replaced was not.
+  # the fix is loud, the behavior it replaced was not.
   fit <- suppressWarnings(
     felm(y ~ x1 + x2 | 0 | 0 | firm + year, data = d, psdef = psdef)
   )

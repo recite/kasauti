@@ -51,7 +51,7 @@ BASE_PACKAGES = {
 #: in a plotting library does not change a reported coefficient. This list is the
 #: one deliberately curated input to the frame, and it is deliberately visible.
 INFERENTIAL_PACKAGES = [
-    # Core modelling, shipped with R
+    # Core modeling, shipped with R
     "stats",
     "MASS",
     "survival",
@@ -78,7 +78,7 @@ INFERENTIAL_PACKAGES = [
     "rdrobust",
     "rddtools",
     "mediation",
-    # Distributions and specialised GLMs
+    # Distributions and specialized GLMs
     "betareg",
     "pscl",
     "VGAM",
@@ -649,7 +649,7 @@ def package_exposure(frame: Frame) -> list[tuple[str, int, int]]:
 
     A package's exposure is the number of distinct scripts calling any of its
     inferential functions. Ambiguous names count for every package exporting
-    them, so these are upper bounds and are labelled as such in the report.
+    them, so these are upper bounds and are labeled as such in the report.
 
     Args:
         frame: The assembled frame.

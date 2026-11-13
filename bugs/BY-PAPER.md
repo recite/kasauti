@@ -6,7 +6,7 @@ probe; 0 were published while a matching bug was live.
 Membership of a window is necessary, not sufficient. The archive also had
 to hit the triggering condition at runtime, which no static check can
 establish -- and an archive published shortly after a fix was very likely
-*analysed* before it, so the window errs in both directions.
+*analyzed* before it, so the window errs in both directions.
 
 | archive | published | journal | bugs | in window |
 |---|---|---|---|---|

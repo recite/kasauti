@@ -7,7 +7,7 @@ and `papers_in_window` currently means "published before the fix" with no lower
 bound at all.
 
 The only way to get a real date is to run the code. A verified record already
-carries everything needed: a backend script parameterised by library path, and
+carries everything needed: a backend script parameterized by library path, and
 two reference outputs -- `results.buggy.json` and `results.fixed.json` -- recorded
 when the bug was verified. Running that same script against an archived version
 and asking *which of the two it matches* needs no new oracle.
@@ -271,7 +271,7 @@ def search(
         The bracket, with every probe recorded.
 
     The search walks outward on `UNEVALUABLE` rather than treating it as an
-    answer: when the midpoint cannot be judged, neighbours are tried before the
+    answer: when the midpoint cannot be judged, neighbors are tried before the
     range is narrowed, so a single unbuildable version does not silently decide
     which half to discard.
     """

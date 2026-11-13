@@ -20,7 +20,7 @@ dropped; that rate is a property of the archives.
 ## Which packages
 
 The frame covers **131** CRAN packages plus base
-R's `stats`, whose exports the attribution needs in order to recognise
+R's `stats`, whose exports the attribution needs in order to recognize
 `lm` and `glm`. They are selected by
 intersecting two sources, neither of them the author's memory: the
 packages CRAN's expert-maintained Task Views list for a field, and the

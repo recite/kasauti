@@ -18,7 +18,7 @@ them fixest began **dropping singleton fixed-effect groups**. The `id` level wit
 exactly one observation vanishes, and every extracted effect shifts.
 
 That is a real change and a deliberate one; it is not this bug. Re-running against
-0.10.4, the immediately following release, isolated the fix: of 240 randomised
+0.10.4, the immediately following release, isolated the fix: of 240 randomized
 designs, **exactly one** diverged, and it was a four-fixed-effect specification —
 consistent with "3+ fixed-effects".
 
@@ -44,7 +44,7 @@ reports.
 
 Three of the four dimensions came back pinned to exactly `0` at their first level,
 which is what makes this hard to notice: a column of fixed effects beginning at
-zero looks like a correctly normalised one. And the regression coefficient is
+zero looks like a correctly normalized one. And the regression coefficient is
 identical, so a paper reporting only `x` was never affected. A paper reporting,
 tabulating, or plotting the fixed effects was.
 
@@ -77,7 +77,7 @@ sharing a name. The probe now requires the script to load `fixest` at all:
 So the honest count is zero, and the study's apparent first affected paper was an
 `lm` model calling a mixed-models function.
 
-This generalised, and has since been applied across the whole funnel rather than
+This generalized, and has since been applied across the whole funnel rather than
 in this one probe. 21.8% of exposed entries rested on a name two or more frame
 packages export — `coordinates` (raster/sp), `vcovHC` (plm/sandwich), `Surv`
 (rms/rstanarm/survival), `lmer` (lme4/lmerTest). A contested name now counts only
@@ -101,7 +101,7 @@ older version could be judged. Every one of them fails the same way:
 before mid-2021 do not compile against a current compiler.
 
 So the wall here is neither the changelog nor the reproducer but the build. It is
-the R analogue of the ABI ceiling recorded for the scikit-learn record, and it
+the R analog of the ABI ceiling recorded for the scikit-learn record, and it
 bounds the archaeology the same way: a fix released long enough ago sits behind a
 toolchain nobody can reconstruct casually. The difference is that R's floor is
 usually about packaging conventions -- `NAMESPACE` became mandatory, which stops

@@ -96,7 +96,7 @@ class TestCensoring:
     def test_a_first_episode_preceded_only_by_absent_code_is_born_not_censored(self):
         # The third time this distinction has paid: a bug in a method nobody has
         # written is not a bug. Calling it censored throws away a measured start
-        # date and inflates the censoring rate the analysis has to apologise for.
+        # date and inflates the censoring rate the analysis has to apologize for.
         history = [
             absent("2.2-3", 2009),
             seen("2.2-4", 2010, se=1.0),
@@ -203,7 +203,7 @@ class TestNewsBetween:
     ]
 
     def test_a_changelog_version_cran_never_shipped_still_counts(self):
-        # `survival`'s NEWS is organised under headings like 2.35 that are not
+        # `survival`'s NEWS is organized under headings like 2.35 that are not
         # releases. An exact-version join would score those as undocumented when
         # the maintainer did describe them.
         text = news_between(self.ENTRIES, "2.34-1", "2.35-2")

@@ -44,7 +44,7 @@ class TestBracket:
         assert exact
 
     def test_a_fix_version_cran_never_shipped_is_straddled(self):
-        # `survival`'s NEWS is organised under headings like 2.35 that are not
+        # `survival`'s NEWS is organized under headings like 2.35 that are not
         # releases, and six of nine fix versions on its shortlist have no archive
         # tarball. Discarding those claims would drop the package with the most
         # candidates; straddling them keeps the claim testable and says so.
@@ -98,7 +98,7 @@ class TestJudge:
 
     def test_a_quantity_that_appears_counts_as_a_change(self):
         # What a function returns changing shape is a changed result by any
-        # reading a user would recognise.
+        # reading a user would recognize.
         verdict, detail, moved, _ = judge(ok({"se": 1.0}), ok({"se": 1.0, "df": 7.0}))
         assert verdict == MOVED
         assert moved == ["+df"]

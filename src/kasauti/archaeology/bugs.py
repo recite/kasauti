@@ -139,7 +139,7 @@ class Bug:
             over-counting them.
         introduction_evidence: How the introduction was established --
             `bisected` (the reproducer was run against archived versions),
-            `changelog` (the entry names the version), `birth` (the behaviour
+            `changelog` (the entry names the version), `birth` (the behavior
             did not exist before, so the whole prior history qualifies), or
             `unknown`. Recorded so a measured date is never mistaken for an
             assumed one, which matters because the two narrow the exposure
@@ -461,7 +461,7 @@ def load_bug(directory: Path, root: Path | None = None) -> Bug:
             papers_in_window=exposure_raw.get("papers_in_window"),
             papers_censored=exposure_raw.get("papers_censored"),
             # YAML rounds numeric keys to ints already, but a hand-edited record
-            # may write them as strings; normalise so the curve is comparable.
+            # may write them as strings; normalize so the curve is comparable.
             papers_by_lag={
                 int(k): int(v)
                 for k, v in (exposure_raw.get("papers_by_lag") or {}).items()

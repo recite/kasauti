@@ -7,7 +7,7 @@ family: version_regression
 #    adjustment of Cameron, Gelbach, Miller. I.e. they are forced to zero. Can be
 #    switched off by felm(...,psdef=FALSE)."
 #
-# No side library. The entry names the flag that restores the old behaviour, so
+# No side library. The entry names the flag that restores the old behavior, so
 # both backends run against current lfe:
 #   Rscript -e 'install.packages("lfe")'
 

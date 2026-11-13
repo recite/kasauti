@@ -16,7 +16,7 @@ intersected with corpus usage.
 ## No archived install was needed
 
 Every other record here pins an old version in a side library. This one does not,
-because the changelog ends by naming the flag that restores the old behaviour:
+because the changelog ends by naming the flag that restores the old behavior:
 `psdef=FALSE`. One current version produces both answers, so the comparison is
 immune to the usual archaeology failure — a 2016 package that no longer compiles
 against a 2026 toolchain. **Where a changelog says a fix is revertible by
@@ -58,7 +58,7 @@ shrink one get published.
 **The concentration.** `x2`'s standard error moves by 0.2% while `x1`'s moves by
 83%. The damage lies along whichever direction the negative eigenvalue occupied,
 so an analyst glancing at the rest of the table sees nothing unusual. That
-localisation is why it is silent, and it is also the reason the case pins
+localization is why it is silent, and it is also the reason the case pins
 `coef@x1` and `coef@x2` to AGREE: the adjustment touches the covariance and never
 the point estimates, and a moving coefficient would mean the case measures
 something other than what it claims.
@@ -90,7 +90,7 @@ four attempts, and the failures are instructive because each one *looked* fine:
 |---|---|---|
 | `[^;]` between pipes | 58 | `[^;]` admits newlines, so the leading segment ran across statements and borrowed pipes from a *later* `felm` call |
 | `[^\|;\n]` | 14 | fixed that, but multi-line `felm` calls — **115 of 244 scripts have one** — stopped matching, turning an upper bound into an undercount |
-| `(?!felm)[^\|;]` | 26 | multi-line works again and it cannot slide into a neighbouring call, but it landed on the *instrument* field of IV specifications: `\| (x2 ~ z1 + z2) \|` |
+| `(?!felm)[^\|;]` | 26 | multi-line works again and it cannot slide into a neighboring call, but it landed on the *instrument* field of IV specifications: `\| (x2 ~ z1 + z2) \|` |
 | `(?!felm)[^\|;)~]` on the last field | **22** | a cluster field never contains `~`, so excluding it forces the match onto the real fourth field |
 
 The lesson is the one this project keeps relearning: a plausible narrowing is

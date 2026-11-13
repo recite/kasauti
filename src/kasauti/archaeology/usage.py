@@ -41,7 +41,7 @@ USER_AGENT = "kasauti/0.1 (research; differential testing of statistical softwar
 #: one chunk rather than the whole frame.
 CHUNK = 50
 
-#: Dependency fields that mean the code is loaded when the dependant runs.
+#: Dependency fields that mean the code is loaded when the dependent runs.
 #: `Enhances` and `Suggests` do not, and are counted separately.
 STRONG = ("Depends", "Imports", "LinkingTo")
 
